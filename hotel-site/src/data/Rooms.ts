@@ -2,7 +2,7 @@ import type {Room} from '../types/Room';
 
 export const rooms: Room[] = [
   {
-    id: 'room-001',
+    id: 1,
     name: 'Camera Singola Classic',
     type: 'single',
     description:
@@ -20,7 +20,7 @@ export const rooms: Room[] = [
     available: true,
   },
   {
-    id: 'room-002',
+    id: 2,
     name: 'Camera Doppia Standard',
     type: 'double',
     description:
@@ -45,7 +45,7 @@ export const rooms: Room[] = [
     available: true,
   },
   {
-    id: 'room-003',
+    id: 3,
     name: 'Camera Doppia Vista Mare',
     type: 'double',
     description:
@@ -71,7 +71,7 @@ export const rooms: Room[] = [
     available: true,
   },
   {
-    id: 'room-004',
+    id: 4,
     name: 'Camera Deluxe con Piscina',
     type: 'deluxe',
     description:
@@ -99,7 +99,7 @@ export const rooms: Room[] = [
     available: false,
   },
   {
-    id: 'room-005',
+    id: 5,
     name: 'Junior Suite',
     type: 'suite',
     description:
@@ -129,7 +129,7 @@ export const rooms: Room[] = [
     available: true,
   },
   {
-    id: 'room-006',
+    id: 6,
     name: 'Suite Presidenziale',
     type: 'suite',
     description:
@@ -161,7 +161,7 @@ export const rooms: Room[] = [
     available: true,
   },
   {
-    id: 'room-007',
+    id: 7,
     name: 'Penthouse Panoramico',
     type: 'penthouse',
     description:

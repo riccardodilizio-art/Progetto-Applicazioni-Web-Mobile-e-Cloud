@@ -3,7 +3,7 @@ export type RoomType = 'single' | 'double' | 'deluxe' | 'suite' | 'penthouse';
 export type RoomView = 'sea' | 'garden' | 'city' | 'pool' | 'mountain';
 
 export interface Room {
-  id: string;
+  id: int;
   name: string;
   type: RoomType;
   description: string;
