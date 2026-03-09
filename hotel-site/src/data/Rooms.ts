@@ -1,4 +1,4 @@
-import { Room } from '../types/Room';
+import type {Room} from '../types/Room';
 
 export const rooms: Room[] = [
   {
@@ -75,7 +75,7 @@ export const rooms: Room[] = [
     name: 'Camera Deluxe con Piscina',
     type: 'deluxe',
     description:
-      'Camera di lusso con accesso diretto alla piscina privata. Interni raffinati, letto king-size e servizi premium per un'esperienza indimenticabile.',
+      'Camera di lusso con accesso diretto alla piscina privata. Interni raffinati, letto king-size e servizi premium per un esperienza indimenticabile.',
     pricePerNight: 280,
     capacity: 2,
     size: 38,
@@ -103,8 +103,8 @@ export const rooms: Room[] = [
     name: 'Junior Suite',
     type: 'suite',
     description:
-      'Elegante junior suite con zona living separata. Perfetta per chi desidera spazio e comfort extra senza rinunciare a un'atmosfera intima.',
-    pricePerNight: 380,
+      'Elegante junior suite con zona living separata. Perfetta per chi desidera spazio e comfort extra senza rinunciare a un atmosfera intima.',
+      pricePerNight: 380,
     capacity: 3,
     size: 55,
     floor: 5,
@@ -133,7 +133,7 @@ export const rooms: Room[] = [
     name: 'Suite Presidenziale',
     type: 'suite',
     description:
-      'La nostra suite più esclusiva. Due camere da letto, salotto privato, sala da pranzo e terrazza panoramica a 360°. Un'esperienza di lusso senza eguali.',
+      'La nostra suite più esclusiva. Due camere da letto, salotto privato, sala da pranzo e terrazza panoramica a 360°. Un esperienza di lusso senza eguali.',
     pricePerNight: 750,
     capacity: 4,
     size: 110,
@@ -165,7 +165,7 @@ export const rooms: Room[] = [
     name: 'Penthouse Panoramico',
     type: 'penthouse',
     description:
-      'L'apice del lusso. L'intero ultimo piano dedicato a un'unica suite con piscina privata sul tetto, vista a 360° su mare e città e servizi personalizzati.',
+      "L' apice del lusso. L'intero ultimo piano dedicato a un'unica suite con piscina privata sul tetto, vista a 360° su mare e città e servizi personalizzati.",
     pricePerNight: 1500,
     capacity: 6,
     size: 220,
@@ -173,7 +173,7 @@ export const rooms: Room[] = [
     view: 'sea',
     amenities: [
       'Wi-Fi dedicato fibra ottica',
-      'Aria condizionata multi-zona con purificatore d'aria',
+      "Aria condizionata multi-zona con purificatore d'aria",
       '3 TV 85" OLED',
       'Cucina privata con chef su richiesta',
       'Sala cinema privata',
