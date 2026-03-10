@@ -44,7 +44,10 @@ export default function Contacts() {
                     <p className="text-[#1a2e4a] text-base md:text-lg drop-shadow mb-6">
                         Contattaci per prenotare il tuo soggiorno ideale a Pesaro.
                     </p>
-                    <button className="border border-[#1a2e4a] text-[#1a2e4a] bg-white/40 backdrop-blur-sm px-6 py-2 rounded hover:bg-[#1a2e4a] hover:text-white transition font-medium">
+                    <button
+                        onClick={() => document.getElementById('contact-form')?.scrollIntoView({ behavior: 'smooth' })}
+                        className="border border-[#1a2e4a] text-[#1a2e4a] bg-white/40 backdrop-blur-sm px-6 py-2 rounded hover:bg-[#1a2e4a] hover:text-white transition font-medium"
+                    >
                         Contattaci
                     </button>
                 </div>
@@ -70,7 +73,7 @@ export default function Contacts() {
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                                     </svg>
                                     <div>
-                                        <p>Viale Trieste 126</p>
+                                        <p>Viale Trieste 129</p>
                                         <p>61121 Pesaro (PU), Marche, Italia</p>
                                     </div>
                                 </div>
@@ -127,7 +130,7 @@ export default function Contacts() {
                         </div>
 
                         {/* ── Colonna destra: Form ── */}
-                        <div>
+                        <div id="contact-form">
                             <h2 className="text-lg font-bold text-[#1a2e4a] mb-5">
                                 Inviaci un messaggio
                             </h2>
