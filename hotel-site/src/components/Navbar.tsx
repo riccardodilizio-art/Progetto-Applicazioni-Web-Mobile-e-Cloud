@@ -12,7 +12,7 @@ export default function Navbar() {
         return () => window.removeEventListener('scroll', handleScroll)
     }, [])
 
-    const isActive = (path) => location.pathname === path
+    const isActive = (path: string) => location.pathname === path
 
     const navLinks = [
         { to: '/', label: 'Home' },
