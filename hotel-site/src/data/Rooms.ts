@@ -103,8 +103,9 @@ export const rooms: Room[] = [
     name: 'Junior Suite',
     type: 'suite',
     description:
-      'Elegante junior suite con zona living separata. Perfetta per chi desidera spazio e comfort extra senza rinunciare a un atmosfera intima.',
-      pricePerNight: 380,
+        'Elegante junior suite con zona living separata. ' +
+        'Perfetta per chi desidera spazio e comfort extra senza rinunciare a un atmosfera intima.',
+    pricePerNight: 380,
     capacity: 3,
     size: 55,
     floor: 5,
