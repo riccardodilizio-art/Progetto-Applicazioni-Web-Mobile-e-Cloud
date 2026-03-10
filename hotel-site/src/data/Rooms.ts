@@ -4,7 +4,7 @@ export const rooms: Room[] = [
   {
     id: 1,
     name: 'Camera Singola Classic',
-    type: 'single',
+    type: 'singola',
     description:
       'Camera accogliente e funzionale, ideale per viaggiatori solitari. Arredata con gusto, offre tutto il necessario per un soggiorno confortevole.',
     pricePerNight: 90,
@@ -22,7 +22,7 @@ export const rooms: Room[] = [
   {
     id: 2,
     name: 'Camera Doppia Standard',
-    type: 'double',
+    type: 'doppia',
     description:
       'Spaziosa camera doppia con letto matrimoniale o due letti separati, perfetta per coppie o colleghi in viaggio di lavoro.',
     pricePerNight: 140,
@@ -47,7 +47,7 @@ export const rooms: Room[] = [
   {
     id: 3,
     name: 'Camera Doppia Vista Mare',
-    type: 'double',
+    type: 'doppia',
     description:
       'Camera doppia con splendida vista panoramica sul mare. Svegliarsi con il suono delle onde e ammirare il tramonto direttamente dalla finestra.',
     pricePerNight: 195,
