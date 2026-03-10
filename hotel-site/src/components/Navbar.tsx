@@ -31,15 +31,14 @@ export default function Navbar() {
 
                 {/* Logo */}
                 <Link to="/" className="flex items-center gap-3 no-underline">
-                    <div className="w-10 h-10 rounded-full border border-[#B07840]/40 bg-[#B07840]/10 flex items-center justify-center text-[#7A4E28]/60 text-xs tracking-widest uppercase">
-                        Logo
-                    </div>
+                    <img
+                        src="/images/LogoHotel.png"
+                        alt="Logo Hotel"
+                        className="w-17 h-17 rounded-full object-cover border border-[#B07840]/40"
+                        />
                     <div className="flex flex-col leading-tight">
-                        <span className="text-[#9A6840]/80 text-[0.58rem] tracking-[0.35em] uppercase font-light">
-                            Grand
-                        </span>
                         <span
-                            className="text-[#3B2010] text-2xl font-medium tracking-wide drop-shadow-sm"
+                            className="text-[#3B2010] text-3xl font-medium tracking-wide drop-shadow-sm"
                             style={{ fontFamily: "'Cormorant Garamond', serif" }}
                         >
                             Hotel Excelsior
