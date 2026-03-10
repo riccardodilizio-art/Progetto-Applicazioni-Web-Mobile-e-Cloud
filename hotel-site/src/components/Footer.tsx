@@ -10,13 +10,13 @@ export default function Footer() {
                     <div>
                         <h3 className="text-xl font-bold mb-4">🏨 Hotel Excelsior</h3>
                         <p className="text-gray-400">
-                            Via Arenile 26, 66010 Ripa Teatina, Italia
+                            Viale Trieste 126, 61121 Pesaro, Marche, Italia
                         </p>
                         <p className="text-gray-400 mt-2">
-                            Tel: +39 0871 399 396
+                            Tel: +39 333 640 5167
                         </p>
                         <p className="text-gray-400">
-                            Email: info@hotelNome.it
+                            Email: info@hotelexcelsior.it
                         </p>
                     </div>
 
@@ -42,15 +42,15 @@ export default function Footer() {
                     {/* Orari */}
                     <div>
                         <h3 className="text-xl font-bold mb-4">Orari</h3>
-                        <p className="text-gray-400">Check-in: dalle 08:00 alle 22:00</p>
-                        <p className="text-gray-400">Check-out: entro le 10:00</p>
+                        <p className="text-gray-400">Check-in: dalle 15:00 alle 22:00</p>
+                        <p className="text-gray-400">Check-out: entro le 11:00</p>
                         <p className="text-gray-400 mt-2">Reception: 24h/24</p>
                     </div>
                 </div>
 
                 {/* Copyright */}
                 <div className="border-t border-gray-700 mt-8 pt-8 text-center text-gray-500">
-                    <p>&copy; {new Date().getFullYear()} Hotel (nome). Tutti i diritti riservati.</p>
+                    <p>&copy; {new Date().getFullYear()} Hotel Excelsior. Tutti i diritti riservati.</p>
                 </div>
             </div>
         </footer>
