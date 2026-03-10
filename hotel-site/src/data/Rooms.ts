@@ -11,7 +11,7 @@ export const rooms: Room[] = [
     capacity: 1,
     size: 18,
     floor: 1,
-    view: 'garden',
+    roomNumber: 105,
     amenities: ['Wi-Fi gratuito', 'Aria condizionata', 'TV', 'Bagno privato', 'Cassaforte'],
     images: [
       'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=800',
@@ -29,7 +29,7 @@ export const rooms: Room[] = [
     capacity: 2,
     size: 26,
     floor: 2,
-    view: 'city',
+    roomNumber: 203,
     amenities: [
       'Wi-Fi gratuito',
       'Aria condizionata',
@@ -54,7 +54,7 @@ export const rooms: Room[] = [
     capacity: 2,
     size: 28,
     floor: 4,
-    view: 'sea',
+    roomNumber: 410,
     amenities: [
       'Wi-Fi gratuito',
       'Aria condizionata',
@@ -80,7 +80,7 @@ export const rooms: Room[] = [
     capacity: 2,
     size: 38,
     floor: 1,
-    view: 'pool',
+    roomNumber: 102,
     amenities: [
       'Wi-Fi gratuito',
       'Aria condizionata',
@@ -108,7 +108,7 @@ export const rooms: Room[] = [
     capacity: 3,
     size: 55,
     floor: 5,
-    view: 'sea',
+    roomNumber: 502,
     amenities: [
       'Wi-Fi gratuito',
       'Aria condizionata',
@@ -138,7 +138,7 @@ export const rooms: Room[] = [
     capacity: 4,
     size: 110,
     floor: 6,
-    view: 'sea',
+    roomNumber: 601,
     amenities: [
       'Wi-Fi dedicato ad alta velocità',
       'Aria condizionata multi-zona',
@@ -157,38 +157,6 @@ export const rooms: Room[] = [
     images: [
       'https://images.unsplash.com/photo-1631049552240-59c37f38802b?w=800',
       'https://images.unsplash.com/photo-1590490360182-c33d57733427?w=800',
-    ],
-    available: true,
-  },
-  {
-    id: 7,
-    name: 'Penthouse Panoramico',
-    type: 'penthouse',
-    description:
-      "L' apice del lusso. L'intero ultimo piano dedicato a un'unica suite con piscina privata sul tetto, vista a 360° su mare e città e servizi personalizzati.",
-    pricePerNight: 1500,
-    capacity: 6,
-    size: 220,
-    floor: 7,
-    view: 'sea',
-    amenities: [
-      'Wi-Fi dedicato fibra ottica',
-      "Aria condizionata multi-zona con purificatore d'aria",
-      '3 TV 85" OLED',
-      'Cucina privata con chef su richiesta',
-      'Sala cinema privata',
-      'Minibar premium sempre rifornito',
-      '3 bagni con vasca idromassaggio e doccia a pioggia',
-      'Piscina privata sul rooftop',
-      'Terrazza panoramica 360°',
-      'Butler personale 24h',
-      'Transfer privato incluso',
-      'Fiori freschi giornalieri',
-      'Accesso spa esclusivo',
-    ],
-    images: [
-      'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=800',
-      'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=800',
     ],
     available: true,
   },
