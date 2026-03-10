@@ -8,7 +8,7 @@ export default function Footer() {
 
                     {/* Info Hotel */}
                     <div>
-                        <h3 className="text-xl font-bold mb-4">🏨 Hotel Luxury</h3>
+                        <h3 className="text-xl font-bold mb-4">🏨 Hotel Excelsior</h3>
                         <p className="text-gray-400">
                             Via Arenile 26, 66010 Ripa Teatina, Italia
                         </p>
@@ -29,6 +29,9 @@ export default function Footer() {
                             </Link>
                             <Link to="/rooms" className="block text-gray-400 hover:text-white transition">
                                 Camere
+                            </Link>
+                            <Link to="/contacts" className="block text-gray-400 hover:text-white transition">
+                                Contatti
                             </Link>
                             <Link to="/admin/login" className="block text-gray-400 hover:text-white transition">
                                 Area Admin

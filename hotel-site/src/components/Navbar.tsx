@@ -11,7 +11,7 @@ export default function Navbar() {
 
                     {/* Logo / Nome Hotel */}
                     <Link to="/" className="text-2xl font-bold text-blue-800">
-                        🏨 Hotel Luxury
+                        🏨 Hotel Excelsior
                     </Link>
 
                     {/* Link desktop */}
@@ -21,6 +21,9 @@ export default function Navbar() {
                         </Link>
                         <Link to="/rooms" className="text-gray-700 hover:text-blue-800 font-medium">
                             Camere
+                        </Link>
+                        <Link to="/contacts" className="text-gray-700 hover:text-blue-800 font-medium">
+                            Contatti
                         </Link>
                         <Link to="/admin/login" className="bg-blue-800 text-white px-4 py-2 rounded-lg hover:bg-blue-900 transition">
                             Admin

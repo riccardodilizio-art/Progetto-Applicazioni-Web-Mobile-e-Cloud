@@ -4,6 +4,7 @@ import Footer from './components/Footer'
 import Home from './pages/Home'
 import Rooms from './pages/Rooms'
 import RoomDetail from './pages/RoomDetail'
+import Contacts from './pages/Contacts'
 import Login from './pages/admin/Login'
 import Dashboard from './pages/admin/Dashboard'
 import RoomForm from './pages/admin/RoomForm'
@@ -23,6 +24,7 @@ export default function App() {
                         <Route path="/admin/dashboard" element={<Dashboard />} />
                         <Route path="/admin/rooms/new" element={<RoomForm />} />
                         <Route path="/admin/rooms/edit/:id" element={<RoomForm />} />
+                        <Route path="/contacts" element={<Contacts />} />
                     </Routes>
                 </main>
 
