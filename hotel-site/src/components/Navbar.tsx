@@ -1,64 +1,119 @@
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { Link, useLocation } from 'react-router-dom'
 
 export default function Navbar() {
     const [isOpen, setIsOpen] = useState(false)
+    const [scrolled, setScrolled] = useState(false)
+    const location = useLocation()
+
+    useEffect(() => {
+        const handleScroll = () => setScrolled(window.scrollY > 20)
+        window.addEventListener('scroll', handleScroll)
+        return () => window.removeEventListener('scroll', handleScroll)
+    }, [])
+
+    const isActive = (path) => location.pathname === path
+
+    const navLinks = [
+        { to: '/', label: 'Home' },
+        { to: '/rooms', label: 'Camere' },
+        { to: '/contacts', label: 'Contatti' },
+    ]
 
     return (
-        <nav className="bg-white shadow-md sticky top-0 z-50">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="flex items-center justify-between h-16">
+        <nav className={`sticky top-0 z-50 transition-all duration-500 backdrop-blur-md
+            ${scrolled
+            ? 'bg-[#E8C9A0]/60 shadow-sm border-b border-[#C4A070]/30'
+            : 'bg-[#E8C9A0]/30 border-b border-[#C4A070]/20'
+        }`}
+        >
+            <div className="max-w-7xl mx-auto px-6 flex items-center justify-between py-4">
 
-                    {/* Logo / Nome Hotel */}
-                    <Link to="/" className="text-2xl font-bold text-blue-800">
-                        🏨 Hotel Excelsior
-                    </Link>
-
-                    {/* Link desktop */}
-                    <div className="hidden md:flex items-center space-x-8">
-                        <Link to="/" className="text-gray-700 hover:text-blue-800 font-medium">
-                            Home
-                        </Link>
-                        <Link to="/rooms" className="text-gray-700 hover:text-blue-800 font-medium">
-                            Camere
-                        </Link>
-                        <Link to="/contacts" className="text-gray-700 hover:text-blue-800 font-medium">
-                            Contatti
-                        </Link>
-                        <Link to="/admin/login" className="bg-blue-800 text-white px-4 py-2 rounded-lg hover:bg-blue-900 transition">
-                            Admin
-                        </Link>
+                {/* Logo */}
+                <Link to="/" className="flex items-center gap-3 no-underline">
+                    <div className="w-10 h-10 rounded-full border border-[#B07840]/40 bg-[#B07840]/10 flex items-center justify-center text-[#7A4E28]/60 text-xs tracking-widest uppercase">
+                        Logo
                     </div>
+                    <div className="flex flex-col leading-tight">
+                        <span className="text-[#9A6840]/80 text-[0.58rem] tracking-[0.35em] uppercase font-light">
+                            Grand
+                        </span>
+                        <span
+                            className="text-[#3B2010] text-2xl font-medium tracking-wide drop-shadow-sm"
+                            style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                        >
+                            Hotel Excelsior
+                        </span>
+                    </div>
+                </Link>
 
-                    {/* Hamburger mobile */}
-                    <button
-                        className="md:hidden text-gray-700"
-                        onClick={() => setIsOpen(!isOpen)}
+                {/* Link desktop */}
+                <div className="hidden md:flex items-center gap-10">
+                    {navLinks.map(({ to, label }) => (
+                        <Link
+                            key={to}
+                            to={to}
+                            className={`text-[0.75rem] tracking-[0.18em] uppercase font-normal relative pb-0.5
+                                after:absolute after:bottom-0 after:left-0 after:h-px after:bg-[#9A6840] after:transition-all after:duration-300
+                                transition-colors duration-300
+                                ${isActive(to)
+                                ? 'text-[#3B2010] after:w-full'
+                                : 'text-[#6B4828] hover:text-[#3B2010] after:w-0 hover:after:w-full'
+                            }`}
+                        >
+                            {label}
+                        </Link>
+                    ))}
+
+                    <div className="w-px h-5 bg-[#9A6840]/35" />
+
+                    <Link
+                        to="/admin/login"
+                        className="text-[0.7rem] tracking-[0.2em] uppercase font-medium
+                            text-[#FAF0E6] bg-[#3B2010]/80 px-5 py-2 border border-[#3B2010]/60
+                            hover:bg-[#3B2010] transition-all duration-300"
                     >
-                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            {isOpen ? (
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                            ) : (
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                            )}
-                        </svg>
-                    </button>
+                        Admin
+                    </Link>
                 </div>
 
-                {/* Menu mobile (si apre/chiude) */}
-                {isOpen && (
-                    <div className="md:hidden pb-4 space-y-2">
-                        <Link to="/" className="block text-gray-700 hover:text-blue-800 font-medium" onClick={() => setIsOpen(false)}>
-                            Home
-                        </Link>
-                        <Link to="/rooms" className="block text-gray-700 hover:text-blue-800 font-medium" onClick={() => setIsOpen(false)}>
-                            Camere
-                        </Link>
-                        <Link to="/admin/login" className="block text-blue-800 font-medium" onClick={() => setIsOpen(false)}>
-                            Admin
-                        </Link>
-                    </div>
-                )}
+                {/* Hamburger */}
+                <button
+                    className="md:hidden flex flex-col gap-1.5 p-1 bg-transparent border-none cursor-pointer"
+                    onClick={() => setIsOpen(!isOpen)}
+                    aria-label="Menu"
+                >
+                    <span className={`block w-6 h-px bg-[#3B2010] transition-all duration-300 origin-center ${isOpen ? 'translate-y-[7px] rotate-45' : ''}`} />
+                    <span className={`block w-6 h-px bg-[#3B2010] transition-all duration-300 ${isOpen ? 'opacity-0' : ''}`} />
+                    <span className={`block w-6 h-px bg-[#3B2010] transition-all duration-300 origin-center ${isOpen ? '-translate-y-[7px] -rotate-45' : ''}`} />
+                </button>
+            </div>
+
+            {/* Mobile menu */}
+            <div className={`md:hidden flex flex-col gap-6 px-6 border-t border-[#9A6840]/20 bg-[#E8C9A0]/70 backdrop-blur-md
+                overflow-hidden transition-all duration-300
+                ${isOpen ? 'max-h-64 py-6' : 'max-h-0 py-0'}`}
+            >
+                {navLinks.map(({ to, label }) => (
+                    <Link
+                        key={to}
+                        to={to}
+                        className={`text-[0.8rem] tracking-[0.2em] uppercase font-normal transition-colors duration-200
+                            ${isActive(to) ? 'text-[#3B2010]' : 'text-[#6B4828] hover:text-[#3B2010]'}`}
+                        onClick={() => setIsOpen(false)}
+                    >
+                        {label}
+                    </Link>
+                ))}
+                <Link
+                    to="/admin/login"
+                    className="text-[0.7rem] tracking-[0.2em] uppercase font-medium
+                        text-[#FAF0E6] bg-[#3B2010]/80 px-5 py-2.5 self-start
+                        hover:bg-[#3B2010] transition-all duration-300"
+                    onClick={() => setIsOpen(false)}
+                >
+                    Admin
+                </Link>
             </div>
         </nav>
     )
