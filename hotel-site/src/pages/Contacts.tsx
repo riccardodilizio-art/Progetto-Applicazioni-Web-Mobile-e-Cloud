@@ -115,7 +115,7 @@ export default function Contacts() {
                             <div className="mt-6 rounded-xl overflow-hidden h-44 shadow-md">
                                 <iframe
                                     title="Mappa Hotel Excelsior Pesaro"
-                                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2867.4560234!2d12.895830!3d43.916820!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x132ce8b6e9517bc5%3A0x9a77f27fb1729d2!2sVia+Arenile+26%2C+61121+Pesaro+PU!5e0!3m2!1sit!2sit!4v1709900000000!5m2!1sit!2sit"
+                                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d11497.130495135983!2d12.902055839615844!3d43.91212247365236!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x132d193fd568f455%3A0x4373c1af0cd16dec!2sViale%20Trieste%2C%20126%2C%2061121%20Pesaro%20PU!5e0!3m2!1sit!2sit!4v1773156437433!5m2!1sit!2sit"
                                     width="100%"
                                     height="100%"
                                     style={{ border: 0 }}
