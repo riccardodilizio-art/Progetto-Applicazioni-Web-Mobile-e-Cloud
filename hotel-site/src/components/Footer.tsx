@@ -10,13 +10,13 @@ export default function Footer() {
                     <div>
                         <h3 className="text-xl font-bold mb-4">🏨 Hotel Luxury</h3>
                         <p className="text-gray-400">
-                            Via Roma 123, 80100 Napoli, Italia
+                            Via Arenile 26, 66010 Ripa Teatina, Italia
                         </p>
                         <p className="text-gray-400 mt-2">
-                            Tel: +39 081 123 4567
+                            Tel: +39 0871 399 396
                         </p>
                         <p className="text-gray-400">
-                            Email: info@hotelluxury.it
+                            Email: info@hotelNome.it
                         </p>
                     </div>
 
@@ -39,7 +39,7 @@ export default function Footer() {
                     {/* Orari */}
                     <div>
                         <h3 className="text-xl font-bold mb-4">Orari</h3>
-                        <p className="text-gray-400">Check-in: dalle 14:00</p>
+                        <p className="text-gray-400">Check-in: dalle 08:00 alle 22:00</p>
                         <p className="text-gray-400">Check-out: entro le 10:00</p>
                         <p className="text-gray-400 mt-2">Reception: 24h/24</p>
                     </div>
@@ -47,7 +47,7 @@ export default function Footer() {
 
                 {/* Copyright */}
                 <div className="border-t border-gray-700 mt-8 pt-8 text-center text-gray-500">
-                    <p>&copy; {new Date().getFullYear()} Hotel Luxury. Tutti i diritti riservati.</p>
+                    <p>&copy; {new Date().getFullYear()} Hotel (nome). Tutti i diritti riservati.</p>
                 </div>
             </div>
         </footer>
