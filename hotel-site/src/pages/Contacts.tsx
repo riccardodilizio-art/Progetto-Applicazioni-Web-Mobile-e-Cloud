@@ -73,7 +73,7 @@ export default function Contacts() {
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                                     </svg>
                                     <div>
-                                        <p>Viale Trieste 129</p>
+                                        <p>Viale Trieste 126</p>
                                         <p>61121 Pesaro (PU), Marche, Italia</p>
                                     </div>
                                 </div>

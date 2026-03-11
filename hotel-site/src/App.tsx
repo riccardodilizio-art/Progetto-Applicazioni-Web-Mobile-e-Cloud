@@ -8,6 +8,7 @@ import Contacts from './pages/Contacts'
 import Login from './pages/admin/Login'
 import Dashboard from './pages/admin/Dashboard'
 import RoomForm from './pages/admin/RoomForm'
+import NotFound from './pages/NotFound'
 
 export default function App() {
     return (
@@ -18,7 +19,7 @@ export default function App() {
                 <main className="flex-grow">
                     <Routes>
                         <Route path="/" element={<Home />} />
-                        {/*<Route path="*" element={<NotFound />} />*/}
+                        <Route path="*" element={<NotFound />} />
                         <Route path="/rooms" element={<Rooms />} />
                         <Route path="/rooms/:id" element={<RoomDetail />} />
                         <Route path="/admin/login" element={<Login />} />
