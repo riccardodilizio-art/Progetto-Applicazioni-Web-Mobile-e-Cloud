@@ -1,0 +1,17 @@
+services:
+  frontend:
+    build:
+      context: ./hotel-site
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"
+    restart: unless-stopped
+
+
+  # backend:
+  #   build:
+  #     context: ./backend
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "3000:3000"
+  #   restart: unless-stopped
