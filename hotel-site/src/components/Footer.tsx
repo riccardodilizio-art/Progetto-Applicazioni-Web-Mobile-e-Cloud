@@ -30,6 +30,9 @@ export default function Footer() {
                             <Link to="/rooms" className="block text-gray-400 text-sm hover:text-white transition">
                                 Camere
                             </Link>
+                            <Link to="/menu" className="block text-gray-400 text-sm hover:text-white transition">
+                                Ristorante
+                            </Link>
                             <Link to="/contacts" className="block text-gray-400 text-sm hover:text-white transition">
                                 Contatti
                             </Link>

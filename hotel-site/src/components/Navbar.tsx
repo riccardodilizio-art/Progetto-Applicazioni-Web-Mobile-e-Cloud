@@ -17,6 +17,7 @@ export default function Navbar() {
     const navLinks = [
         { to: '/', label: 'Home' },
         { to: '/rooms', label: 'Camere' },
+        { to: '/menu', label: 'Ristorante' },
         { to: '/contacts', label: 'Contatti' },
     ]
 
