@@ -21,7 +21,7 @@ export default function Rooms() {
     return (
         <div className="min-h-screen bg-[#FAF0E6]">
             {/* Hero */}
-            <div className="bg-gradient-to-br from-[#6B4828] to-[#6B4828] text-white py-16 px-4 text-center">
+            <div className="bg-gradient-to-br from-[#3B2010] to-[#6B4828] text-white py-16 px-4 text-center">
                 <h1 className="text-4xl md:text-5xl font-bold mb-3">Le Nostre Camere</h1>
                 <p className="text-lg text-white/80 max-w-xl mx-auto">
                     Scopri le camere dell'Hotel Excelsior: comfort, eleganza e vista mare per ogni esigenza.

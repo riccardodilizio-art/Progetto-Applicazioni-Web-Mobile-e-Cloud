@@ -145,7 +145,7 @@ export default function RoomDetail() {
                             disabled={!room.available}
                             className={`w-full py-3 rounded-lg font-semibold text-white transition ${
                                 room.available
-                                    ? 'bg-[#6B4828] hover:bg-[#6B4828] cursor-pointer'
+                                    ? 'bg-[#6B4828] hover:bg-[#3B2010] cursor-pointer'
                                     : 'bg-gray-400 cursor-not-allowed'
                             }`}
                         >

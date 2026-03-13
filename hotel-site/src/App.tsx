@@ -37,7 +37,7 @@ export default function App() {
                     <Route path="/rooms/:id" element={<RoomDetail />} />
                     <Route path="/contacts" element={<Contacts />} />
                     <Route path="/menu" element={<Menu />} />
-                    <Route path="*" element={<NotFound />} />
+
 
                     {/* Login admin (pubblica) */}
                     <Route path="/admin/login" element={<Login />} />
@@ -73,6 +73,7 @@ export default function App() {
                             </ProtectedRoute>
                         }
                     />
+                    <Route path="*" element={<NotFound />} />
                 </Routes>
             </main>
 

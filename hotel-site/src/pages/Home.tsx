@@ -129,7 +129,7 @@ export default function Home() {
                                     </svg>
                                 </div>
                                 <h3
-                                    className="text-base font-medium text-[#3B2010] mb-2 font-light font-heading"
+                                    className="text-base font-medium text-[#3B2010] mb-2 font-heading"
                                 >
                                     {service.title}
                                 </h3>
