@@ -15,7 +15,6 @@ interface RoleGuardProps {
 export default function RoleGuard({ role, children, fallbackPath }: RoleGuardProps) {
     const authUser = useAuthUser<UserState>()
 
-    // Se il ruolo non corrisponde, redirect
     if (!authUser || authUser.role !== role) {
         return <Navigate to={fallbackPath || '/admin/login'} replace />
     }

@@ -1,39 +1,77 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { Routes, Route, Navigate } from 'react-router-dom'
+import useIsAuthenticated from 'react-auth-kit/hooks/useIsAuthenticated'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
+import RoleGuard from './components/RoleGuard'
 import Home from './pages/Home'
 import Rooms from './pages/Rooms'
 import RoomDetail from './pages/RoomDetail'
-import Menu from './pages/Menu'
 import Contacts from './pages/Contacts'
 import Login from './pages/admin/Login'
 import Dashboard from './pages/admin/Dashboard'
 import RoomForm from './pages/admin/RoomForm'
-import NotFound from './pages/NotFound'
+
+function ProtectedRoute({ children }: { children: React.ReactNode }) {
+    const isAuthenticated = useIsAuthenticated()
+
+    if (!isAuthenticated) {
+        return <Navigate to="/admin/login" replace />
+    }
+
+    return <>{children}</>
+}
 
 export default function App() {
     return (
-        <BrowserRouter>
-            <div className="flex flex-col min-h-screen">
-                <Navbar />
+        <div className="flex flex-col min-h-screen">
+            <Navbar />
 
-                <main className="flex-grow">
-                    <Routes>
-                        <Route path="/" element={<Home />} />
-                        <Route path="*" element={<NotFound />} />
-                        <Route path="/rooms" element={<Rooms />} />
-                        <Route path="/rooms/:id" element={<RoomDetail />} />
-                        <Route path="/menu" element={<Menu />} />
-                        <Route path="/admin/login" element={<Login />} />
-                        <Route path="/admin/dashboard" element={<Dashboard />} />
-                        <Route path="/admin/rooms/new" element={<RoomForm />} />
-                        <Route path="/admin/rooms/edit/:id" element={<RoomForm />} />
-                        <Route path="/contacts" element={<Contacts />} />
-                    </Routes>
-                </main>
+            <main className="flex-grow">
+                <Routes>
+                    {/* Rotte pubbliche */}
+                    <Route path="/" element={<Home />} />
+                    <Route path="/rooms" element={<Rooms />} />
+                    <Route path="/rooms/:id" element={<RoomDetail />} />
+                    <Route path="/contacts" element={<Contacts />} />
 
-                <Footer />
-            </div>
-        </BrowserRouter>
+                    {/* Login admin (pubblica) */}
+                    <Route path="/admin/login" element={<Login />} />
+
+                    {/* Rotte admin protette */}
+                    <Route
+                        path="/admin/dashboard"
+                        element={
+                            <ProtectedRoute>
+                                <RoleGuard role="admin">
+                                    <Dashboard />
+                                </RoleGuard>
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/admin/rooms/new"
+                        element={
+                            <ProtectedRoute>
+                                <RoleGuard role="admin">
+                                    <RoomForm />
+                                </RoleGuard>
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/admin/rooms/edit/:id"
+                        element={
+                            <ProtectedRoute>
+                                <RoleGuard role="admin">
+                                    <RoomForm />
+                                </RoleGuard>
+                            </ProtectedRoute>
+                        }
+                    />
+                </Routes>
+            </main>
+
+            <Footer />
+        </div>
     )
 }

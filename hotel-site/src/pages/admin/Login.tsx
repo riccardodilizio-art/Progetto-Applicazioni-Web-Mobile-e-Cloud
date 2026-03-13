@@ -11,7 +11,6 @@ export default function Login() {
     const [password, setPassword] = useState('')
     const [error, setError] = useState('')
 
-    // Se già autenticato, vai alla dashboard
     if (isAuthenticated) {
         return <Navigate to="/admin/dashboard" replace />
     }
@@ -24,7 +23,7 @@ export default function Login() {
         if (email === 'admin@hotelexcelsior.it' && password === 'admin123') {
             const success = signIn({
                 auth: {
-                    token: 'mock-jwt-token-admin',  // dal backend verrà il JWT reale
+                    token: 'mock-jwt-token-admin',
                     type: 'Bearer',
                 },
                 userState: {
