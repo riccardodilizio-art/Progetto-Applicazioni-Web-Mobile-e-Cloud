@@ -22,8 +22,7 @@ export default function Home() {
                         Pesaro, Marche — Italia
                     </p>
                     <h1
-                        className="text-5xl md:text-7xl text-white font-light tracking-wide drop-shadow-lg"
-                        style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                        className="text-5xl md:text-7xl text-white font-light tracking-wide drop-shadow-lg font-heading"
                     >
                         Hotel Excelsior
                     </h1>
@@ -53,8 +52,7 @@ export default function Home() {
                     <div className="text-center mb-12">
                         <p className="text-sm tracking-[0.25em] uppercase text-[#9A6840] mb-2">Le nostre</p>
                         <h2
-                            className="text-3xl md:text-4xl text-[#3B2010] font-light"
-                            style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                            className="text-3xl md:text-4xl text-[#3B2010] font-light font-heading"
                         >
                             Camere in Evidenza
                         </h2>
@@ -80,8 +78,7 @@ export default function Home() {
                                 </div>
                                 <div className="p-5 border-t border-[#E8C9A0]/60">
                                     <h3
-                                        className="text-lg font-medium text-[#3B2010]"
-                                        style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                                        className="text-lg font-medium text-[#3B2010] font-heading"
                                     >
                                         {room.name}
                                     </h3>
@@ -113,8 +110,7 @@ export default function Home() {
                     <div className="text-center mb-12">
                         <p className="text-sm tracking-[0.25em] uppercase text-[#9A6840] mb-2">Esperienza unica</p>
                         <h2
-                            className="text-3xl md:text-4xl text-[#3B2010] font-light"
-                            style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                            className="text-3xl md:text-4xl text-[#3B2010] font-light font-heading"
                         >
                             I Nostri Servizi
                         </h2>
@@ -128,13 +124,12 @@ export default function Home() {
                                 className="bg-[#FAF5EE] p-6 text-center shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1"
                             >
                                 <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-[#E8C9A0]/60 text-[#3B2010] mb-4">
-                                    <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                         dangerouslySetInnerHTML={{ __html: service.icon }}
-                                    />
+                                    <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        {service.icon}
+                                    </svg>
                                 </div>
                                 <h3
-                                    className="text-base font-medium text-[#3B2010] mb-2"
-                                    style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                                    className="text-base font-medium text-[#3B2010] mb-2 font-light font-heading"
                                 >
                                     {service.title}
                                 </h3>

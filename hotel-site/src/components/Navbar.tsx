@@ -39,8 +39,8 @@ export default function Navbar() {
                         />
                     <div className="flex flex-col leading-tight">
                         <span
-                            className="text-[#3B2010] text-3xl font-medium tracking-wide drop-shadow-sm"
-                            style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                            className="text-[#3B2010] text-3xl font-medium tracking-wide drop-shadow-sm font-heading"
+
                         >
                             Hotel Excelsior
                         </span>

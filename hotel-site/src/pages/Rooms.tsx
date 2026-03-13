@@ -21,7 +21,7 @@ export default function Rooms() {
     return (
         <div className="min-h-screen bg-[#FAF0E6]">
             {/* Hero */}
-            <div className="bg-gradient-to-br from-[#1a2e4a] to-[#2a4a6a] text-white py-16 px-4 text-center">
+            <div className="bg-gradient-to-br from-[#6B4828] to-[#6B4828] text-white py-16 px-4 text-center">
                 <h1 className="text-4xl md:text-5xl font-bold mb-3">Le Nostre Camere</h1>
                 <p className="text-lg text-white/80 max-w-xl mx-auto">
                     Scopri le camere dell'Hotel Excelsior: comfort, eleganza e vista mare per ogni esigenza.
@@ -36,8 +36,8 @@ export default function Rooms() {
                         onClick={() => setActiveFilter(f.value)}
                         className={`px-5 py-2 rounded-full text-sm font-semibold transition ${
                             activeFilter === f.value
-                                ? 'bg-[#1a2e4a] text-white shadow-md'
-                                : 'bg-white text-[#1a2e4a] border border-[#1a2e4a]/30 hover:bg-[#1a2e4a]/10'
+                                ? 'bg-[#6B4828] text-white shadow-md'
+                                : 'bg-white text-[#6B4828] border border-[#6B4828]/30 hover:bg-[#6B4828]/10'
                         }`}
                     >
                         {f.label}

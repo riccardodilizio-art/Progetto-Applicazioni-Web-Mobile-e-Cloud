@@ -1,11 +1,8 @@
 import { useNavigate } from 'react-router-dom'
 import useSignOut from 'react-auth-kit/hooks/useSignOut'
 import useAuthUser from 'react-auth-kit/hooks/useAuthUser'
+import type {UserState} from '../../types/User'
 
-interface UserState {
-    email: string
-    role: string
-}
 
 export default function Dashboard() {
     const signOut = useSignOut()
@@ -22,8 +19,7 @@ export default function Dashboard() {
             <div className="max-w-4xl mx-auto">
                 <div className="flex justify-between items-center mb-8">
                     <h1
-                        className="text-3xl text-[#3B2010] font-light"
-                        style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                        className="text-3xl text-[#3B2010] font-light font-heading"
                     >
                         Dashboard
                     </h1>

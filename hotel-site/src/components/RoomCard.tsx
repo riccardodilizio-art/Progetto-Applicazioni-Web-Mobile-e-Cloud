@@ -4,8 +4,8 @@ import type { Room, RoomType } from '../types/Room';
 const typeBadgeColors: Record<RoomType, string> = {
     singola: 'bg-[#6B4828] text-white',
     doppia: 'bg-[#9A6840] text-white',
-    deluxe: 'bg-[#C4A070] text-[#3B2010]',
-    suite: 'bg-[#E8C9A0] text-[#3B2010]',
+    deluxe: 'bg-[#C4A070] text-[#6B4828]',
+    suite: 'bg-[#E8C9A0] text-[#6B4828]',
 };
 
 const typeLabels: Record<RoomType, string> = {
@@ -41,7 +41,7 @@ export default function RoomCard({ room }: { room: Room }) {
 
             {/* Contenuto */}
             <div className="p-5 flex flex-col flex-1">
-                <h3 className="text-lg font-bold text-[#1a2e4a] mb-2">{room.name}</h3>
+                <h3 className="text-lg font-bold text-[#6B4828] mb-2">{room.name}</h3>
 
                 {/* Info rapide */}
                 <div className="flex items-center gap-4 text-sm text-gray-600 mb-4">
@@ -61,13 +61,13 @@ export default function RoomCard({ room }: { room: Room }) {
 
                 {/* Prezzo */}
                 <div className="mt-auto flex items-center justify-between">
-                    <p className="text-[#1a2e4a]">
+                    <p className="text-[#6B4828]">
                         <span className="text-xl font-bold">€{room.pricePerNight}</span>
                         <span className="text-sm text-gray-500"> / notte</span>
                     </p>
                     <Link
                         to={`/rooms/${room.id}`}
-                        className="text-sm font-semibold text-white bg-[#1a2e4a] px-4 py-2 rounded-lg hover:bg-[#2a4a6a] transition"
+                        className="text-sm font-semibold text-white bg-[#6B4828] px-4 py-2 rounded-lg hover:bg-[#2a4a6a] transition"
                     >
                         Scopri di più
                     </Link>

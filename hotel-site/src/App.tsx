@@ -10,6 +10,9 @@ import Contacts from './pages/Contacts'
 import Login from './pages/admin/Login'
 import Dashboard from './pages/admin/Dashboard'
 import RoomForm from './pages/admin/RoomForm'
+import Menu from './pages/Menu'
+import NotFound from './pages/NotFound'
+
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
     const isAuthenticated = useIsAuthenticated()
@@ -33,6 +36,8 @@ export default function App() {
                     <Route path="/rooms" element={<Rooms />} />
                     <Route path="/rooms/:id" element={<RoomDetail />} />
                     <Route path="/contacts" element={<Contacts />} />
+                    <Route path="/menu" element={<Menu />} />
+                    <Route path="*" element={<NotFound />} />
 
                     {/* Login admin (pubblica) */}
                     <Route path="/admin/login" element={<Login />} />
