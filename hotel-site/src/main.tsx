@@ -1,10 +1,26 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
+import { BrowserRouter } from 'react-router-dom'
+// @ts-ignore
+import createStore from 'react-auth-kit/createStore'
+import AuthProvider from 'react-auth-kit'
+import App from './App'
 import './index.css'
-import App from './App.tsx'
+
+// Crea lo store di autenticazione
+const store = createStore({
+    authName: '_auth',          // nome del cookie
+    authType: 'cookie',         // salva in cookie (più sicuro di localStorage)
+    cookieDomain: window.location.hostname,
+    cookieSecure: false,        // metti true in produzione con HTTPS
+})
 
 createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <App />
-  </StrictMode>,
+    <StrictMode>
+        <AuthProvider store={store}>
+            <BrowserRouter>
+                <App />
+            </BrowserRouter>
+        </AuthProvider>
+    </StrictMode>
 )
