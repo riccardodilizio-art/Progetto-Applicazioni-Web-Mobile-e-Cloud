@@ -23,7 +23,7 @@ export default function Login() {
         if (email === 'admin@hotelexcelsior.it' && password === 'admin123') {
             const success = signIn({
                 auth: {
-                    token: 'mock-jwt-token-admin',
+                    token: 'token: \'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkBob3RlbGV4Y2Vsc2lvci5pdCIsInJvbGUiOiJhZG1pbiIsImV4cCI6OTk5OTk5OTk5OX0.mock-signature\',',
                     type: 'Bearer',
                 },
                 userState: {
