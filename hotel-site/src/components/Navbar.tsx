@@ -1,10 +1,15 @@
 import { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
+import useIsAuthenticated from 'react-auth-kit/hooks/useIsAuthenticated'
+import useAuthUser from 'react-auth-kit/hooks/useAuthUser'
+import type { UserState } from '../types/User'
 
 export default function Navbar() {
     const [isOpen, setIsOpen] = useState(false)
     const [scrolled, setScrolled] = useState(false)
     const location = useLocation()
+    const isAuthenticated = useIsAuthenticated()
+    const user = useAuthUser<UserState>()
 
     useEffect(() => {
         const handleScroll = () => setScrolled(window.scrollY > 20)
@@ -21,6 +26,13 @@ export default function Navbar() {
         { to: '/contacts', label: 'Contatti' },
     ]
 
+    const authLink = isAuthenticated
+        ? {
+            to: user?.role === 'admin' ? '/admin/dashboard' : '/profile',
+            label: user?.role === 'admin' ? 'Admin' : 'Profilo',
+        }
+        : { to: '/login', label: 'Accedi' }
+
     return (
         <nav className={`sticky top-0 z-50 transition-all duration-500 backdrop-blur-md
             ${scrolled
@@ -36,11 +48,10 @@ export default function Navbar() {
                         src="/images/LogoHotel.png"
                         alt="Logo Hotel"
                         className="w-17 h-17 rounded-full object-cover border border-[#B07840]/40"
-                        />
+                    />
                     <div className="flex flex-col leading-tight">
                         <span
                             className="text-[#3B2010] text-3xl font-medium tracking-wide drop-shadow-sm font-heading"
-
                         >
                             Hotel Excelsior
                         </span>
@@ -68,12 +79,12 @@ export default function Navbar() {
                     <div className="w-px h-5 bg-[#9A6840]/35" />
 
                     <Link
-                        to="/admin/login"
+                        to={authLink.to}
                         className="text-[0.7rem] tracking-[0.2em] uppercase font-medium
                             text-[#FAF0E6] bg-[#3B2010]/80 px-5 py-2 border border-[#3B2010]/60
                             hover:bg-[#3B2010] transition-all duration-300"
                     >
-                        Admin
+                        {authLink.label}
                     </Link>
                 </div>
 
@@ -106,13 +117,13 @@ export default function Navbar() {
                     </Link>
                 ))}
                 <Link
-                    to="/admin/login"
+                    to={authLink.to}
                     className="text-[0.7rem] tracking-[0.2em] uppercase font-medium
                         text-[#FAF0E6] bg-[#3B2010]/80 px-5 py-2.5 self-start
                         hover:bg-[#3B2010] transition-all duration-300"
                     onClick={() => setIsOpen(false)}
                 >
-                    Admin
+                    {authLink.label}
                 </Link>
             </div>
         </nav>
