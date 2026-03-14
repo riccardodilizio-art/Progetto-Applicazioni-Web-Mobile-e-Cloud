@@ -74,7 +74,7 @@ export default function App() {
                     <Route
                         path="/admin/rooms/new"
                         element={
-                            <ProtectedRoute>
+                            <ProtectedRoute redirectTo="/admin/login">
                                 <RoleGuard role="admin">
                                     <RoomForm />
                                 </RoleGuard>
@@ -84,7 +84,7 @@ export default function App() {
                     <Route
                         path="/admin/rooms/edit/:id"
                         element={
-                            <ProtectedRoute>
+                            <ProtectedRoute redirectTo="/admin/login">
                                 <RoleGuard role="admin">
                                     <RoomForm />
                                 </RoleGuard>

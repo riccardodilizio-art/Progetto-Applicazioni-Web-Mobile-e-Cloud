@@ -2,10 +2,11 @@ import { useState } from 'react'
 import { useNavigate, Navigate } from 'react-router-dom'
 import useSignIn from 'react-auth-kit/hooks/useSignIn'
 import useIsAuthenticated from 'react-auth-kit/hooks/useIsAuthenticated'
+import type { UserState } from '../../types/User'
 
 export default function Login() {
     const isAuthenticated = useIsAuthenticated()
-    const signIn = useSignIn()
+    const signIn = useSignIn<UserState>()
     const navigate = useNavigate()
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
