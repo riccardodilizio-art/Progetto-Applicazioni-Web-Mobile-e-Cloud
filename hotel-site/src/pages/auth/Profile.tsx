@@ -22,17 +22,14 @@ export default function Profile() {
     return (
         <div className="min-h-screen bg-[#FAF5EE] px-4 py-12">
             <div className="max-w-2xl mx-auto">
-
-                <h1 className="font-heading text-3xl font-semibold text-[#3B2010] text-center mb-8">
-                    Il mio Profilo
-                </h1>
+                <h1 className="font-heading text-3xl font-semibold text-[#3B2010] text-center mb-8">Il mio Profilo</h1>
 
                 <div className="bg-white rounded-2xl shadow-lg p-8">
-
                     {/* Avatar + nome */}
                     <div className="flex items-center gap-4 mb-8 pb-6 border-b border-[#E8C9A0]">
                         <div className="w-16 h-16 rounded-full bg-[#3B2010] flex items-center justify-center text-white text-2xl font-heading">
-                            {(user.name ?? '').charAt(0).toUpperCase()}{(user.surname ?? '').charAt(0).toUpperCase()}
+                            {(user.name ?? '').charAt(0).toUpperCase()}
+                            {(user.surname ?? '').charAt(0).toUpperCase()}
                         </div>
                         <div>
                             <p className="text-xl font-semibold text-[#3B2010]">
@@ -51,7 +48,9 @@ export default function Profile() {
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-[#3B2010] mb-1">Cognome</label>
-                                <p className="w-full bg-[#FAF5EE] rounded-lg px-4 py-2 text-[#3B2010]">{user.surname}</p>
+                                <p className="w-full bg-[#FAF5EE] rounded-lg px-4 py-2 text-[#3B2010]">
+                                    {user.surname}
+                                </p>
                             </div>
                         </div>
                         <div>
@@ -83,7 +82,6 @@ export default function Profile() {
                             Esci dall'account
                         </button>
                     </div>
-
                 </div>
             </div>
         </div>

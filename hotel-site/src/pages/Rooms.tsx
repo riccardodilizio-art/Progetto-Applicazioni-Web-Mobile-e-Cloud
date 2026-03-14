@@ -1,7 +1,7 @@
-import { useState } from 'react';
-import { rooms } from '../data/Rooms';
-import RoomCard from '../components/RoomCard';
-import type { RoomType } from '../types/Room';
+import { useState } from 'react'
+import { rooms } from '../data/Rooms'
+import RoomCard from '../components/RoomCard'
+import type { RoomType } from '../types/Room'
 
 const filters: { label: string; value: RoomType | 'all' }[] = [
     { label: 'Tutte', value: 'all' },
@@ -9,14 +9,12 @@ const filters: { label: string; value: RoomType | 'all' }[] = [
     { label: 'Doppia', value: 'doppia' },
     { label: 'Deluxe', value: 'deluxe' },
     { label: 'Suite', value: 'suite' },
-];
+]
 
 export default function Rooms() {
-    const [activeFilter, setActiveFilter] = useState<RoomType | 'all'>('all');
+    const [activeFilter, setActiveFilter] = useState<RoomType | 'all'>('all')
 
-    const filteredRooms = activeFilter === 'all'
-        ? rooms
-        : rooms.filter((r) => r.type === activeFilter);
+    const filteredRooms = activeFilter === 'all' ? rooms : rooms.filter((r) => r.type === activeFilter)
 
     return (
         <div className="min-h-screen bg-[#FAF0E6]">
@@ -60,5 +58,5 @@ export default function Rooms() {
                 )}
             </div>
         </div>
-    );
+    )
 }

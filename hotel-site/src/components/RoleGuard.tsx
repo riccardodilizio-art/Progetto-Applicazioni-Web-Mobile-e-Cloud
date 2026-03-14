@@ -1,6 +1,6 @@
 import { Navigate } from 'react-router-dom'
 import useAuthUser from 'react-auth-kit/hooks/useAuthUser'
-import type {UserState} from '../types/User'
+import type { UserState } from '../types/User'
 
 interface RoleGuardProps {
     role: 'admin' | 'client'

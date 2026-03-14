@@ -28,20 +28,21 @@ export default function Navbar() {
 
     const authLink = isAuthenticated
         ? {
-            to: user?.role === 'admin' ? '/admin/dashboard' : '/profile',
-            label: user?.role === 'admin' ? 'Admin' : 'Profilo',
-        }
+              to: user?.role === 'admin' ? '/admin/dashboard' : '/profile',
+              label: user?.role === 'admin' ? 'Admin' : 'Profilo',
+          }
         : { to: '/login', label: 'Accedi' }
 
     return (
-        <nav className={`sticky top-0 z-50 transition-all duration-500 backdrop-blur-md
-            ${scrolled
-            ? 'bg-[#E8C9A0]/60 shadow-sm border-b border-[#C4A070]/30'
-            : 'bg-[#E8C9A0]/30 border-b border-[#C4A070]/20'
-        }`}
+        <nav
+            className={`sticky top-0 z-50 transition-all duration-500 backdrop-blur-md
+            ${
+                scrolled
+                    ? 'bg-[#E8C9A0]/60 shadow-sm border-b border-[#C4A070]/30'
+                    : 'bg-[#E8C9A0]/30 border-b border-[#C4A070]/20'
+            }`}
         >
             <div className="max-w-7xl mx-auto px-6 flex items-center justify-between py-4">
-
                 {/* Logo */}
                 <Link to="/" className="flex items-center gap-3 no-underline">
                     <img
@@ -50,9 +51,7 @@ export default function Navbar() {
                         className="w-17 h-17 rounded-full object-cover border border-[#B07840]/40"
                     />
                     <div className="flex flex-col leading-tight">
-                        <span
-                            className="text-[#3B2010] text-3xl font-medium tracking-wide drop-shadow-sm font-heading"
-                        >
+                        <span className="text-[#3B2010] text-3xl font-medium tracking-wide drop-shadow-sm font-heading">
                             Hotel Excelsior
                         </span>
                     </div>
@@ -67,10 +66,11 @@ export default function Navbar() {
                             className={`text-[0.75rem] tracking-[0.18em] uppercase font-normal relative pb-0.5
                                 after:absolute after:bottom-0 after:left-0 after:h-px after:bg-[#9A6840] after:transition-all after:duration-300
                                 transition-colors duration-300
-                                ${isActive(to)
-                                ? 'text-[#3B2010] after:w-full'
-                                : 'text-[#6B4828] hover:text-[#3B2010] after:w-0 hover:after:w-full'
-                            }`}
+                                ${
+                                    isActive(to)
+                                        ? 'text-[#3B2010] after:w-full'
+                                        : 'text-[#6B4828] hover:text-[#3B2010] after:w-0 hover:after:w-full'
+                                }`}
                         >
                             {label}
                         </Link>
@@ -94,14 +94,21 @@ export default function Navbar() {
                     onClick={() => setIsOpen(!isOpen)}
                     aria-label="Menu"
                 >
-                    <span className={`block w-6 h-px bg-[#3B2010] transition-all duration-300 origin-center ${isOpen ? 'translate-y-[7px] rotate-45' : ''}`} />
-                    <span className={`block w-6 h-px bg-[#3B2010] transition-all duration-300 ${isOpen ? 'opacity-0' : ''}`} />
-                    <span className={`block w-6 h-px bg-[#3B2010] transition-all duration-300 origin-center ${isOpen ? '-translate-y-[7px] -rotate-45' : ''}`} />
+                    <span
+                        className={`block w-6 h-px bg-[#3B2010] transition-all duration-300 origin-center ${isOpen ? 'translate-y-[7px] rotate-45' : ''}`}
+                    />
+                    <span
+                        className={`block w-6 h-px bg-[#3B2010] transition-all duration-300 ${isOpen ? 'opacity-0' : ''}`}
+                    />
+                    <span
+                        className={`block w-6 h-px bg-[#3B2010] transition-all duration-300 origin-center ${isOpen ? '-translate-y-[7px] -rotate-45' : ''}`}
+                    />
                 </button>
             </div>
 
             {/* Mobile menu */}
-            <div className={`md:hidden flex flex-col gap-6 px-6 border-t border-[#9A6840]/20 bg-[#E8C9A0]/70 backdrop-blur-md
+            <div
+                className={`md:hidden flex flex-col gap-6 px-6 border-t border-[#9A6840]/20 bg-[#E8C9A0]/70 backdrop-blur-md
                 overflow-hidden transition-all duration-300
                 ${isOpen ? 'max-h-64 py-6' : 'max-h-0 py-0'}`}
             >

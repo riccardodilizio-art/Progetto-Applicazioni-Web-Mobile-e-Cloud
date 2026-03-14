@@ -1,7 +1,7 @@
-import type {ReactNode} from 'react';
+import type { ReactNode } from 'react'
 
 export interface Service {
-    title: string;
-    description: string;
-    icon: ReactNode;
+    title: string
+    description: string
+    icon: ReactNode
 }

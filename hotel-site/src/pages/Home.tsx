@@ -2,12 +2,11 @@ import { Link } from 'react-router-dom'
 import { rooms } from '../data/Rooms'
 import { services } from '../data/Services'
 
-const featuredRooms = rooms.filter(r => r.available).slice(0, 3)
+const featuredRooms = rooms.filter((r) => r.available).slice(0, 3)
 
 export default function Home() {
     return (
         <div>
-
             {/* ── Hero Section ── */}
             <section className="relative h-[85vh] min-h-[500px] overflow-hidden">
                 <img
@@ -18,12 +17,8 @@ export default function Home() {
                 <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/10 to-[#E8C9A0]/60" />
 
                 <div className="relative z-10 h-full flex flex-col items-center justify-center text-center px-6">
-                    <p className="text-white/80 text-sm tracking-[0.3em] uppercase mb-4">
-                        Pesaro, Marche — Italia
-                    </p>
-                    <h1
-                        className="text-5xl md:text-7xl text-white font-light tracking-wide drop-shadow-lg font-heading"
-                    >
+                    <p className="text-white/80 text-sm tracking-[0.3em] uppercase mb-4">Pesaro, Marche — Italia</p>
+                    <h1 className="text-5xl md:text-7xl text-white font-light tracking-wide drop-shadow-lg font-heading">
                         Hotel Excelsior
                     </h1>
                     <p className="text-white/80 text-lg md:text-xl mt-4 max-w-xl">
@@ -51,16 +46,14 @@ export default function Home() {
                 <div className="max-w-6xl mx-auto">
                     <div className="text-center mb-12">
                         <p className="text-sm tracking-[0.25em] uppercase text-[#9A6840] mb-2">Le nostre</p>
-                        <h2
-                            className="text-3xl md:text-4xl text-[#3B2010] font-light font-heading"
-                        >
+                        <h2 className="text-3xl md:text-4xl text-[#3B2010] font-light font-heading">
                             Camere in Evidenza
                         </h2>
                         <div className="w-12 h-px bg-[#C4A070] mx-auto mt-4" />
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        {featuredRooms.map(room => (
+                        {featuredRooms.map((room) => (
                             <Link
                                 key={room.id}
                                 to={`/rooms/${room.id}`}
@@ -77,13 +70,10 @@ export default function Home() {
                                     </div>
                                 </div>
                                 <div className="p-5 border-t border-[#E8C9A0]/60">
-                                    <h3
-                                        className="text-lg font-medium text-[#3B2010] font-heading"
-                                    >
-                                        {room.name}
-                                    </h3>
+                                    <h3 className="text-lg font-medium text-[#3B2010] font-heading">{room.name}</h3>
                                     <p className="text-xs text-[#9A6840] mt-1 tracking-wide uppercase">
-                                        {room.size}m² &middot; {room.capacity} {room.capacity === 1 ? 'ospite' : 'ospiti'} &middot; {room.floor}° piano
+                                        {room.size}m² &middot; {room.capacity}{' '}
+                                        {room.capacity === 1 ? 'ospite' : 'ospiti'} &middot; {room.floor}° piano
                                     </p>
                                     <p className="text-sm text-gray-500 mt-3 line-clamp-2 leading-relaxed">
                                         {room.description}
@@ -109,16 +99,14 @@ export default function Home() {
                 <div className="max-w-6xl mx-auto">
                     <div className="text-center mb-12">
                         <p className="text-sm tracking-[0.25em] uppercase text-[#9A6840] mb-2">Esperienza unica</p>
-                        <h2
-                            className="text-3xl md:text-4xl text-[#3B2010] font-light font-heading"
-                        >
+                        <h2 className="text-3xl md:text-4xl text-[#3B2010] font-light font-heading">
                             I Nostri Servizi
                         </h2>
                         <div className="w-12 h-px bg-[#C4A070] mx-auto mt-4" />
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                        {services.map(service => (
+                        {services.map((service) => (
                             <div
                                 key={service.title}
                                 className="bg-[#FAF5EE] p-6 text-center shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1"
@@ -128,9 +116,7 @@ export default function Home() {
                                         {service.icon}
                                     </svg>
                                 </div>
-                                <h3
-                                    className="text-base font-medium text-[#3B2010] mb-2 font-heading"
-                                >
+                                <h3 className="text-base font-medium text-[#3B2010] mb-2 font-heading">
                                     {service.title}
                                 </h3>
                                 <p className="text-sm text-[#6B4828]/70 leading-relaxed">{service.description}</p>
@@ -139,7 +125,6 @@ export default function Home() {
                     </div>
                 </div>
             </section>
-
         </div>
     )
 }

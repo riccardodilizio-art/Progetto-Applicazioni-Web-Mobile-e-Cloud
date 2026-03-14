@@ -26,45 +26,37 @@ export default function Edit() {
     return (
         <div className="min-h-screen bg-[#FAF5EE] px-4 py-12">
             <div className="max-w-2xl mx-auto">
-
                 <h1 className="font-heading text-3xl font-semibold text-[#3B2010] text-center mb-8">
                     Modifica Profilo
                 </h1>
 
                 <div className="bg-white rounded-2xl shadow-lg p-8">
                     <form onSubmit={handleSave} className="space-y-5">
-
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
-                                <label className="block text-sm font-medium text-[#3B2010] mb-1">
-                                    Nome
-                                </label>
+                                <label className="block text-sm font-medium text-[#3B2010] mb-1">Nome</label>
                                 <input
                                     type="text"
                                     required
                                     value={name}
-                                    onChange={e => setName(e.target.value)}
+                                    onChange={(e) => setName(e.target.value)}
                                     className="w-full border border-[#C4A070] rounded-lg px-4 py-2 text-[#3B2010] focus:outline-none focus:ring-2 focus:ring-[#9A6840] focus:border-transparent"
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-[#3B2010] mb-1">
-                                    Cognome
-                                </label>
+                                <label className="block text-sm font-medium text-[#3B2010] mb-1">Cognome</label>
                                 <input
                                     type="text"
                                     required
                                     value={surname}
-                                    onChange={e => setSurname(e.target.value)}
+                                    onChange={(e) => setSurname(e.target.value)}
                                     className="w-full border border-[#C4A070] rounded-lg px-4 py-2 text-[#3B2010] focus:outline-none focus:ring-2 focus:ring-[#9A6840] focus:border-transparent"
                                 />
                             </div>
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-[#3B2010] mb-1">
-                                Email
-                            </label>
+                            <label className="block text-sm font-medium text-[#3B2010] mb-1">Email</label>
                             <input
                                 type="email"
                                 value={user.email}
@@ -74,13 +66,11 @@ export default function Edit() {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-[#3B2010] mb-1">
-                                Telefono
-                            </label>
+                            <label className="block text-sm font-medium text-[#3B2010] mb-1">Telefono</label>
                             <input
                                 type="tel"
                                 value={phone}
-                                onChange={e => setPhone(e.target.value)}
+                                onChange={(e) => setPhone(e.target.value)}
                                 className="w-full border border-[#C4A070] rounded-lg px-4 py-2 text-[#3B2010] focus:outline-none focus:ring-2 focus:ring-[#9A6840] focus:border-transparent"
                             />
                         </div>
@@ -100,7 +90,6 @@ export default function Edit() {
                                 Annulla
                             </button>
                         </div>
-
                     </form>
                 </div>
             </div>

@@ -1,19 +1,6 @@
-import { Link } from 'react-router-dom';
-import type { Room, RoomType } from '../types/Room';
-
-const typeBadgeColors: Record<RoomType, string> = {
-    singola: 'bg-[#6B4828] text-white',
-    doppia: 'bg-[#9A6840] text-white',
-    deluxe: 'bg-[#C4A070] text-[#6B4828]',
-    suite: 'bg-[#E8C9A0] text-[#6B4828]',
-};
-
-const typeLabels: Record<RoomType, string> = {
-    singola: 'Singola',
-    doppia: 'Doppia',
-    deluxe: 'Deluxe',
-    suite: 'Suite',
-};
+import { Link } from 'react-router-dom'
+import type { Room } from '../types/Room'
+import { typeLabels, typeBadgeColors } from '../data/roomUtils'
 
 export default function RoomCard({ room }: { room: Room }) {
     return (
@@ -26,7 +13,9 @@ export default function RoomCard({ room }: { room: Room }) {
                     className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
                 />
                 {/* Badge tipo */}
-                <span className={`absolute top-3 left-3 text-xs font-semibold px-3 py-1 rounded-full ${typeBadgeColors[room.type]}`}>
+                <span
+                    className={`absolute top-3 left-3 text-xs font-semibold px-3 py-1 rounded-full ${typeBadgeColors[room.type]}`}
+                >
                     {typeLabels[room.type]}
                 </span>
                 {/* Overlay non disponibile */}
@@ -47,13 +36,23 @@ export default function RoomCard({ room }: { room: Room }) {
                 <div className="flex items-center gap-4 text-sm text-gray-600 mb-4">
                     <span className="flex items-center gap-1">
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                            />
                         </svg>
                         {room.capacity}
                     </span>
                     <span className="flex items-center gap-1">
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"
+                            />
                         </svg>
                         {room.size} m²
                     </span>
@@ -74,5 +73,5 @@ export default function RoomCard({ room }: { room: Room }) {
                 </div>
             </div>
         </div>
-    );
+    )
 }

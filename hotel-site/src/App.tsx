@@ -17,7 +17,6 @@ import Register from './pages/auth/Register'
 import Profile from './pages/auth/Profile'
 import Edit from './pages/auth/Edit'
 
-
 function ProtectedRoute({ children, redirectTo = '/login' }: { children: React.ReactNode; redirectTo?: string }) {
     const isAuthenticated = useIsAuthenticated()
 
@@ -27,7 +26,6 @@ function ProtectedRoute({ children, redirectTo = '/login' }: { children: React.R
 
     return <>{children}</>
 }
-
 
 export default function App() {
     return (
@@ -42,7 +40,6 @@ export default function App() {
                     <Route path="/rooms/:id" element={<RoomDetail />} />
                     <Route path="/contacts" element={<Contacts />} />
                     <Route path="/menu" element={<Menu />} />
-
 
                     {/* Auth client */}
                     <Route path="/login" element={<ClientLogin />} />
@@ -64,7 +61,6 @@ export default function App() {
                             </ProtectedRoute>
                         }
                     />
-
 
                     {/* Login admin (pubblica) */}
                     <Route path="/admin/login" element={<Login />} />
