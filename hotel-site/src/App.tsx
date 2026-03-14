@@ -15,6 +15,7 @@ import NotFound from './pages/NotFound'
 import ClientLogin from './pages/auth/Login'
 import Register from './pages/auth/Register'
 import Profile from './pages/auth/Profile'
+import Edit from './pages/auth/Edit'
 
 
 function ProtectedRoute({ children, redirectTo = '/login' }: { children: React.ReactNode; redirectTo?: string }) {
@@ -51,6 +52,15 @@ export default function App() {
                         element={
                             <ProtectedRoute>
                                 <Profile />
+                            </ProtectedRoute>
+                        }
+                    />
+
+                    <Route
+                        path="/profile/edit"
+                        element={
+                            <ProtectedRoute>
+                                <Edit />
                             </ProtectedRoute>
                         }
                     />

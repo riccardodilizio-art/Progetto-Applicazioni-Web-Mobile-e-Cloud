@@ -36,7 +36,7 @@ export default function Register() {
         }
 
         signIn({
-            auth: { token: 'mock-client-token', type: 'Bearer' },
+            auth: { token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjbGllbnRAaG90ZWxleGNlbHNpb3IuaXQiLCJyb2xlIjoiY2xpZW50IiwiZXhwIjo5OTk5OTk5OTk5fQ.dGVzdC1zaWduYXR1cmU', type: 'Bearer' },
             userState: {
                 email,
                 role: 'client',

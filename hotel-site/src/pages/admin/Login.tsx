@@ -3,6 +3,7 @@ import { useNavigate, Navigate } from 'react-router-dom'
 import useSignIn from 'react-auth-kit/hooks/useSignIn'
 import useIsAuthenticated from 'react-auth-kit/hooks/useIsAuthenticated'
 import type { UserState } from '../../types/User'
+import useAuthUser from 'react-auth-kit/hooks/useAuthUser'
 
 export default function Login() {
     const isAuthenticated = useIsAuthenticated()
@@ -11,10 +12,14 @@ export default function Login() {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [error, setError] = useState('')
+    const user = useAuthUser<UserState>()
 
-    if (isAuthenticated) {
+
+    if (isAuthenticated && user?.role === 'admin') {
         return <Navigate to="/admin/dashboard" replace />
     }
+
+
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()

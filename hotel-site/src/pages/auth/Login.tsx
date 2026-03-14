@@ -29,8 +29,8 @@ export default function Login() {
         const client = mockClients.find(c => c.email === email && c.password === password)
 
         if (client) {
-            signIn({
-                auth: { token: 'mock-client-token', type: 'Bearer' },
+            const success = signIn({
+                auth: { token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjbGllbnRAaG90ZWxleGNlbHNpb3IuaXQiLCJyb2xlIjoiY2xpZW50IiwiZXhwIjo5OTk5OTk5OTk5fQ.dGVzdC1zaWduYXR1cmU', type: 'Bearer' },
                 userState: {
                     email: client.email,
                     role: 'client',
@@ -39,8 +39,13 @@ export default function Login() {
                     phone: client.phone,
                 }
             })
-            navigate('/profile')
+            if (success) {
+                navigate('/profile')
+            } else {
+                setError('Errore durante il login')
+            }
         } else {
+
             setError('Email o password non validi')
         }
     }
