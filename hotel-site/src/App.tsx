@@ -12,17 +12,21 @@ import Dashboard from './pages/admin/Dashboard'
 import RoomForm from './pages/admin/RoomForm'
 import Menu from './pages/Menu'
 import NotFound from './pages/NotFound'
+import ClientLogin from './pages/auth/Login'
+import Register from './pages/auth/Register'
+import Profile from './pages/auth/Profile'
 
 
-function ProtectedRoute({ children }: { children: React.ReactNode }) {
+function ProtectedRoute({ children, redirectTo = '/login' }: { children: React.ReactNode; redirectTo?: string }) {
     const isAuthenticated = useIsAuthenticated()
 
     if (!isAuthenticated) {
-        return <Navigate to="/admin/login" replace />
+        return <Navigate to={redirectTo} replace />
     }
 
     return <>{children}</>
 }
+
 
 export default function App() {
     return (
@@ -39,6 +43,19 @@ export default function App() {
                     <Route path="/menu" element={<Menu />} />
 
 
+                    {/* Auth client */}
+                    <Route path="/login" element={<ClientLogin />} />
+                    <Route path="/register" element={<Register />} />
+                    <Route
+                        path="/profile"
+                        element={
+                            <ProtectedRoute>
+                                <Profile />
+                            </ProtectedRoute>
+                        }
+                    />
+
+
                     {/* Login admin (pubblica) */}
                     <Route path="/admin/login" element={<Login />} />
 
@@ -46,13 +63,14 @@ export default function App() {
                     <Route
                         path="/admin/dashboard"
                         element={
-                            <ProtectedRoute>
+                            <ProtectedRoute redirectTo="/admin/login">
                                 <RoleGuard role="admin">
                                     <Dashboard />
                                 </RoleGuard>
                             </ProtectedRoute>
                         }
                     />
+
                     <Route
                         path="/admin/rooms/new"
                         element={
