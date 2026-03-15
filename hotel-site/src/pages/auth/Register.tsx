@@ -35,7 +35,7 @@ export default function Register() {
             return
         }
 
-        signIn({
+        const success = signIn({
             auth: {
                 token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjbGllbnRAaG90ZWxleGNlbHNpb3IuaXQiLCJyb2xlIjoiY2xpZW50IiwiZXhwIjo5OTk5OTk5OTk5fQ.dGVzdC1zaWduYXR1cmU',
                 type: 'Bearer',
@@ -48,7 +48,11 @@ export default function Register() {
                 phone,
             },
         })
-        navigate('/profile')
+        if (success) {
+            navigate('/profile')
+        } else {
+            setError('Errore durante la registrazione')
+        }
     }
 
     return (
