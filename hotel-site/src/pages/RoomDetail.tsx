@@ -27,6 +27,13 @@ export default function RoomDetail() {
     const [bookingDone, setBookingDone] = useState(false)
     const [isLoading] = useState(false)
 
+    const today = toISODate(new Date())
+    const minCheckOut = useMemo(() => {
+        return checkIn
+            ? toISODate(new Date(new Date(checkIn).getTime() + 86_400_000))
+            : toISODate(new Date(new Date().getTime() + 86_400_000))
+    }, [checkIn])
+
     if (!room) {
         return (
             <div className="min-h-screen bg-[#FAF0E6] flex flex-col items-center justify-center px-4 text-center">
@@ -39,12 +46,7 @@ export default function RoomDetail() {
         )
     }
 
-    const today = toISODate(new Date())
-    const minCheckOut = useMemo(() => {
-        return checkIn
-            ? toISODate(new Date(new Date(checkIn).getTime() + 86_400_000))
-            : toISODate(new Date(Date.now() + 86_400_000))
-    }, [checkIn])
+
     const nights = nightsBetween(checkIn, checkOut)
     const total = nights * room.pricePerNight
 
