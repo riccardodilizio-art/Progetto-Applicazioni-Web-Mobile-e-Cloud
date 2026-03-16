@@ -158,7 +158,7 @@ export default function MyReservations() {
                         {roomReservations.length === 0 ? (
                             <EmptyState
                                 message="Nessuna prenotazione camera trovata."
-                                cta={{ label: 'Esplora le camere', to: '/camere' }}
+                                cta={{ label: 'Esplora le camere', to: '/rooms' }}
                             />
                         ) : (
                             roomReservations.map(r => <RoomCard key={r.id} r={r} />)

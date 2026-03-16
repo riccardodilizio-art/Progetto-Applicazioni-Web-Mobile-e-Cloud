@@ -62,9 +62,14 @@ export default function App() {
                             </ProtectedRoute>
                         }
                     />
-                    <Route path="/prenotazioni" element={<MyReservations />} />
-
-
+                    <Route
+                        path="/prenotazioni"
+                        element={
+                            <ProtectedRoute>
+                                <MyReservations />
+                            </ProtectedRoute>
+                        }
+                    />
 
                     {/* Login admin (pubblica) */}
                     <Route path="/admin/login" element={<Login />} />
