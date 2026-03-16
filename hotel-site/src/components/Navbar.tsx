@@ -18,11 +18,14 @@ export default function Navbar() {
     }, [])
 
     const isActive = (path: string) => location.pathname === path
+    const isClient = isAuthenticated && user?.role === 'client'
+
 
     const navLinks = [
         { to: '/', label: 'Home' },
         { to: '/rooms', label: 'Camere' },
         { to: '/menu', label: 'Ristorante' },
+        ...(isClient ? [{ to: '/prenotazioni', label: 'Prenotazioni' }] : []),
         { to: '/contacts', label: 'Contatti' },
     ]
 

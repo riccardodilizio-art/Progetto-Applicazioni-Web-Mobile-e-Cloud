@@ -16,6 +16,7 @@ import ClientLogin from './pages/auth/Login'
 import Register from './pages/auth/Register'
 import Profile from './pages/auth/Profile'
 import Edit from './pages/auth/Edit'
+import MyReservations from './pages/auth/MyReservations'
 
 function ProtectedRoute({ children, redirectTo = '/login' }: { children: React.ReactNode; redirectTo?: string }) {
     const isAuthenticated = useIsAuthenticated()
@@ -61,6 +62,9 @@ export default function App() {
                             </ProtectedRoute>
                         }
                     />
+                    <Route path="/prenotazioni" element={<MyReservations />} />
+
+
 
                     {/* Login admin (pubblica) */}
                     <Route path="/admin/login" element={<Login />} />
