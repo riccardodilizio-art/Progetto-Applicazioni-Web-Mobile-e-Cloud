@@ -14,3 +14,21 @@ export interface Room {
     images: string[]
     available: boolean
 }
+
+// ── Tipi per RoomForm ──
+
+export type RoomFormData = {
+    name: string
+    type: RoomType
+    description: string
+    pricePerNight: string
+    capacity: string
+    size: string
+    floor: string
+    roomNumber: string
+    amenities: string[]
+    images: string[]
+    available: boolean
+}
+
+export type RoomFormErrors = Partial<Record<keyof RoomFormData, string>>
