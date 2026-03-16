@@ -6,12 +6,14 @@ import { rooms as initialRooms } from '../../data/Rooms'
 import { typeLabels } from '../../data/roomUtils'
 import type { Room } from '../../types/Room'
 import type { UserState } from '../../types/User'
+import LoadingSpinner from '../../components/LoadingSpinner'
 
 export default function Dashboard() {
     const signOut = useSignOut()
     const navigate = useNavigate()
     const authUser = useAuthUser<UserState>()
     const [rooms, setRooms] = useState<Room[]>(initialRooms)
+    const [isLoading] = useState(false)
 
     const handleLogout = () => {
         signOut()
@@ -27,6 +29,7 @@ export default function Dashboard() {
         // TODO: chiamata API per aggiornare disponibilità
         setRooms((prev) => prev.map((r) => (r.id === id ? { ...r, available: !r.available } : r)))
     }
+    if (isLoading) return <LoadingSpinner message="Caricamento camere..." />
 
     return (
         <div className="min-h-screen bg-[#FAF5EE]">

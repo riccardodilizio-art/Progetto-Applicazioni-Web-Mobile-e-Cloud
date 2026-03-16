@@ -3,11 +3,13 @@ import { Navigate, useNavigate } from 'react-router-dom'
 import useAuthUser from 'react-auth-kit/hooks/useAuthUser'
 import useIsAuthenticated from 'react-auth-kit/hooks/useIsAuthenticated'
 import type { UserState } from '../../types/User'
+import useSignIn from 'react-auth-kit/hooks/useSignIn'
 
 export default function Edit() {
     const user = useAuthUser<UserState>()
     const isAuthenticated = useIsAuthenticated()
     const navigate = useNavigate()
+    const signIn = useSignIn<UserState>()
 
     const [name, setName] = useState(user?.name ?? '')
     const [surname, setSurname] = useState(user?.surname ?? '')
@@ -20,6 +22,19 @@ export default function Edit() {
     const handleSave = (e: React.FormEvent) => {
         e.preventDefault()
         // TODO: chiamata API per aggiornare il profilo
+        // Aggiorna lo stato react-auth-kit così la Navbar legge il nuovo nome
+        signIn({
+            auth: {
+                token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjbGllbnRAaG90ZWxleGNlbHNpb3IuaXQiLCJyb2xlIjoiY2xpZW50IiwiZXhwIjo5OTk5OTk5OTk5fQ.dGVzdC1zaWduYXR1cmU',
+                type: 'Bearer',
+            },
+            userState: {
+                ...user,
+                name,
+                surname,
+                phone,
+            },
+        })
         navigate('/profile')
     }
 
