@@ -14,7 +14,6 @@ export default function RoomInfoSection({ data, errors, onChange }: Props) {
                 <h2 className="font-heading text-lg text-[#3B2010] font-medium">Informazioni Principali</h2>
             </div>
             <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-
                 {/* Nome */}
                 <div className="md:col-span-2" data-error={!!errors.name}>
                     <label className="block text-sm font-medium text-[#6B4828] mb-1.5">
@@ -43,7 +42,9 @@ export default function RoomInfoSection({ data, errors, onChange }: Props) {
                         className="w-full border border-[#E8C9A0] rounded-lg px-3 py-2.5 text-sm text-[#3B2010] bg-white focus:outline-none focus:ring-2 focus:ring-[#C4A070] transition"
                     >
                         {ROOM_TYPES.map((t) => (
-                            <option key={t.value} value={t.value}>{t.label}</option>
+                            <option key={t.value} value={t.value}>
+                                {t.label}
+                            </option>
                         ))}
                     </select>
                 </div>
@@ -103,7 +104,6 @@ export default function RoomInfoSection({ data, errors, onChange }: Props) {
                     />
                     {errors.floor && <p className="text-red-500 text-xs mt-1">{errors.floor}</p>}
                 </div>
-
             </div>
         </div>
     )

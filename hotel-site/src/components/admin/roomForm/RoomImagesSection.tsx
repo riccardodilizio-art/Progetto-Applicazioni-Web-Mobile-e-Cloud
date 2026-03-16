@@ -30,14 +30,18 @@ export default function RoomImagesSection({ images, error, onAdd, onRemove, onMo
                 </p>
             </div>
             <div className="p-6 space-y-4">
-
                 {/* Input URL */}
                 <div className="flex gap-2">
                     <input
                         type="url"
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
-                        onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleAdd() } }}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                                e.preventDefault()
+                                handleAdd()
+                            }
+                        }}
                         placeholder="https://images.unsplash.com/..."
                         className={`flex-1 border rounded-lg px-3 py-2 text-sm text-[#3B2010] placeholder:text-[#C4A070] focus:outline-none focus:ring-2 focus:ring-[#C4A070] transition ${
                             error ? 'border-red-400' : 'border-[#E8C9A0]'
@@ -65,7 +69,9 @@ export default function RoomImagesSection({ images, error, onAdd, onRemove, onMo
                                     src={url}
                                     alt={`Immagine ${index + 1}`}
                                     className="w-16 h-16 rounded-lg object-cover flex-shrink-0 bg-[#E8C9A0]"
-                                    onError={(e) => { (e.target as HTMLImageElement).src = IMG_FALLBACK }}
+                                    onError={(e) => {
+                                        ;(e.target as HTMLImageElement).src = IMG_FALLBACK
+                                    }}
                                 />
                                 <div className="flex-1 min-w-0">
                                     <p className="text-xs text-[#3B2010] truncate">{url}</p>
@@ -112,7 +118,6 @@ export default function RoomImagesSection({ images, error, onAdd, onRemove, onMo
                         <p className="text-[#C4A070] text-xs mt-1">Incolla un URL sopra e clicca "Aggiungi"</p>
                     </div>
                 )}
-
             </div>
         </div>
     )

@@ -13,7 +13,6 @@ export default function RoomDetailsSection({ data, errors, onChange }: Props) {
                 <h2 className="font-heading text-lg text-[#3B2010] font-medium">Descrizione e Dettagli</h2>
             </div>
             <div className="p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
-
                 {/* Descrizione */}
                 <div className="md:col-span-3" data-error={!!errors.description}>
                     <label className="block text-sm font-medium text-[#6B4828] mb-1.5">
@@ -91,7 +90,6 @@ export default function RoomDetailsSection({ data, errors, onChange }: Props) {
                     </div>
                     {errors.size && <p className="text-red-500 text-xs mt-1">{errors.size}</p>}
                 </div>
-
             </div>
         </div>
     )

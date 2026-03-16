@@ -16,9 +16,7 @@ export default function RoomForm() {
     const isEdit = id !== undefined
     const existingRoom = isEdit ? rooms.find((r) => r.id === Number(id)) : undefined
 
-    const [form, setForm] = useState<RoomFormData>(
-        existingRoom ? roomToForm(existingRoom) : EMPTY_ROOM_FORM
-    )
+    const [form, setForm] = useState<RoomFormData>(existingRoom ? roomToForm(existingRoom) : EMPTY_ROOM_FORM)
     const [errors, setErrors] = useState<RoomFormErrors>({})
 
     function handleChange(field: keyof RoomFormData, value: string | boolean) {
@@ -47,7 +45,7 @@ export default function RoomForm() {
         const newImages = [...form.images]
         const swap = direction === 'up' ? index - 1 : index + 1
         if (swap < 0 || swap >= newImages.length) return
-            ;[newImages[index], newImages[swap]] = [newImages[swap], newImages[index]]
+        ;[newImages[index], newImages[swap]] = [newImages[swap], newImages[index]]
         setForm((prev) => ({ ...prev, images: newImages }))
     }
 
@@ -69,7 +67,10 @@ export default function RoomForm() {
                 <div className="text-center">
                     <p className="text-[#3B2010] text-xl font-heading mb-2">Camera non trovata</p>
                     <p className="text-[#9A6840] text-sm mb-6">L'ID #{id} non corrisponde a nessuna camera.</p>
-                    <Link to="/admin/dashboard" className="bg-[#3B2010] text-white text-sm px-5 py-2.5 rounded-lg hover:bg-[#6B4828] transition-colors">
+                    <Link
+                        to="/admin/dashboard"
+                        className="bg-[#3B2010] text-white text-sm px-5 py-2.5 rounded-lg hover:bg-[#6B4828] transition-colors"
+                    >
                         Torna alla Dashboard
                     </Link>
                 </div>
@@ -83,13 +84,29 @@ export default function RoomForm() {
             <form onSubmit={handleSubmit} noValidate>
                 <div className="max-w-4xl mx-auto px-6 py-8 space-y-6">
                     <RoomInfoSection
-                        data={{ name: form.name, type: form.type, roomNumber: form.roomNumber, floor: form.floor, available: form.available }}
+                        data={{
+                            name: form.name,
+                            type: form.type,
+                            roomNumber: form.roomNumber,
+                            floor: form.floor,
+                            available: form.available,
+                        }}
                         errors={{ name: errors.name, roomNumber: errors.roomNumber, floor: errors.floor }}
                         onChange={handleChange}
                     />
                     <RoomDetailsSection
-                        data={{ description: form.description, pricePerNight: form.pricePerNight, capacity: form.capacity, size: form.size }}
-                        errors={{ description: errors.description, pricePerNight: errors.pricePerNight, capacity: errors.capacity, size: errors.size }}
+                        data={{
+                            description: form.description,
+                            pricePerNight: form.pricePerNight,
+                            capacity: form.capacity,
+                            size: form.size,
+                        }}
+                        errors={{
+                            description: errors.description,
+                            pricePerNight: errors.pricePerNight,
+                            capacity: errors.capacity,
+                            size: errors.size,
+                        }}
                         onChange={handleChange}
                     />
                     <RoomAmenitiesSection
@@ -105,10 +122,16 @@ export default function RoomForm() {
                         onMove={handleMoveImage}
                     />
                     <div className="flex flex-col-reverse sm:flex-row justify-end gap-3 pb-8">
-                        <Link to="/admin/dashboard" className="text-center text-sm text-[#6B4828] border border-[#C4A070] px-6 py-2.5 rounded-lg hover:bg-[#FAF5EE] transition-colors">
+                        <Link
+                            to="/admin/dashboard"
+                            className="text-center text-sm text-[#6B4828] border border-[#C4A070] px-6 py-2.5 rounded-lg hover:bg-[#FAF5EE] transition-colors"
+                        >
                             Annulla
                         </Link>
-                        <button type="submit" className="bg-[#3B2010] text-white text-sm font-medium px-8 py-2.5 rounded-lg hover:bg-[#6B4828] transition-colors">
+                        <button
+                            type="submit"
+                            className="bg-[#3B2010] text-white text-sm font-medium px-8 py-2.5 rounded-lg hover:bg-[#6B4828] transition-colors"
+                        >
                             {isEdit ? 'Salva Modifiche' : 'Crea Camera'}
                         </button>
                     </div>

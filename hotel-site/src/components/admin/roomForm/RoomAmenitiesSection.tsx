@@ -23,12 +23,9 @@ export default function RoomAmenitiesSection({ amenities, onAdd, onRemove }: Pro
         <div className="bg-white rounded-xl shadow-sm border border-[#E8C9A0]/50 overflow-hidden">
             <div className="bg-[#FAF5EE] border-b border-[#E8C9A0]/50 px-6 py-4">
                 <h2 className="font-heading text-lg text-[#3B2010] font-medium">Servizi Inclusi</h2>
-                <p className="text-xs text-[#9A6840] mt-0.5">
-                    Seleziona dalla lista o aggiungi servizi personalizzati
-                </p>
+                <p className="text-xs text-[#9A6840] mt-0.5">Seleziona dalla lista o aggiungi servizi personalizzati</p>
             </div>
             <div className="p-6 space-y-5">
-
                 {/* Chip preset */}
                 <div className="flex flex-wrap gap-2">
                     {PRESET_AMENITIES.map((amenity) => {
@@ -37,14 +34,15 @@ export default function RoomAmenitiesSection({ amenities, onAdd, onRemove }: Pro
                             <button
                                 key={amenity}
                                 type="button"
-                                onClick={() => selected ? onRemove(amenity) : onAdd(amenity)}
+                                onClick={() => (selected ? onRemove(amenity) : onAdd(amenity))}
                                 className={`text-xs px-3 py-1.5 rounded-full border transition-all duration-150 ${
                                     selected
                                         ? 'bg-[#3B2010] text-[#E8C9A0] border-[#3B2010]'
                                         : 'bg-white text-[#6B4828] border-[#C4A070] hover:border-[#9A6840]'
                                 }`}
                             >
-                                {selected ? '✓ ' : ''}{amenity}
+                                {selected ? '✓ ' : ''}
+                                {amenity}
                             </button>
                         )
                     })}
@@ -56,7 +54,12 @@ export default function RoomAmenitiesSection({ amenities, onAdd, onRemove }: Pro
                         type="text"
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
-                        onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleAdd() } }}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                                e.preventDefault()
+                                handleAdd()
+                            }
+                        }}
                         placeholder="Aggiungi servizio personalizzato..."
                         className="flex-1 border border-[#E8C9A0] rounded-lg px-3 py-2 text-sm text-[#3B2010] placeholder:text-[#C4A070] focus:outline-none focus:ring-2 focus:ring-[#C4A070] transition"
                     />
@@ -96,7 +99,6 @@ export default function RoomAmenitiesSection({ amenities, onAdd, onRemove }: Pro
                 {amenities.length === 0 && (
                     <p className="text-xs text-[#C4A070] italic">Nessun servizio selezionato.</p>
                 )}
-
             </div>
         </div>
     )

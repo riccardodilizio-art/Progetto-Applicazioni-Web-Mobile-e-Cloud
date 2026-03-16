@@ -15,9 +15,7 @@ export default function RoomFormHeader({ isEdit, roomName }: Props) {
                             Dashboard
                         </Link>
                         <span>/</span>
-                        <span className="text-[#3B2010]">
-                            {isEdit ? 'Modifica Camera' : 'Nuova Camera'}
-                        </span>
+                        <span className="text-[#3B2010]">{isEdit ? 'Modifica Camera' : 'Nuova Camera'}</span>
                     </div>
                     <h1 className="text-2xl text-[#3B2010] font-light font-heading">
                         {isEdit ? `Modifica: ${roomName}` : 'Aggiungi Nuova Camera'}
