@@ -3,7 +3,7 @@ import { useParams, Link } from 'react-router-dom'
 import { rooms } from '../data/Rooms'
 import { typeLabels } from '../data/roomUtils'
 import LoadingSpinner from '../components/LoadingSpinner'
-
+import {useMemo} from 'react'
 // ── Helpers ────────────────────────────────────────────────
 function toISODate(d: Date) {
     return d.toISOString().split('T')[0]
@@ -40,9 +40,11 @@ export default function RoomDetail() {
     }
 
     const today = toISODate(new Date())
-    const minCheckOut = checkIn
-        ? toISODate(new Date(new Date(checkIn).getTime() + 86_400_000))
-        : toISODate(new Date(Date.now() + 86_400_000))
+    const minCheckOut = useMemo(() => {
+        return checkIn
+            ? toISODate(new Date(new Date(checkIn).getTime() + 86_400_000))
+            : toISODate(new Date(Date.now() + 86_400_000))
+    }, [checkIn])
     const nights = nightsBetween(checkIn, checkOut)
     const total = nights * room.pricePerNight
 
