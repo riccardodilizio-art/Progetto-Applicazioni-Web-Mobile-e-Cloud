@@ -17,8 +17,8 @@ const roomTypeLabel: Record<string, string> = {
 
 const statusConfig = {
     confermata: { label: 'Confermata', bg: 'bg-[#E0F0D8]', text: 'text-[#3A6B28]', border: 'border-[#B8D8A8]' },
-    in_attesa:  { label: 'In attesa',  bg: 'bg-[#FEF9E7]', text: 'text-[#8A6D00]', border: 'border-[#F0DC82]' },
-    annullata:  { label: 'Annullata',  bg: 'bg-[#F5E0D8]', text: 'text-[#8A3820]', border: 'border-[#E6B8A8]' },
+    in_attesa: { label: 'In attesa', bg: 'bg-[#FEF9E7]', text: 'text-[#8A6D00]', border: 'border-[#F0DC82]' },
+    annullata: { label: 'Annullata', bg: 'bg-[#F5E0D8]', text: 'text-[#8A3820]', border: 'border-[#E6B8A8]' },
 }
 
 function formatDate(iso: string) {
@@ -104,8 +104,8 @@ export default function MyReservations() {
     const roomReservations: RoomReservation[] = mockRoomReservations
     const dinnerReservations: DinnerReservation[] = mockDinnerReservations
 
-    const activeRooms   = roomReservations.filter(r => r.status !== 'annullata')
-    const activeDinners = dinnerReservations.filter(d => d.status !== 'annullata')
+    const activeRooms = roomReservations.filter((r) => r.status !== 'annullata')
+    const activeDinners = dinnerReservations.filter((d) => d.status !== 'annullata')
 
     return (
         <div className="min-h-screen bg-[#FAF0E6]">
@@ -114,9 +114,7 @@ export default function MyReservations() {
                 <p className="text-[#E8C9A0] tracking-[0.3em] uppercase text-xs mb-3 font-light">
                     Hotel Excelsior · Pesaro
                 </p>
-                <h1 className="font-heading text-4xl md:text-5xl font-light text-white mb-3">
-                    Le Mie Prenotazioni
-                </h1>
+                <h1 className="font-heading text-4xl md:text-5xl font-light text-white mb-3">Le Mie Prenotazioni</h1>
                 <p className="text-[#E8C9A0] text-sm font-light">
                     Benvenuto, {user?.name} {user?.surname}
                 </p>
@@ -137,7 +135,7 @@ export default function MyReservations() {
 
                 {/* Tab */}
                 <div className="flex gap-2 mb-8">
-                    {(['camere', 'cene'] as Tab[]).map(tab => (
+                    {(['camere', 'cene'] as Tab[]).map((tab) => (
                         <button
                             key={tab}
                             onClick={() => setActiveTab(tab)}
@@ -161,7 +159,7 @@ export default function MyReservations() {
                                 cta={{ label: 'Esplora le camere', to: '/rooms' }}
                             />
                         ) : (
-                            roomReservations.map(r => <RoomCard key={r.id} r={r} />)
+                            roomReservations.map((r) => <RoomCard key={r.id} r={r} />)
                         )}
                     </div>
                 )}
@@ -175,7 +173,7 @@ export default function MyReservations() {
                                 cta={{ label: 'Vai al menu', to: '/menu' }}
                             />
                         ) : (
-                            dinnerReservations.map(d => <DinnerCard key={d.id} d={d} />)
+                            dinnerReservations.map((d) => <DinnerCard key={d.id} d={d} />)
                         )}
                     </div>
                 )}

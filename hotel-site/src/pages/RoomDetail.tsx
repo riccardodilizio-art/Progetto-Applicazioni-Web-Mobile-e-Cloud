@@ -3,7 +3,7 @@ import { useParams, Link } from 'react-router-dom'
 import { rooms } from '../data/Rooms'
 import { typeLabels } from '../data/roomUtils'
 import LoadingSpinner from '../components/LoadingSpinner'
-import {useMemo} from 'react'
+import { useMemo } from 'react'
 // ── Helpers ────────────────────────────────────────────────
 function toISODate(d: Date) {
     return d.toISOString().split('T')[0]
@@ -45,7 +45,6 @@ export default function RoomDetail() {
             </div>
         )
     }
-
 
     const nights = nightsBetween(checkIn, checkOut)
     const total = nights * room.pricePerNight

@@ -4,7 +4,7 @@ export interface RoomReservation {
     id: string
     roomName: string
     roomType: RoomType
-    checkIn: string   // 'YYYY-MM-DD'
+    checkIn: string // 'YYYY-MM-DD'
     checkOut: string
     nights: number
     pricePerNight: number
@@ -14,7 +14,7 @@ export interface RoomReservation {
 
 export interface DinnerReservation {
     id: string
-    date: string      // 'YYYY-MM-DD'
+    date: string // 'YYYY-MM-DD'
     day: string
     primo: string
     secondo: string

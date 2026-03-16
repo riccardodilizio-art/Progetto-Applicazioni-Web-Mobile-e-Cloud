@@ -25,7 +25,7 @@ export default function Login() {
     const navigate = useNavigate()
 
     if (isAuthenticated) {
-        return <Navigate to="/profile" replace />
+        return <Navigate to="/" replace />
     }
 
     const handleSubmit = (e: React.FormEvent) => {
