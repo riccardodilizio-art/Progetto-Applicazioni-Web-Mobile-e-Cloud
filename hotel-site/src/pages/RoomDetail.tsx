@@ -106,9 +106,11 @@ export default function RoomDetail() {
                             <span className="text-xs font-semibold px-3 py-1 rounded-full bg-[#E8C9A0] text-[#6B4828]">
                                 {typeLabels[room.type]}
                             </span>
-                            <span className={`text-xs font-semibold px-3 py-1 rounded-full ${
-                                room.available ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
-                            }`}>
+                            <span
+                                className={`text-xs font-semibold px-3 py-1 rounded-full ${
+                                    room.available ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                                }`}
+                            >
                                 {room.available ? 'Disponibile' : 'Non disponibile'}
                             </span>
                         </div>
@@ -124,29 +126,69 @@ export default function RoomDetail() {
 
                         <div className="grid grid-cols-2 gap-4 mb-6">
                             <div className="bg-white rounded-xl p-4 text-center shadow-sm">
-                                <svg className="w-6 h-6 mx-auto text-[#6B4828] mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                <svg
+                                    className="w-6 h-6 mx-auto text-[#6B4828] mb-1"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                                    />
                                 </svg>
                                 <p className="text-sm text-gray-500">Ospiti</p>
                                 <p className="font-bold text-[#6B4828]">{room.capacity}</p>
                             </div>
                             <div className="bg-white rounded-xl p-4 text-center shadow-sm">
-                                <svg className="w-6 h-6 mx-auto text-[#6B4828] mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                                <svg
+                                    className="w-6 h-6 mx-auto text-[#6B4828] mb-1"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"
+                                    />
                                 </svg>
                                 <p className="text-sm text-gray-500">Dimensione</p>
                                 <p className="font-bold text-[#6B4828]">{room.size} m²</p>
                             </div>
                             <div className="bg-white rounded-xl p-4 text-center shadow-sm">
-                                <svg className="w-6 h-6 mx-auto text-[#6B4828] mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                <svg
+                                    className="w-6 h-6 mx-auto text-[#6B4828] mb-1"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                                    />
                                 </svg>
                                 <p className="text-sm text-gray-500">Piano</p>
                                 <p className="font-bold text-[#6B4828]">{room.floor}°</p>
                             </div>
                             <div className="bg-white rounded-xl p-4 text-center shadow-sm">
-                                <svg className="w-6 h-6 mx-auto text-[#6B4828] mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14" />
+                                <svg
+                                    className="w-6 h-6 mx-auto text-[#6B4828] mb-1"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"
+                                    />
                                 </svg>
                                 <p className="text-sm text-gray-500">Camera</p>
                                 <p className="font-bold text-[#6B4828]">{room.roomNumber}</p>
@@ -157,9 +199,22 @@ export default function RoomDetail() {
                             <h2 className="text-lg font-bold text-[#6B4828] mb-3">Servizi inclusi</h2>
                             <div className="flex flex-wrap gap-2">
                                 {room.amenities.map((amenity) => (
-                                    <span key={amenity} className="flex items-center gap-1.5 text-sm bg-white text-gray-700 px-3 py-1.5 rounded-full shadow-sm">
-                                        <svg className="w-4 h-4 text-green-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                    <span
+                                        key={amenity}
+                                        className="flex items-center gap-1.5 text-sm bg-white text-gray-700 px-3 py-1.5 rounded-full shadow-sm"
+                                    >
+                                        <svg
+                                            className="w-4 h-4 text-green-500 shrink-0"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                strokeWidth={2}
+                                                d="M5 13l4 4L19 7"
+                                            />
                                         </svg>
                                         {amenity}
                                     </span>
@@ -189,19 +244,31 @@ export default function RoomDetail() {
                     <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={handleCloseModal} />
 
                     <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 z-10">
-
                         {/* Stato: prenotazione confermata */}
                         {bookingDone ? (
                             <div className="text-center py-4">
                                 <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                    <svg
+                                        className="w-8 h-8 text-green-600"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={2}
+                                            d="M5 13l4 4L19 7"
+                                        />
                                     </svg>
                                 </div>
                                 <h3 className="text-xl font-bold text-[#3B2010] mb-2">Prenotazione confermata!</h3>
-                                <p className="text-gray-600 text-sm mb-1"><strong>{room.name}</strong></p>
+                                <p className="text-gray-600 text-sm mb-1">
+                                    <strong>{room.name}</strong>
+                                </p>
                                 <p className="text-gray-500 text-sm mb-1">
-                                    {checkIn} → {checkOut} · {nights} {nights === 1 ? 'notte' : 'notti'} · {guests} {guests === 1 ? 'ospite' : 'ospiti'}
+                                    {checkIn} → {checkOut} · {nights} {nights === 1 ? 'notte' : 'notti'} · {guests}{' '}
+                                    {guests === 1 ? 'ospite' : 'ospiti'}
                                 </p>
                                 <p className="text-[#6B4828] font-bold text-lg mb-5">Totale: €{total}</p>
                                 <button
@@ -218,9 +285,18 @@ export default function RoomDetail() {
                                         <h2 className="text-xl font-bold text-[#3B2010]">Prenota {room.name}</h2>
                                         <p className="text-sm text-[#9A6840]">€{room.pricePerNight} / notte</p>
                                     </div>
-                                    <button onClick={handleCloseModal} className="text-gray-400 hover:text-gray-600 transition cursor-pointer" aria-label="Chiudi">
+                                    <button
+                                        onClick={handleCloseModal}
+                                        className="text-gray-400 hover:text-gray-600 transition cursor-pointer"
+                                        aria-label="Chiudi"
+                                    >
                                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                            <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                strokeWidth={2}
+                                                d="M6 18L18 6M6 6l12 12"
+                                            />
                                         </svg>
                                     </button>
                                 </div>
@@ -228,7 +304,9 @@ export default function RoomDetail() {
                                 <form onSubmit={handleBook} className="space-y-4">
                                     <div className="grid grid-cols-2 gap-3">
                                         <div>
-                                            <label className="block text-xs font-semibold text-[#3B2010] uppercase tracking-wide mb-1">Check-in</label>
+                                            <label className="block text-xs font-semibold text-[#3B2010] uppercase tracking-wide mb-1">
+                                                Check-in
+                                            </label>
                                             <input
                                                 type="date"
                                                 required
@@ -242,7 +320,9 @@ export default function RoomDetail() {
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-xs font-semibold text-[#3B2010] uppercase tracking-wide mb-1">Check-out</label>
+                                            <label className="block text-xs font-semibold text-[#3B2010] uppercase tracking-wide mb-1">
+                                                Check-out
+                                            </label>
                                             <input
                                                 type="date"
                                                 required
@@ -255,14 +335,18 @@ export default function RoomDetail() {
                                     </div>
 
                                     <div>
-                                        <label className="block text-xs font-semibold text-[#3B2010] uppercase tracking-wide mb-1">Ospiti</label>
+                                        <label className="block text-xs font-semibold text-[#3B2010] uppercase tracking-wide mb-1">
+                                            Ospiti
+                                        </label>
                                         <select
                                             value={guests}
                                             onChange={(e) => setGuests(Number(e.target.value))}
                                             className="w-full border border-[#C4A070] rounded-lg px-3 py-2 text-sm text-[#3B2010] focus:outline-none focus:ring-2 focus:ring-[#9A6840]"
                                         >
                                             {Array.from({ length: room.capacity }, (_, i) => i + 1).map((n) => (
-                                                <option key={n} value={n}>{n} {n === 1 ? 'ospite' : 'ospiti'}</option>
+                                                <option key={n} value={n}>
+                                                    {n} {n === 1 ? 'ospite' : 'ospiti'}
+                                                </option>
                                             ))}
                                         </select>
                                     </div>
@@ -270,7 +354,9 @@ export default function RoomDetail() {
                                     {nights > 0 && (
                                         <div className="bg-[#FAF5EE] rounded-lg px-4 py-3 border border-[#E8C9A0]">
                                             <div className="flex justify-between text-sm text-[#6B4828]">
-                                                <span>€{room.pricePerNight} × {nights} {nights === 1 ? 'notte' : 'notti'}</span>
+                                                <span>
+                                                    €{room.pricePerNight} × {nights} {nights === 1 ? 'notte' : 'notti'}
+                                                </span>
                                                 <span className="font-bold text-[#3B2010]">€{total}</span>
                                             </div>
                                         </div>
