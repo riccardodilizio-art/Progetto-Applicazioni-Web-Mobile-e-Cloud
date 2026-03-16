@@ -49,7 +49,7 @@ export default function Register() {
             },
         })
         if (success) {
-            navigate('/profile')
+            navigate('/')
         } else {
             setError('Errore durante la registrazione')
         }
