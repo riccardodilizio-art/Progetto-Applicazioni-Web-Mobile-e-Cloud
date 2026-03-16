@@ -23,7 +23,6 @@ export default function Navbar() {
 
 
     const isActive = (path: string) => location.pathname === path
-    //const isClient = isAuthenticated && user?.role === 'client'
     const isAdmin  = isAuthenticated && user?.role === 'admin'
 
     const navLinks = [
@@ -35,7 +34,7 @@ export default function Navbar() {
 
     const clientMenuItems = [
         { to: '/prenotazioni', label: 'Le mie prenotazioni' },
-        { to: '/edit',         label: 'Modifica dati'       },
+        { to: '/profile/edit',         label: 'Modifica dati'       },
     ]
 
     const adminMenuItems = [
