@@ -21,10 +21,6 @@ export default function Navbar() {
         return () => window.removeEventListener('scroll', handleScroll)
     }, [])
 
-    // chiude il drawer mobile al cambio pagina
-    useEffect(() => {
-        setIsOpen(false)
-    }, [location.pathname])
 
     const isActive = (path: string) => location.pathname === path
     //const isClient = isAuthenticated && user?.role === 'client'
