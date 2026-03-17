@@ -25,6 +25,19 @@ const CATEGORY_STYLE: Record<string, string> = {
 // ── Tipi interni ─────────────────────────────────────────────────
 type PageState = 'idle' | 'booking' | 'locked' | 'error' | 'success'
 
+// ── Header comune a tutte le pagine ─────────────────────────────
+function PageHeader() {
+    return (
+        <div className="text-center mb-10">
+            <h1 className="text-4xl font-bold text-[#3B2010] mb-3">Ristorante</h1>
+            <p className="text-[#6B4828] max-w-md mx-auto text-sm leading-relaxed">
+                Prenota la tua cena inserendo il codice a 5 cifre ricevuto al check-in.
+                Il termine per la prenotazione è le <strong>18:00</strong>.
+            </p>
+        </div>
+    )
+}
+
 // ════════════════════════════════════════════════════════════════
 // COMPONENTE PRINCIPALE
 // ════════════════════════════════════════════════════════════════
@@ -33,16 +46,7 @@ export default function Restaurant() {
     const [roomNumber, setRoomNumber]       = useState('')
     const [pageState, setPageState]         = useState<PageState>('idle')
     const [errorMsg, setErrorMsg]           = useState('')
-    const [rlStatus, setRlStatus]           = useState<RLStatus>({
-        blocked: false,
-        remainingAttempts: 5,
-        unblockAt: null,
-    })
-
-    // Controlla rate limit all'avvio e ogni 30 secondi se bloccato
-    useEffect(() => {
-        setRlStatus(getRLStatus())
-    }, [])
+    const [rlStatus, setRlStatus]           = useState<RLStatus>(() => getRLStatus())
 
     useEffect(() => {
         if (!rlStatus.blocked) return
@@ -67,10 +71,16 @@ export default function Restaurant() {
     function handleSubmitCode(e: React.FormEvent) {
         e.preventDefault()
 
-        // Controlla blocco prima di tutto
         const currentRL = getRLStatus()
         if (currentRL.blocked) {
             setRlStatus(currentRL)
+            setErrorMsg(
+                `Accesso bloccato per troppi tentativi. Riprova alle ${currentRL.unblockAt?.toLocaleTimeString('it-IT', {
+                    hour:   '2-digit',
+                    minute: '2-digit',
+                })}.`
+            )
+            setPageState('error')
             return
         }
 
@@ -89,12 +99,10 @@ export default function Restaurant() {
             return
         }
 
-        // Codice valido: resetta rate limit
         recordSuccess()
         setRlStatus({ blocked: false, remainingAttempts: 5, unblockAt: null })
         setReservation(found)
 
-        // Controlla che il soggiorno sia attivo oggi
         if (!isTodayInStay(found.checkIn, found.checkOut)) {
             setErrorMsg(
                 'Il tuo soggiorno non è attivo oggi. La prenotazione cena è disponibile solo durante il soggiorno.'
@@ -103,28 +111,23 @@ export default function Restaurant() {
             return
         }
 
-        // Recupera menu di oggi
         const menu = getMenuForDate(today)
         setTodayMenu(menu)
 
-        // Controlla se esiste già una prenotazione per stasera
         const existing = findDinnerByDate(today, found.dinnerCode, mockDinnerReservations)
         setExistingDinner(existing ?? null)
 
-        // Cena già confermata → sola lettura
         if (existing && existing.status === 'confermata') {
             setPageState('locked')
             return
         }
 
-        // Verifica cutoff (solo se non c'è già una bozza in corso)
         if (!existing && !isBeforeCutoff()) {
             setErrorMsg('Il termine per la prenotazione della cena è le 18:00. Riprova domani.')
             setPageState('error')
             return
         }
 
-        // Inizializza coperti e ordini (da bozza o da zero)
         const n = existing?.totalCovers ?? 1
         setCovers(n)
         if (existing?.status === 'bozza') {
@@ -161,13 +164,37 @@ export default function Restaurant() {
     }
 
     // ── Conferma prenotazione ────────────────────────────────────
-    function handleConfirm() {
+    async function handleConfirm() {
         if (orders.some(o => !o.primo || !o.secondo)) {
             setValidationError('Seleziona primo e secondo per ogni coperto.')
             return
         }
-        // TODO: chiamata API per salvare la prenotazione
-        setPageState('success')
+
+        try {
+            const response = await fetch('/api/dinner-reservations', {
+                method: existingDinner?.status === 'bozza' ? 'PUT' : 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    dinnerCode:  reservation!.dinnerCode,
+                    date:        today,
+                    day:         todayMenu!.day,
+                    totalCovers: covers,
+                    orders,
+                }),
+            })
+
+            if (!response.ok) {
+                const data = await response.json().catch(() => ({}))
+                setErrorMsg(data.message ?? 'Errore durante la prenotazione. Riprova.')
+                setPageState('error')
+                return
+            }
+
+            setPageState('success')
+        } catch {
+            setErrorMsg('Errore di rete. Controlla la connessione e riprova.')
+            setPageState('error')
+        }
     }
 
     // ── Reset completo ───────────────────────────────────────────
@@ -182,17 +209,6 @@ export default function Restaurant() {
         setOrders([])
         setValidationError('')
     }
-
-    // ── Header comune a tutte le pagine ──────────────────────────
-    const PageHeader = () => (
-        <div className="text-center mb-10">
-            <h1 className="text-4xl font-bold text-[#3B2010] mb-3">Ristorante</h1>
-            <p className="text-[#6B4828] max-w-md mx-auto text-sm leading-relaxed">
-                Prenota la tua cena inserendo il codice a 5 cifre ricevuto al check-in.
-                Il termine per la prenotazione è le <strong>18:00</strong>.
-            </p>
-        </div>
-    )
 
     // ════════════════════════════════════════════════════════════
     // STATO: inserimento codice
@@ -232,7 +248,6 @@ export default function Restaurant() {
                             bg-[#FAF0E6] text-[#3B2010] focus:outline-none focus:border-[#9A6840] transition-colors"
                     />
 
-                    {/* Feedback rate limit */}
                     {rlStatus.remainingAttempts < 5 && !rlStatus.blocked && (
                         <p className="mt-3 text-xs text-amber-700 text-center">
                             Tentativi rimasti: <strong>{rlStatus.remainingAttempts}</strong> su 5
@@ -408,12 +423,10 @@ export default function Restaurant() {
                         ))}
                     </div>
 
-                    {/* Errore validazione */}
                     {validationError && (
                         <p className="text-red-600 text-sm mb-4 text-center">{validationError}</p>
                     )}
 
-                    {/* Azioni */}
                     <div className="flex flex-col gap-3">
                         <button
                             onClick={handleConfirm}

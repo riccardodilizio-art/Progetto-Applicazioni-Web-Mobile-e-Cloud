@@ -4,14 +4,16 @@ import { weeklyMenu } from '../data/Menu'
 
 // ── Menu ─────────────────────────────────────────────────────────
 export function getMenuForDate(dateStr: string): DayMenu {
-    const jsDay = new Date(dateStr).getDay()
-    const menuIndex = (jsDay + 6) % 7
+    // Parsiamo manualmente per evitare conversioni UTC → locale off-by-one
+    const [year, month, day] = dateStr.split('-').map(Number)
+    const jsDay     = new Date(year, month - 1, day).getDay() // costruttore locale, no UTC
+    const menuIndex = (jsDay + 6) % 7                         // 0=Lun … 6=Dom
     return weeklyMenu[menuIndex]
 }
 
 // ── Date / Soggiorno ─────────────────────────────────────────────
 export function isBeforeCutoff(): boolean {
-    return new Date().getHours() < 24
+    return new Date().getHours() < 18
 }
 
 export function isTodayInStay(checkIn: string, checkOut: string): boolean {
