@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, Navigate } from 'react-router-dom'
 import useAuthUser from 'react-auth-kit/hooks/useAuthUser'
 import useIsAuthenticated from 'react-auth-kit/hooks/useIsAuthenticated'
@@ -34,7 +34,11 @@ function StatusBadge({ status }: { status: keyof typeof statusConfig }) {
     )
 }
 
-function RoomCard({ r }: { r: RoomReservation }) {
+function RoomCard({ r, onCancel }: { r: RoomReservation; onCancel: () => void }) {
+    const [confirming, setConfirming] = useState(false)
+    const today = new Date().toISOString().split('T')[0]
+    const isCancellable = r.status !== 'annullata' && r.checkIn > today
+
     return (
         <div className="bg-white rounded-2xl border border-[#E8C9A0] shadow-sm overflow-hidden">
             <div className="bg-[#FAF0E6] border-b border-[#E8C9A0] px-5 py-4 flex items-center justify-between gap-3">
@@ -63,12 +67,43 @@ function RoomCard({ r }: { r: RoomReservation }) {
                     </p>
                     <p className="text-base font-semibold text-[#3B2010]">€{r.totalPrice.toLocaleString('it-IT')}</p>
                 </div>
+                {isCancellable && (
+                    <div className="pt-3 border-t border-[#E8C9A0]">
+                        {confirming ? (
+                            <div className="flex items-center gap-2">
+                                <span className="text-xs text-[#9A6840] flex-1">Confermi l'annullamento?</span>
+                                <button
+                                    onClick={() => { onCancel(); setConfirming(false) }}
+                                    className="text-xs px-3 py-1.5 rounded-lg bg-red-600 text-white hover:bg-red-700 transition-colors"
+                                >
+                                    Sì, annulla
+                                </button>
+                                <button
+                                    onClick={() => setConfirming(false)}
+                                    className="text-xs px-3 py-1.5 rounded-lg border border-[#C4A070] text-[#6B4828] hover:bg-[#FAF0E6] transition-colors"
+                                >
+                                    Indietro
+                                </button>
+                            </div>
+                        ) : (
+                            <button
+                                onClick={() => setConfirming(true)}
+                                className="text-xs text-red-600 hover:text-red-700 hover:underline transition-colors"
+                            >
+                                Annulla prenotazione
+                            </button>
+                        )}
+                    </div>
+                )}
             </div>
         </div>
     )
 }
 
-function DinnerCard({ d }: { d: DinnerReservation }) {
+function DinnerCard({ d, onCancel }: { d: DinnerReservation; onCancel: () => void }) {
+    const [confirming, setConfirming] = useState(false)
+    const today = new Date().toISOString().split('T')[0]
+    const isCancellable = d.status !== 'annullata' && d.date > today
     return (
         <div className="bg-white rounded-2xl border border-[#E8C9A0] shadow-sm overflow-hidden">
             <div className="bg-[#3B2010] px-5 py-4 flex items-center justify-between gap-3">
@@ -87,22 +122,69 @@ function DinnerCard({ d }: { d: DinnerReservation }) {
                     <span className="text-xs text-[#9A6840] w-14 flex-shrink-0 pt-0.5">Secondo</span>
                     <span className="text-sm text-[#3B2010] leading-snug">{d.secondo}</span>
                 </div>
+                {isCancellable && (
+                    <div className="pt-3 border-t border-[#E8C9A0]">
+                        {confirming ? (
+                            <div className="flex items-center gap-2">
+                                <span className="text-xs text-[#9A6840] flex-1">Confermi l'annullamento?</span>
+                                <button
+                                    onClick={() => { onCancel(); setConfirming(false) }}
+                                    className="text-xs px-3 py-1.5 rounded-lg bg-red-600 text-white hover:bg-red-700 transition-colors"
+                                >
+                                    Sì, annulla
+                                </button>
+                                <button
+                                    onClick={() => setConfirming(false)}
+                                    className="text-xs px-3 py-1.5 rounded-lg border border-[#C4A070] text-[#6B4828] hover:bg-[#FAF0E6] transition-colors"
+                                >
+                                    Indietro
+                                </button>
+                            </div>
+                        ) : (
+                            <button
+                                onClick={() => setConfirming(true)}
+                                className="text-xs text-red-600 hover:text-red-700 hover:underline transition-colors"
+                            >
+                                Annulla prenotazione
+                            </button>
+                        )}
+                    </div>
+                )}
+
             </div>
         </div>
     )
 }
 
 export default function MyReservations() {
-    const user = useAuthUser<UserState>()
-    const isAuthenticated = useIsAuthenticated()
-    const [activeTab, setActiveTab] = useState<Tab>('camere')
+        const user = useAuthUser<UserState>()
+        const isAuthenticated = useIsAuthenticated()
+        const [activeTab, setActiveTab] = useState<Tab>('camere')
 
-    if (!isAuthenticated || user?.role !== 'client') {
-        return <Navigate to="/login" replace />
-    }
+        const [roomReservations, setRoomReservations] = useState<RoomReservation[]>([])
+        const [dinnerReservations, setDinnerReservations] = useState<DinnerReservation[]>([])
 
-    const roomReservations: RoomReservation[] = mockRoomReservations
-    const dinnerReservations: DinnerReservation[] = mockDinnerReservations
+        const handleCancelRoom = (id: string) => {
+            setRoomReservations(prev =>
+                prev.map(r => r.id === id ? { ...r, status: 'annullata' } : r)
+            )
+        }
+
+        const handleCancelDinner = (id: string) => {
+            setDinnerReservations(prev =>
+                prev.map(d => d.id === id ? { ...d, status: 'annullata' } : d)
+            )
+        }
+
+        useEffect(() => {
+            if (!user?.email) return
+            setRoomReservations(mockRoomReservations.filter(r => r.userEmail === user.email))
+            setDinnerReservations(mockDinnerReservations.filter(d => d.userEmail === user.email))
+        }, [user?.email])
+
+        if (!isAuthenticated || user?.role !== 'client') {
+            return <Navigate to="/login" replace />
+        }
 
     const activeRooms = roomReservations.filter((r) => r.status !== 'annullata')
     const activeDinners = dinnerReservations.filter((d) => d.status !== 'annullata')
@@ -159,7 +241,9 @@ export default function MyReservations() {
                                 cta={{ label: 'Esplora le camere', to: '/rooms' }}
                             />
                         ) : (
-                            roomReservations.map((r) => <RoomCard key={r.id} r={r} />)
+                            roomReservations.map((r) => (
+                                <RoomCard key={r.id} r={r} onCancel={() => handleCancelRoom(r.id)} />
+                            ))
                         )}
                     </div>
                 )}
@@ -173,8 +257,10 @@ export default function MyReservations() {
                                 cta={{ label: 'Vai al menu', to: '/menu' }}
                             />
                         ) : (
-                            dinnerReservations.map((d) => <DinnerCard key={d.id} d={d} />)
-                        )}
+                            dinnerReservations.map((d) => (
+                                <DinnerCard key={d.id} d={d} onCancel={() => handleCancelDinner(d.id)} />
+                            ))
+                       )}
                     </div>
                 )}
             </div>

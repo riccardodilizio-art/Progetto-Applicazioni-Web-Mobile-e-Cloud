@@ -2,6 +2,7 @@ import type { RoomType } from './Room'
 
 export interface RoomReservation {
     id: string
+    userEmail: string
     roomName: string
     roomType: RoomType
     checkIn: string // 'YYYY-MM-DD'
@@ -14,6 +15,7 @@ export interface RoomReservation {
 
 export interface DinnerReservation {
     id: string
+    userEmail: string
     date: string // 'YYYY-MM-DD'
     day: string
     primo: string

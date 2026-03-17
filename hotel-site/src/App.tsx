@@ -19,6 +19,7 @@ import Edit from './pages/auth/Edit'
 import MyReservations from './pages/auth/MyReservations'
 import ForgotPassword from './pages/auth/ForgotPassword'
 import ResetPassword  from './pages/auth/ResetPassword'
+import { useApiSetup } from './hooks/useApiSetup'
 
 function ProtectedRoute({ children, redirectTo = '/login' }: { children: React.ReactNode; redirectTo?: string }) {
     const isAuthenticated = useIsAuthenticated()
@@ -31,6 +32,7 @@ function ProtectedRoute({ children, redirectTo = '/login' }: { children: React.R
 }
 
 export default function App() {
+    useApiSetup()
     return (
         <div className="flex flex-col min-h-screen">
             <Navbar />

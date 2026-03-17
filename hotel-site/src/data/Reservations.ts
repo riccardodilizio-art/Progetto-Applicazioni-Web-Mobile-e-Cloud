@@ -3,6 +3,7 @@ import type { RoomReservation, DinnerReservation } from '../types/Reservation'
 export const mockRoomReservations: RoomReservation[] = [
     {
         id: 'R001',
+        userEmail: 'cliente@hotelexcelsior.it',
         roomName: 'Camera Doppia Vista Mare',
         roomType: 'doppia',
         checkIn: '2025-07-14',
@@ -14,6 +15,7 @@ export const mockRoomReservations: RoomReservation[] = [
     },
     {
         id: 'R002',
+        userEmail: 'cliente@hotelexcelsior.it',
         roomName: 'Suite Excelsior',
         roomType: 'suite',
         checkIn: '2025-12-26',
@@ -28,6 +30,7 @@ export const mockRoomReservations: RoomReservation[] = [
 export const mockDinnerReservations: DinnerReservation[] = [
     {
         id: 'D001',
+        userEmail: 'cliente@hotelexcelsior.it',
         date: '2025-07-14',
         day: 'Lunedì',
         primo: "Spaghetti alle Vongole Veraci dell'Adriatico",
@@ -36,6 +39,7 @@ export const mockDinnerReservations: DinnerReservation[] = [
     },
     {
         id: 'D002',
+        userEmail: 'cliente@hotelexcelsior.it',
         date: '2025-07-15',
         day: 'Martedì',
         primo: 'Linguine al Brodetto Pesarese',
@@ -44,6 +48,7 @@ export const mockDinnerReservations: DinnerReservation[] = [
     },
     {
         id: 'D003',
+        userEmail: 'cliente@hotelexcelsior.it',
         date: '2025-07-16',
         day: 'Mercoledì',
         primo: 'Risotto ai Frutti di Mare Adriatici',
