@@ -15,6 +15,7 @@ export default function RoomForm() {
     const navigate = useNavigate()
     const isEdit = id !== undefined
     const existingRoom = isEdit ? rooms.find((r) => r.id === Number(id)) : undefined
+    const [isLoading, setIsLoading] = useState(false)
 
     const [form, setForm] = useState<RoomFormData>(existingRoom ? roomToForm(existingRoom) : EMPTY_ROOM_FORM)
     const [errors, setErrors] = useState<RoomFormErrors>({})
@@ -49,7 +50,7 @@ export default function RoomForm() {
         setForm((prev) => ({ ...prev, images: newImages }))
     }
 
-    function handleSubmit(e: React.FormEvent) {
+    async function handleSubmit(e: React.FormEvent) {
         e.preventDefault()
         const newErrors = validateRoomForm(form)
         if (Object.keys(newErrors).length > 0) {
@@ -57,9 +58,15 @@ export default function RoomForm() {
             document.querySelector('[data-error="true"]')?.scrollIntoView({ behavior: 'smooth', block: 'center' })
             return
         }
-        // TODO: chiamata API
-        navigate('/admin/dashboard')
+        setIsLoading(true)
+        try {
+            // TODO: chiamata API
+            navigate('/admin/dashboard')
+        } finally {
+            setIsLoading(false)
+        }
     }
+
 
     if (isEdit && !existingRoom) {
         return (
@@ -130,10 +137,13 @@ export default function RoomForm() {
                         </Link>
                         <button
                             type="submit"
-                            className="bg-[#3B2010] text-white text-sm font-medium px-8 py-2.5 rounded-lg hover:bg-[#6B4828] transition-colors"
+                            disabled={isLoading}
+                            className={`bg-[#3B2010] text-white text-sm font-medium px-8 py-2.5 rounded-lg transition-colors
+        ${isLoading ? 'opacity-70 cursor-not-allowed' : 'hover:bg-[#6B4828]'}`}
                         >
-                            {isEdit ? 'Salva Modifiche' : 'Crea Camera'}
+                            {isLoading ? 'Salvataggio...' : (isEdit ? 'Salva Modifiche' : 'Crea Camera')}
                         </button>
+
                     </div>
                 </div>
             </form>

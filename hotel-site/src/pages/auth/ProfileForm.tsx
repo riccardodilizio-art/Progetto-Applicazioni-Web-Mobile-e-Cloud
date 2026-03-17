@@ -3,7 +3,7 @@ import type { UserState } from '../../types/User'
 
 type Props = {
     user: UserState
-    onSave: (name: string, surname: string, phone: string) => void
+    onSave: (name: string | undefined, surname: string | undefined, phone: string | undefined) => void
     onCancel: () => void
 }
 
@@ -12,13 +12,20 @@ export default function ProfileForm({ user, onSave, onCancel }: Props) {
     const [surname, setSurname] = useState(user.surname ?? '')
     const [phone, setPhone]     = useState(user.phone ?? '')
     const [saved, setSaved]     = useState(false)
+    const [isLoading, setIsLoading] = useState(false)
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
-        onSave(name, surname, phone)
-        setSaved(true)
-        setTimeout(() => setSaved(false), 3000)
+        setIsLoading(true)
+        try {
+            onSave(name.trim() || undefined, surname.trim() || undefined, phone.trim() || undefined)
+            setSaved(true)
+            setTimeout(() => setSaved(false), 3000)
+        } finally {
+            setIsLoading(false)
+        }
     }
+
 
     return (
         <div className="bg-white rounded-2xl shadow-lg p-8">
@@ -26,10 +33,11 @@ export default function ProfileForm({ user, onSave, onCancel }: Props) {
             <form onSubmit={handleSubmit} className="space-y-5">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                        <label className="block text-sm font-medium text-[#3B2010] mb-1">Nome</label>
+                        <label className="block text-sm font-medium text-[#3B2010] mb-1">
+                            Nome <span className="text-[#9A6840] font-normal">(opzionale)</span>
+                        </label>
                         <input
                             type="text"
-                            required
                             value={name}
                             onChange={(e) => setName(e.target.value)}
                             className="w-full border border-[#C4A070] rounded-lg px-4 py-2
@@ -38,10 +46,11 @@ export default function ProfileForm({ user, onSave, onCancel }: Props) {
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-[#3B2010] mb-1">Cognome</label>
+                        <label className="block text-sm font-medium text-[#3B2010] mb-1">
+                            Cognome <span className="text-[#9A6840] font-normal">(opzionale)</span>
+                        </label>
                         <input
                             type="text"
-                            required
                             value={surname}
                             onChange={(e) => setSurname(e.target.value)}
                             className="w-full border border-[#C4A070] rounded-lg px-4 py-2
@@ -63,7 +72,9 @@ export default function ProfileForm({ user, onSave, onCancel }: Props) {
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-[#3B2010] mb-1">Telefono</label>
+                    <label className="block text-sm font-medium text-[#3B2010] mb-1">
+                        Telefono <span className="text-[#9A6840] font-normal">(opzionale)</span>
+                    </label>
                     <input
                         type="tel"
                         value={phone}
@@ -83,19 +94,22 @@ export default function ProfileForm({ user, onSave, onCancel }: Props) {
                 <div className="flex gap-3 pt-2">
                     <button
                         type="submit"
-                        className="flex-1 bg-[#3B2010] text-white font-medium py-2.5
-                            rounded-lg hover:bg-[#6B4828] transition-colors cursor-pointer"
+                        disabled={isLoading}
+                        className={`flex-1 bg-[#3B2010] text-white font-medium py-2.5 rounded-lg transition-colors
+        ${isLoading ? 'opacity-70 cursor-not-allowed' : 'hover:bg-[#6B4828] cursor-pointer'}`}
                     >
-                        Salva modifiche
+                        {isLoading ? 'Salvataggio...' : 'Salva modifiche'}
                     </button>
                     <button
                         type="button"
                         onClick={onCancel}
-                        className="flex-1 border border-[#C4A070] text-[#6B4828] font-medium
-                            py-2.5 rounded-lg hover:bg-[#FAF5EE] transition-colors cursor-pointer"
+                        disabled={isLoading}
+                        className={`flex-1 border border-[#C4A070] text-[#6B4828] font-medium py-2.5 rounded-lg transition-colors
+        ${isLoading ? 'opacity-70 cursor-not-allowed' : 'hover:bg-[#FAF5EE] cursor-pointer'}`}
                     >
                         Annulla
                     </button>
+
                 </div>
             </form>
         </div>

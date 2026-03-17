@@ -12,6 +12,7 @@ export default function Register() {
     const [password, setPassword] = useState('')
     const [confirmPassword, setConfirmPassword] = useState('')
     const [error, setError] = useState('')
+    const [isLoading, setIsLoading] = useState(false)
 
     const signIn = useSignIn<UserState>()
     const isAuthenticated = useIsAuthenticated()
@@ -21,43 +22,35 @@ export default function Register() {
         return <Navigate to="/profile" replace />
     }
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         setError('')
-
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-        if (!emailRegex.test(email)) {
-            setError('Inserisci un indirizzo email valido')
-            return
-        }
 
         if (password.length < 8) {
             setError('La password deve contenere almeno 8 caratteri')
             return
         }
-
         if (password !== confirmPassword) {
             setError('Le password non coincidono')
             return
         }
 
-        const success = signIn({
-            auth: {
-                token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjbGllbnRAaG90ZWxleGNlbHNpb3IuaXQiLCJyb2xlIjoiY2xpZW50IiwiZXhwIjo5OTk5OTk5OTk5fQ.dGVzdC1zaWduYXR1cmU',
-                type: 'Bearer',
-            },
-            userState: {
-                email,
-                role: 'client',
-                name,
-                surname,
-                phone,
-            },
-        })
-        if (success) {
-            navigate('/')
-        } else {
-            setError('Errore durante la registrazione')
+        setIsLoading(true)
+        try {
+            const success = signIn({
+                auth: {
+                    token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjbGllbnRAaG90ZWxleGNlbHNpb3IuaXQiLCJyb2xlIjoiY2xpZW50IiwiZXhwIjo5OTk5OTk5OTk5fQ.dGVzdC1zaWduYXR1cmU',
+                    type: 'Bearer',
+                },
+                userState: { email, role: 'client', name, surname, phone },
+            })
+            if (success) {
+                navigate('/')
+            } else {
+                setError('Errore durante la registrazione')
+            }
+        } finally {
+            setIsLoading(false)
         }
     }
 
@@ -151,10 +144,13 @@ export default function Register() {
 
                     <button
                         type="submit"
-                        className="w-full bg-[#3B2010] text-white font-medium py-2.5 rounded-lg hover:bg-[#6B4828] transition-colors cursor-pointer"
+                        disabled={isLoading}
+                        className={`w-full bg-[#3B2010] text-white font-medium py-2.5 rounded-lg transition-colors
+        ${isLoading ? 'opacity-70 cursor-not-allowed' : 'hover:bg-[#6B4828] cursor-pointer'}`}
                     >
-                        Registrati
+                        {isLoading ? 'Registrazione in corso...' : 'Registrati'}
                     </button>
+
                 </form>
 
                 <p className="text-center text-sm text-[#6B4828] mt-6">

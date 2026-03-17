@@ -18,7 +18,7 @@ export default function Edit() {
         return <Navigate to="/login" replace />
     }
 
-    const handleSaveProfile = (name: string, surname: string, phone: string) => {
+    const handleSaveProfile = (name: string | undefined, surname: string | undefined, phone: string | undefined) => {
         // TODO: chiamata API per aggiornare il profilo
         const currentToken = (authHeader ?? '').replace('Bearer ', '')
         signIn({

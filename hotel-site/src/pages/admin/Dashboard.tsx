@@ -4,7 +4,7 @@ import useSignOut from 'react-auth-kit/hooks/useSignOut'
 import useAuthUser from 'react-auth-kit/hooks/useAuthUser'
 import { rooms as initialRooms } from '../../data/Rooms'
 import { typeLabels } from '../../data/roomUtils'
-import type { Room } from '../../types/Room'
+import type { Room, RoomType } from '../../types/Room'
 import type { UserState } from '../../types/User'
 import LoadingSpinner from '../../components/LoadingSpinner'
 
@@ -15,6 +15,17 @@ export default function Dashboard() {
     const [rooms, setRooms] = useState<Room[]>(initialRooms)
     const [isLoading] = useState(false)
     const [deleteId, setDeleteId] = useState<number | null>(null)
+    const [searchQuery, setSearchQuery] = useState('')
+    const [filterType, setFilterType] = useState<RoomType | ''>('')
+
+    const filteredRooms = rooms.filter((r) => {
+        const matchesType = filterType === '' || r.type === filterType
+        const matchesSearch =
+            searchQuery === '' ||
+            r.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            String(r.roomNumber).includes(searchQuery)
+        return matchesType && matchesSearch
+    })
 
     const handleLogout = () => {
         signOut()
@@ -77,7 +88,7 @@ export default function Dashboard() {
                 </div>
 
                 {/* Titolo + bottone aggiungi */}
-                <div className="flex justify-between items-center mb-6">
+                <div className="flex justify-between items-center mb-4">
                     <h2 className="text-xl font-semibold text-[#3B2010]">Gestione Camere</h2>
                     <Link
                         to="/admin/rooms/new"
@@ -87,103 +98,126 @@ export default function Dashboard() {
                     </Link>
                 </div>
 
+                {/* Filtri */}
+                <div className="flex flex-col sm:flex-row gap-3 mb-6">
+                    <input
+                        type="text"
+                        placeholder="Cerca per nome o numero camera..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="flex-1 border border-[#C4A070] rounded-lg px-4 py-2 text-sm text-[#3B2010] placeholder-[#C4A070] focus:outline-none focus:ring-2 focus:ring-[#9A6840] focus:border-transparent bg-white"
+                    />
+                    <select
+                        value={filterType}
+                        onChange={(e) => setFilterType(e.target.value as RoomType | '')}
+                        className="border border-[#C4A070] rounded-lg px-4 py-2 text-sm text-[#3B2010] focus:outline-none focus:ring-2 focus:ring-[#9A6840] focus:border-transparent bg-white cursor-pointer"
+                    >
+                        <option value="">Tutti i tipi</option>
+                        {(Object.keys(typeLabels) as RoomType[]).map((type) => (
+                            <option key={type} value={type}>
+                                {typeLabels[type]}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+
                 {/* Tabella camere - Desktop */}
                 <div className="hidden md:block bg-white rounded-xl shadow-sm border border-[#E8C9A0]/50 overflow-hidden">
                     <table className="w-full">
                         <thead>
-                            <tr className="bg-[#FAF5EE] border-b border-[#E8C9A0]/50">
-                                <th className="text-left text-xs font-semibold text-[#9A6840] uppercase tracking-wider px-6 py-3">
-                                    Camera
-                                </th>
-                                <th className="text-left text-xs font-semibold text-[#9A6840] uppercase tracking-wider px-6 py-3">
-                                    Tipo
-                                </th>
-                                <th className="text-left text-xs font-semibold text-[#9A6840] uppercase tracking-wider px-6 py-3">
-                                    Prezzo
-                                </th>
-                                <th className="text-left text-xs font-semibold text-[#9A6840] uppercase tracking-wider px-6 py-3">
-                                    Capacità
-                                </th>
-                                <th className="text-left text-xs font-semibold text-[#9A6840] uppercase tracking-wider px-6 py-3">
-                                    Stato
-                                </th>
-                                <th className="text-right text-xs font-semibold text-[#9A6840] uppercase tracking-wider px-6 py-3">
-                                    Azioni
-                                </th>
-                            </tr>
+                        <tr className="bg-[#FAF5EE] border-b border-[#E8C9A0]/50">
+                            <th className="text-left text-xs font-semibold text-[#9A6840] uppercase tracking-wider px-6 py-3">
+                                Camera
+                            </th>
+                            <th className="text-left text-xs font-semibold text-[#9A6840] uppercase tracking-wider px-6 py-3">
+                                Tipo
+                            </th>
+                            <th className="text-left text-xs font-semibold text-[#9A6840] uppercase tracking-wider px-6 py-3">
+                                Prezzo
+                            </th>
+                            <th className="text-left text-xs font-semibold text-[#9A6840] uppercase tracking-wider px-6 py-3">
+                                Capacità
+                            </th>
+                            <th className="text-left text-xs font-semibold text-[#9A6840] uppercase tracking-wider px-6 py-3">
+                                Stato
+                            </th>
+                            <th className="text-right text-xs font-semibold text-[#9A6840] uppercase tracking-wider px-6 py-3">
+                                Azioni
+                            </th>
+                        </tr>
                         </thead>
                         <tbody>
-                            {rooms.map((room) => (
-                                <tr
-                                    key={room.id}
-                                    className="border-b border-[#E8C9A0]/30 hover:bg-[#FAF5EE]/50 transition-colors"
-                                >
-                                    <td className="px-6 py-4">
-                                        <div className="flex items-center gap-3">
-                                            <img
-                                                src={room.images[0]}
-                                                alt={room.name}
-                                                className="w-12 h-12 rounded-lg object-cover"
-                                            />
-                                            <div>
-                                                <p className="font-medium text-[#3B2010]">{room.name}</p>
-                                                <p className="text-xs text-[#9A6840]">
-                                                    #{room.roomNumber} · Piano {room.floor}
-                                                </p>
-                                            </div>
+                        {filteredRooms.map((room) => (
+                            <tr
+                                key={room.id}
+                                className="border-b border-[#E8C9A0]/30 hover:bg-[#FAF5EE]/50 transition-colors"
+                            >
+                                <td className="px-6 py-4">
+                                    <div className="flex items-center gap-3">
+                                        <img
+                                            src={room.images[0]}
+                                            alt={room.name}
+                                            className="w-12 h-12 rounded-lg object-cover"
+                                        />
+                                        <div>
+                                            <p className="font-medium text-[#3B2010]">{room.name}</p>
+                                            <p className="text-xs text-[#9A6840]">
+                                                #{room.roomNumber} · Piano {room.floor}
+                                            </p>
                                         </div>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <span className="text-sm text-[#6B4828]">{typeLabels[room.type]}</span>
-                                    </td>
-                                    <td className="px-6 py-4">
+                                    </div>
+                                </td>
+                                <td className="px-6 py-4">
+                                    <span className="text-sm text-[#6B4828]">{typeLabels[room.type]}</span>
+                                </td>
+                                <td className="px-6 py-4">
                                         <span className="text-sm font-semibold text-[#3B2010]">
                                             €{room.pricePerNight}
                                         </span>
-                                        <span className="text-xs text-[#9A6840]"> /notte</span>
-                                    </td>
-                                    <td className="px-6 py-4">
+                                    <span className="text-xs text-[#9A6840]"> /notte</span>
+                                </td>
+                                <td className="px-6 py-4">
                                         <span className="text-sm text-[#6B4828]">
                                             {room.capacity} {room.capacity === 1 ? 'ospite' : 'ospiti'}
                                         </span>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <button
-                                            onClick={() => handleToggleAvailability(room.id)}
-                                            className={`text-xs font-semibold px-3 py-1 rounded-full cursor-pointer transition-colors ${
-                                                room.available
-                                                    ? 'bg-green-100 text-green-700 hover:bg-green-200'
-                                                    : 'bg-red-100 text-red-700 hover:bg-red-200'
-                                            }`}
+                                </td>
+                                <td className="px-6 py-4">
+                                    <button
+                                        onClick={() => handleToggleAvailability(room.id)}
+                                        className={`text-xs font-semibold px-3 py-1 rounded-full cursor-pointer transition-colors ${
+                                            room.available
+                                                ? 'bg-green-100 text-green-700 hover:bg-green-200'
+                                                : 'bg-red-100 text-red-700 hover:bg-red-200'
+                                        }`}
+                                    >
+                                        {room.available ? 'Disponibile' : 'Non disponibile'}
+                                    </button>
+                                </td>
+                                <td className="px-6 py-4 text-right">
+                                    <div className="flex justify-end gap-2">
+                                        <Link
+                                            to={`/admin/rooms/edit/${room.id}`}
+                                            className="text-sm text-[#6B4828] border border-[#C4A070] px-3 py-1.5 rounded-lg hover:bg-[#FAF5EE] transition-colors"
                                         >
-                                            {room.available ? 'Disponibile' : 'Non disponibile'}
+                                            Modifica
+                                        </Link>
+                                        <button
+                                            onClick={() => setDeleteId(room.id)}
+                                            className="text-sm text-red-600 border border-red-200 px-3 py-1.5 rounded-lg hover:bg-red-50 transition-colors cursor-pointer"
+                                        >
+                                            Elimina
                                         </button>
-                                    </td>
-                                    <td className="px-6 py-4 text-right">
-                                        <div className="flex justify-end gap-2">
-                                            <Link
-                                                to={`/admin/rooms/edit/${room.id}`}
-                                                className="text-sm text-[#6B4828] border border-[#C4A070] px-3 py-1.5 rounded-lg hover:bg-[#FAF5EE] transition-colors"
-                                            >
-                                                Modifica
-                                            </Link>
-                                            <button
-                                                onClick={() => setDeleteId(room.id)}
-                                                className="text-sm text-red-600 border border-red-200 px-3 py-1.5 rounded-lg hover:bg-red-50 transition-colors cursor-pointer"
-                                            >
-                                                Elimina
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))}
+                                    </div>
+                                </td>
+                            </tr>
+                        ))}
                         </tbody>
                     </table>
                 </div>
 
                 {/* Card camere - Mobile */}
                 <div className="md:hidden space-y-4">
-                    {rooms.map((room) => (
+                    {filteredRooms.map((room) => (
                         <div key={room.id} className="bg-white rounded-xl shadow-sm border border-[#E8C9A0]/50 p-4">
                             <div className="flex gap-4">
                                 <img
@@ -229,12 +263,26 @@ export default function Dashboard() {
                 </div>
 
                 {/* Messaggio lista vuota */}
-                {rooms.length === 0 && (
+                {filteredRooms.length === 0 && (
                     <div className="text-center py-16">
-                        <p className="text-[#9A6840] text-lg mb-4">Nessuna camera presente</p>
-                        <Link to="/admin/rooms/new" className="text-[#6B4828] underline hover:opacity-70 transition">
-                            Aggiungi la prima camera
-                        </Link>
+                        <p className="text-[#9A6840] text-lg mb-4">
+                            {rooms.length === 0 ? 'Nessuna camera presente' : 'Nessuna camera corrisponde ai filtri'}
+                        </p>
+                        {rooms.length === 0 ? (
+                            <Link
+                                to="/admin/rooms/new"
+                                className="text-[#6B4828] underline hover:opacity-70 transition"
+                            >
+                                Aggiungi la prima camera
+                            </Link>
+                        ) : (
+                            <button
+                                onClick={() => { setSearchQuery(''); setFilterType('') }}
+                                className="text-[#6B4828] underline hover:opacity-70 transition cursor-pointer"
+                            >
+                                Rimuovi filtri
+                            </button>
+                        )}
                     </div>
                 )}
             </div>

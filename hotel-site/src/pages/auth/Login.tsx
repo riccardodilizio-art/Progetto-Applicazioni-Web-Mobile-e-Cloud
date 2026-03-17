@@ -19,6 +19,8 @@ export default function Login() {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [error, setError] = useState('')
+    const [isLoading, setIsLoading] = useState(false)
+
 
     const signIn = useSignIn<UserState>()
     const isAuthenticated = useIsAuthenticated()
@@ -28,35 +30,39 @@ export default function Login() {
         return <Navigate to="/" replace />
     }
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         setError('')
-
-        const client = mockClients.find((c) => c.email === email && c.password === password)
-
-        if (client) {
-            const success = signIn({
-                auth: {
-                    token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjbGllbnRAaG90ZWxleGNlbHNpb3IuaXQiLCJyb2xlIjoiY2xpZW50IiwiZXhwIjo5OTk5OTk5OTk5fQ.dGVzdC1zaWduYXR1cmU',
-                    type: 'Bearer',
-                },
-                userState: {
-                    email: client.email,
-                    role: 'client',
-                    name: client.name,
-                    surname: client.surname,
-                    phone: client.phone,
-                },
-            })
-            if (success) {
-                navigate('/profile')
+        setIsLoading(true)
+        try {
+            const client = mockClients.find((c) => c.email === email && c.password === password)
+            if (client) {
+                const success = signIn({
+                    auth: {
+                        token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjbGllbnRAaG90ZWxleGNlbHNpb3IuaXQiLCJyb2xlIjoiY2xpZW50IiwiZXhwIjo5OTk5OTk5OTk5fQ.dGVzdC1zaWduYXR1cmU',
+                        type: 'Bearer',
+                    },
+                    userState: {
+                        email: client.email,
+                        role: 'client',
+                        name: client.name,
+                        surname: client.surname,
+                        phone: client.phone,
+                    },
+                })
+                if (success) {
+                    navigate('/profile')
+                } else {
+                    setError('Errore durante il login')
+                }
             } else {
-                setError('Errore durante il login')
+                setError('Email o password non validi')
             }
-        } else {
-            setError('Email o password non validi')
+        } finally {
+            setIsLoading(false)
         }
     }
+
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-[#FAF5EE] px-4">
@@ -99,10 +105,13 @@ export default function Login() {
 
                     <button
                         type="submit"
-                        className="w-full bg-[#3B2010] text-white font-medium py-2.5 rounded-lg hover:bg-[#6B4828] transition-colors cursor-pointer"
+                        disabled={isLoading}
+                        className={`w-full bg-[#3B2010] text-white font-medium py-2.5 rounded-lg transition-colors
+        ${isLoading ? 'opacity-70 cursor-not-allowed' : 'hover:bg-[#6B4828] cursor-pointer'}`}
                     >
-                        Accedi
+                        {isLoading ? 'Accesso in corso...' : 'Accedi'}
                     </button>
+
                 </form>
 
                 <p className="text-center text-sm text-[#6B4828] mt-6">
