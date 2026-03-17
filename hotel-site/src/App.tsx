@@ -18,7 +18,7 @@ import Profile from './pages/auth/Profile'
 import Edit from './pages/auth/Edit'
 import MyReservations from './pages/auth/MyReservations'
 import ForgotPassword from './pages/auth/ForgotPassword'
-import ResetPassword  from './pages/auth/ResetPassword'
+import ResetPassword from './pages/auth/ResetPassword'
 import { useApiSetup } from './hooks/useApiSetup'
 
 function ProtectedRoute({ children, redirectTo = '/login' }: { children: React.ReactNode; redirectTo?: string }) {
@@ -50,7 +50,7 @@ export default function App() {
                     <Route path="/login" element={<ClientLogin />} />
                     <Route path="/register" element={<Register />} />
                     <Route path="/forgot-password" element={<ForgotPassword />} />
-                    <Route path="/reset-password"  element={<ResetPassword />} />
+                    <Route path="/reset-password" element={<ResetPassword />} />
                     <Route
                         path="/profile"
                         element={

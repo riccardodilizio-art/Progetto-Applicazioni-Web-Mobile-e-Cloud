@@ -8,10 +8,10 @@ type Props = {
 }
 
 export default function ProfileForm({ user, onSave, onCancel }: Props) {
-    const [name, setName]       = useState(user.name ?? '')
+    const [name, setName] = useState(user.name ?? '')
     const [surname, setSurname] = useState(user.surname ?? '')
-    const [phone, setPhone]     = useState(user.phone ?? '')
-    const [saved, setSaved]     = useState(false)
+    const [phone, setPhone] = useState(user.phone ?? '')
+    const [saved, setSaved] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -25,7 +25,6 @@ export default function ProfileForm({ user, onSave, onCancel }: Props) {
             setIsLoading(false)
         }
     }
-
 
     return (
         <div className="bg-white rounded-2xl shadow-lg p-8">
@@ -109,7 +108,6 @@ export default function ProfileForm({ user, onSave, onCancel }: Props) {
                     >
                         Annulla
                     </button>
-
                 </div>
             </form>
         </div>

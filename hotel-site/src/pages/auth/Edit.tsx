@@ -8,10 +8,10 @@ import PasswordForm from './PasswordForm'
 import useAuthHeader from 'react-auth-kit/hooks/useAuthHeader'
 
 export default function Edit() {
-    const user            = useAuthUser<UserState>()
+    const user = useAuthUser<UserState>()
     const isAuthenticated = useIsAuthenticated()
-    const navigate        = useNavigate()
-    const signIn          = useSignIn<UserState>()
+    const navigate = useNavigate()
+    const signIn = useSignIn<UserState>()
     const authHeader = useAuthHeader()
 
     if (!isAuthenticated || !user) {
@@ -42,14 +42,8 @@ export default function Edit() {
     return (
         <div className="min-h-screen bg-[#FAF5EE] px-4 py-12">
             <div className="max-w-2xl mx-auto space-y-6">
-                <h1 className="font-heading text-3xl font-semibold text-[#3B2010] text-center">
-                    Modifica Profilo
-                </h1>
-                <ProfileForm
-                    user={user}
-                    onSave={handleSaveProfile}
-                    onCancel={() => navigate(-1)}
-                />
+                <h1 className="font-heading text-3xl font-semibold text-[#3B2010] text-center">Modifica Profilo</h1>
+                <ProfileForm user={user} onSave={handleSaveProfile} onCancel={() => navigate(-1)} />
                 <PasswordForm
                     onRequest2FA={handleRequest2FA}
                     onSave={handleSavePassword}

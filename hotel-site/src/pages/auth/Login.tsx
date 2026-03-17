@@ -21,7 +21,6 @@ export default function Login() {
     const [error, setError] = useState('')
     const [isLoading, setIsLoading] = useState(false)
 
-
     const signIn = useSignIn<UserState>()
     const isAuthenticated = useIsAuthenticated()
     const navigate = useNavigate()
@@ -62,7 +61,6 @@ export default function Login() {
             setIsLoading(false)
         }
     }
-
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-[#FAF5EE] px-4">
@@ -111,7 +109,6 @@ export default function Login() {
                     >
                         {isLoading ? 'Accesso in corso...' : 'Accedi'}
                     </button>
-
                 </form>
 
                 <p className="text-center text-sm text-[#6B4828] mt-6">

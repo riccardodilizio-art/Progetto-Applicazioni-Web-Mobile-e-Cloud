@@ -17,22 +17,34 @@ function EyeIcon({ visible }: { visible: boolean }) {
     return (
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             {visible ? (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                      d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7
+                <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7
                        a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243
                        M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29
                        m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0
                        0112 5c4.478 0 8.268 2.943 9.543 7
-                       a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                       a10.025 10.025 0 01-4.132 5.411m0 0L21 21"
+                />
             ) : (
                 <>
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                          d="M2.458 12C3.732 7.943 7.523 5 12 5
+                    <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                    />
+                    <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M2.458 12C3.732 7.943 7.523 5 12 5
                            c4.478 0 8.268 2.943 9.542 7
                            -1.274 4.057-5.064 7-9.542 7
-                           -4.477 0-8.268-2.943-9.542-7z" />
+                           -4.477 0-8.268-2.943-9.542-7z"
+                    />
                 </>
             )}
         </svg>
@@ -67,10 +79,13 @@ function PasswordField({ label, value, show, required = true, onChange, onToggle
                         text-[#3B2010] focus:outline-none focus:ring-2 focus:ring-[#9A6840]
                         focus:border-transparent"
                 />
-                <button type="button" onClick={onToggleShow}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9A6840]
+                <button
+                    type="button"
+                    onClick={onToggleShow}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9A6840]
                         hover:text-[#3B2010] transition-colors cursor-pointer"
-                        aria-label={show ? 'Nascondi' : 'Mostra'}>
+                    aria-label={show ? 'Nascondi' : 'Mostra'}
+                >
                     <EyeIcon visible={show} />
                 </button>
             </div>
@@ -82,13 +97,16 @@ function PasswordField({ label, value, show, required = true, onChange, onToggle
 function getStrength(pwd: string) {
     if (!pwd) return { level: 0, label: '', color: '' }
     const score = [
-        pwd.length >= 8, /[a-zA-Z]/.test(pwd), /[0-9]/.test(pwd),
-        /[^a-zA-Z0-9]/.test(pwd), pwd.length >= 12,
+        pwd.length >= 8,
+        /[a-zA-Z]/.test(pwd),
+        /[0-9]/.test(pwd),
+        /[^a-zA-Z0-9]/.test(pwd),
+        pwd.length >= 12,
     ].filter(Boolean).length
-    if (score <= 2) return { level: 1, label: 'Debole',     color: 'bg-red-400'    }
-    if (score === 3) return { level: 2, label: 'Media',      color: 'bg-yellow-400' }
-    if (score === 4) return { level: 3, label: 'Forte',      color: 'bg-green-500'  }
-    return             { level: 4, label: 'Molto forte', color: 'bg-green-700'  }
+    if (score <= 2) return { level: 1, label: 'Debole', color: 'bg-red-400' }
+    if (score === 3) return { level: 2, label: 'Media', color: 'bg-yellow-400' }
+    if (score === 4) return { level: 3, label: 'Forte', color: 'bg-green-500' }
+    return { level: 4, label: 'Molto forte', color: 'bg-green-700' }
 }
 
 function StrengthBar({ password }: { password: string }) {
@@ -97,12 +115,17 @@ function StrengthBar({ password }: { password: string }) {
     return (
         <div className="mt-1.5">
             <div className="flex gap-1 mb-1">
-                {[1, 2, 3, 4].map(i => (
-                    <div key={i} className={`h-1 flex-1 rounded-full transition-all duration-300
-                        ${i <= level ? color : 'bg-[#E8C9A0]'}`} />
+                {[1, 2, 3, 4].map((i) => (
+                    <div
+                        key={i}
+                        className={`h-1 flex-1 rounded-full transition-all duration-300
+                        ${i <= level ? color : 'bg-[#E8C9A0]'}`}
+                    />
                 ))}
             </div>
-            <p className={`text-xs ${level === 1 ? 'text-red-500' : level <= 2 ? 'text-yellow-600' : 'text-green-600'}`}>
+            <p
+                className={`text-xs ${level === 1 ? 'text-red-500' : level <= 2 ? 'text-yellow-600' : 'text-green-600'}`}
+            >
                 {label}
             </p>
         </div>
@@ -118,19 +141,21 @@ type OtpStepProps = {
 }
 
 function OtpStep({ onConfirm, onResend, onBack, error }: OtpStepProps) {
-    const [otp, setOtp]           = useState('')
-    const [seconds, setSeconds]   = useState(OTP_EXPIRY_SEC)
+    const [otp, setOtp] = useState('')
+    const [seconds, setSeconds] = useState(OTP_EXPIRY_SEC)
     const [resending, setResending] = useState(false)
     const inputRef = useRef<HTMLInputElement>(null)
 
     // countdown
     useEffect(() => {
         if (seconds <= 0) return
-        const id = setInterval(() => setSeconds(s => s - 1), 1000)
+        const id = setInterval(() => setSeconds((s) => s - 1), 1000)
         return () => clearInterval(id)
     }, [seconds])
 
-    useEffect(() => { inputRef.current?.focus() }, [])
+    useEffect(() => {
+        inputRef.current?.focus()
+    }, [])
 
     const handleResend = async () => {
         setResending(true)
@@ -153,14 +178,16 @@ function OtpStep({ onConfirm, onResend, onBack, error }: OtpStepProps) {
                 {/* icona lock */}
                 <div className="mx-auto w-12 h-12 rounded-full bg-[#F5ECD7] flex items-center justify-center mb-3">
                     <svg className="w-6 h-6 text-[#9A6840]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                              d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                        <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                        />
                     </svg>
                 </div>
                 <p className="text-sm text-[#3B2010] font-medium">Codice di verifica inviato</p>
-                <p className="text-xs text-[#9A6840] mt-1">
-                    Controlla la tua email e inserisci il codice a 6 cifre.
-                </p>
+                <p className="text-xs text-[#9A6840] mt-1">Controlla la tua email e inserisci il codice a 6 cifre.</p>
             </div>
 
             <div>
@@ -173,7 +200,7 @@ function OtpStep({ onConfirm, onResend, onBack, error }: OtpStepProps) {
                     maxLength={6}
                     required
                     value={otp}
-                    onChange={e => setOtp(e.target.value.replace(/\D/g, ''))}
+                    onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
                     placeholder="123456"
                     className="w-full border border-[#C4A070] rounded-lg px-4 py-2
                         text-[#3B2010] text-center tracking-[0.4em] text-lg font-mono
@@ -183,9 +210,7 @@ function OtpStep({ onConfirm, onResend, onBack, error }: OtpStepProps) {
                 {/* countdown / scaduto */}
                 <div className="flex items-center justify-between mt-2">
                     <p className={`text-xs ${expired ? 'text-red-500' : 'text-[#9A6840]'}`}>
-                        {expired
-                            ? 'Codice scaduto.'
-                            : `Scade tra ${seconds}s`}
+                        {expired ? 'Codice scaduto.' : `Scade tra ${seconds}s`}
                     </p>
                     <button
                         type="button"
@@ -200,9 +225,7 @@ function OtpStep({ onConfirm, onResend, onBack, error }: OtpStepProps) {
             </div>
 
             {error && (
-                <p className="text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg px-4 py-2">
-                    {error}
-                </p>
+                <p className="text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg px-4 py-2">{error}</p>
             )}
 
             <button
@@ -215,9 +238,12 @@ function OtpStep({ onConfirm, onResend, onBack, error }: OtpStepProps) {
                 Conferma
             </button>
 
-            <button type="button" onClick={onBack}
-                    className="w-full text-sm text-[#9A6840] hover:text-[#3B2010] hover:underline
-                    transition-colors cursor-pointer">
+            <button
+                type="button"
+                onClick={onBack}
+                className="w-full text-sm text-[#9A6840] hover:text-[#3B2010] hover:underline
+                    transition-colors cursor-pointer"
+            >
                 ← Torna indietro
             </button>
         </form>
@@ -226,27 +252,29 @@ function OtpStep({ onConfirm, onResend, onBack, error }: OtpStepProps) {
 
 // ── Componente principale ──────────────────────────────────
 export default function PasswordForm({ onRequest2FA, onSave, onForgotPassword }: Props) {
-    const [step, setStep]     = useState<Step>('form')
+    const [step, setStep] = useState<Step>('form')
     const [fields, setFields] = useState<Fields>({ current: '', next: '', confirm: '' })
-    const [show, setShow]     = useState<Visibility>({ current: false, next: false, confirm: false })
-    const [error, setError]   = useState('')
-    const [saved, setSaved]   = useState(false)
+    const [show, setShow] = useState<Visibility>({ current: false, next: false, confirm: false })
+    const [error, setError] = useState('')
+    const [saved, setSaved] = useState(false)
     const [loading, setLoading] = useState(false)
 
     const forgotMode = fields.current === '' && (fields.next !== '' || fields.confirm !== '')
 
     const handleChange = (key: keyof Fields) => (e: React.ChangeEvent<HTMLInputElement>) =>
-        setFields(prev => ({ ...prev, [key]: e.target.value }))
+        setFields((prev) => ({ ...prev, [key]: e.target.value }))
 
-    const handleToggle = (key: keyof Fields) =>
-        setShow(prev => ({ ...prev, [key]: !prev[key] }))
+    const handleToggle = (key: keyof Fields) => setShow((prev) => ({ ...prev, [key]: !prev[key] }))
 
     // Step 1 → richiede il codice OTP al backend
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         setError('')
 
-        if (forgotMode) { onForgotPassword(); return }
+        if (forgotMode) {
+            onForgotPassword()
+            return
+        }
 
         if (fields.next.length < 8) {
             setError('La nuova password deve essere di almeno 8 caratteri.')
@@ -287,7 +315,10 @@ export default function PasswordForm({ onRequest2FA, onSave, onForgotPassword }:
                 <OtpStep
                     onConfirm={handleOtpConfirm}
                     onResend={() => onRequest2FA(fields.current, fields.next)}
-                    onBack={() => { setStep('form'); setError('') }}
+                    onBack={() => {
+                        setStep('form')
+                        setError('')
+                    }}
                     error={error}
                 />
             ) : (
@@ -300,8 +331,11 @@ export default function PasswordForm({ onRequest2FA, onSave, onForgotPassword }:
                         onChange={handleChange('current')}
                         onToggleShow={() => handleToggle('current')}
                         hint={
-                            <button type="button" onClick={onForgotPassword}
-                                    className="text-xs text-[#9A6840] hover:text-[#3B2010] hover:underline transition-colors">
+                            <button
+                                type="button"
+                                onClick={onForgotPassword}
+                                className="text-xs text-[#9A6840] hover:text-[#3B2010] hover:underline transition-colors"
+                            >
                                 Password dimenticata?
                             </button>
                         }

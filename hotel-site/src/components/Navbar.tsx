@@ -21,25 +21,22 @@ export default function Navbar() {
         return () => window.removeEventListener('scroll', handleScroll)
     }, [])
 
-
     const isActive = (path: string) => location.pathname === path
-    const isAdmin  = isAuthenticated && user?.role === 'admin'
+    const isAdmin = isAuthenticated && user?.role === 'admin'
 
     const navLinks = [
-        { to: '/',        label: 'Home'        },
-        { to: '/rooms',   label: 'Camere'      },
-        { to: '/menu',    label: 'Ristorante'  },
-        { to: '/contacts',label: 'Contatti'    },
+        { to: '/', label: 'Home' },
+        { to: '/rooms', label: 'Camere' },
+        { to: '/menu', label: 'Ristorante' },
+        { to: '/contacts', label: 'Contatti' },
     ]
 
     const clientMenuItems = [
         { to: '/prenotazioni', label: 'Le mie prenotazioni' },
-        { to: '/profile/edit',         label: 'Modifica dati'       },
+        { to: '/profile/edit', label: 'Modifica dati' },
     ]
 
-    const adminMenuItems = [
-        { to: '/admin/dashboard', label: 'Dashboard' },
-    ]
+    const adminMenuItems = [{ to: '/admin/dashboard', label: 'Dashboard' }]
 
     const mobileUserItems = isAdmin ? adminMenuItems : clientMenuItems
 
@@ -52,9 +49,10 @@ export default function Navbar() {
     return (
         <nav
             className={`sticky top-0 z-50 transition-all duration-500 backdrop-blur-md
-            ${scrolled
-                ? 'bg-[#E8C9A0]/60 shadow-sm border-b border-[#C4A070]/30'
-                : 'bg-[#E8C9A0]/30 border-b border-[#C4A070]/20'
+            ${
+                scrolled
+                    ? 'bg-[#E8C9A0]/60 shadow-sm border-b border-[#C4A070]/30'
+                    : 'bg-[#E8C9A0]/30 border-b border-[#C4A070]/20'
             }`}
         >
             <div className="max-w-7xl mx-auto px-6 flex items-center justify-between py-4">
@@ -81,10 +79,11 @@ export default function Navbar() {
                             className={`text-[0.75rem] tracking-[0.18em] uppercase font-normal relative pb-0.5
                                 after:absolute after:bottom-0 after:left-0 after:h-px after:bg-[#9A6840]
                                 after:transition-all after:duration-300 transition-colors duration-300
-                                ${isActive(to)
-                                ? 'text-[#3B2010] after:w-full'
-                                : 'text-[#6B4828] hover:text-[#3B2010] after:w-0 hover:after:w-full'
-                            }`}
+                                ${
+                                    isActive(to)
+                                        ? 'text-[#3B2010] after:w-full'
+                                        : 'text-[#6B4828] hover:text-[#3B2010] after:w-0 hover:after:w-full'
+                                }`}
                         >
                             {label}
                         </Link>
@@ -112,12 +111,18 @@ export default function Navbar() {
                     onClick={() => setIsOpen(!isOpen)}
                     aria-label="Menu"
                 >
-                    <span className={`block w-6 h-px bg-[#3B2010] transition-all duration-300 origin-center
-                        ${isOpen ? 'translate-y-[7px] rotate-45' : ''}`} />
-                    <span className={`block w-6 h-px bg-[#3B2010] transition-all duration-300
-                        ${isOpen ? 'opacity-0' : ''}`} />
-                    <span className={`block w-6 h-px bg-[#3B2010] transition-all duration-300 origin-center
-                        ${isOpen ? '-translate-y-[7px] -rotate-45' : ''}`} />
+                    <span
+                        className={`block w-6 h-px bg-[#3B2010] transition-all duration-300 origin-center
+                        ${isOpen ? 'translate-y-[7px] rotate-45' : ''}`}
+                    />
+                    <span
+                        className={`block w-6 h-px bg-[#3B2010] transition-all duration-300
+                        ${isOpen ? 'opacity-0' : ''}`}
+                    />
+                    <span
+                        className={`block w-6 h-px bg-[#3B2010] transition-all duration-300 origin-center
+                        ${isOpen ? '-translate-y-[7px] -rotate-45' : ''}`}
+                    />
                 </button>
             </div>
 

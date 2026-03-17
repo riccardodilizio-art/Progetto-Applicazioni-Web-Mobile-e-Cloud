@@ -2,8 +2,8 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
 export default function ForgotPassword() {
-    const [email, setEmail]   = useState('')
-    const [sent, setSent]     = useState(false)
+    const [email, setEmail] = useState('')
+    const [sent, setSent] = useState(false)
     const [loading, setLoading] = useState(false)
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -33,17 +33,28 @@ export default function ForgotPassword() {
                     <div className="text-center space-y-4">
                         <div className="mx-auto w-14 h-14 rounded-full bg-[#F5ECD7] flex items-center justify-center">
                             {/* icona email */}
-                            <svg className="w-7 h-7 text-[#9A6840]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                                      d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                            <svg
+                                className="w-7 h-7 text-[#9A6840]"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                                />
                             </svg>
                         </div>
                         <p className="text-sm text-[#3B2010] font-medium">Email inviata!</p>
                         <p className="text-xs text-[#9A6840]">
                             Controlla la tua casella di posta. Il link scade tra 30 minuti.
                         </p>
-                        <Link to="/login"
-                              className="block text-sm text-[#9A6840] hover:text-[#3B2010] hover:underline transition-colors">
+                        <Link
+                            to="/login"
+                            className="block text-sm text-[#9A6840] hover:text-[#3B2010] hover:underline transition-colors"
+                        >
                             ← Torna al login
                         </Link>
                     </div>
@@ -55,7 +66,7 @@ export default function ForgotPassword() {
                                 type="email"
                                 required
                                 value={email}
-                                onChange={e => setEmail(e.target.value)}
+                                onChange={(e) => setEmail(e.target.value)}
                                 placeholder="tuaemail@esempio.it"
                                 className="w-full border border-[#C4A070] rounded-lg px-4 py-2
                                     text-[#3B2010] placeholder-[#C4A070] focus:outline-none

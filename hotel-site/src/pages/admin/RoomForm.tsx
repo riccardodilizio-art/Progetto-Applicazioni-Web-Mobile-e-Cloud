@@ -67,7 +67,6 @@ export default function RoomForm() {
         }
     }
 
-
     if (isEdit && !existingRoom) {
         return (
             <div className="min-h-screen bg-[#FAF5EE] flex items-center justify-center">
@@ -141,9 +140,8 @@ export default function RoomForm() {
                             className={`bg-[#3B2010] text-white text-sm font-medium px-8 py-2.5 rounded-lg transition-colors
         ${isLoading ? 'opacity-70 cursor-not-allowed' : 'hover:bg-[#6B4828]'}`}
                         >
-                            {isLoading ? 'Salvataggio...' : (isEdit ? 'Salva Modifiche' : 'Crea Camera')}
+                            {isLoading ? 'Salvataggio...' : isEdit ? 'Salva Modifiche' : 'Crea Camera'}
                         </button>
-
                     </div>
                 </div>
             </form>

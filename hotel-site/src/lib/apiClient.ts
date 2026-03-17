@@ -5,10 +5,7 @@ export function registerUnauthorizedHandler(fn: () => void) {
     onUnauthorized = fn
 }
 
-export async function apiFetch<T = unknown>(
-    path: string,
-    options: RequestInit = {}
-): Promise<T> {
+export async function apiFetch<T = unknown>(path: string, options: RequestInit = {}): Promise<T> {
     const baseUrl = import.meta.env.VITE_API_URL ?? '/api'
 
     const res = await fetch(`${baseUrl}${path}`, {

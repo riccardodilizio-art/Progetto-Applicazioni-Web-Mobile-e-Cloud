@@ -150,7 +150,6 @@ export default function Register() {
                     >
                         {isLoading ? 'Registrazione in corso...' : 'Registrati'}
                     </button>
-
                 </form>
 
                 <p className="text-center text-sm text-[#6B4828] mt-6">

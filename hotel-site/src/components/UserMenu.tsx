@@ -10,12 +10,10 @@ type Props = {
 
 const clientItems = [
     { to: '/prenotazioni', label: 'Le mie prenotazioni' },
-    { to: '/profile/edit',         label: 'Modifica dati'       },
+    { to: '/profile/edit', label: 'Modifica dati' },
 ]
 
-const adminItems = [
-    { to: '/admin/dashboard', label: 'Dashboard' },
-]
+const adminItems = [{ to: '/admin/dashboard', label: 'Dashboard' }]
 
 export default function UserMenu({ user, role }: Props) {
     const [open, setOpen] = useState(false)
@@ -45,30 +43,41 @@ export default function UserMenu({ user, role }: Props) {
         <div className="relative" ref={ref}>
             {/* Bottone trigger */}
             <button
-                onClick={() => setOpen(prev => !prev)}
+                onClick={() => setOpen((prev) => !prev)}
                 className="flex items-center gap-2.5 text-[#FAF0E6] bg-[#3B2010]/80 px-4 py-2
                     border border-[#3B2010]/60 hover:bg-[#3B2010] transition-all duration-300 cursor-pointer"
                 aria-expanded={open}
                 aria-haspopup="true"
             >
-                <span className="w-6 h-6 rounded-full bg-[#9A6840] flex items-center justify-center
-                    text-[0.6rem] font-semibold tracking-wide text-white select-none">
-                    {user.name?.[0]?.toUpperCase()}{user.surname?.[0]?.toUpperCase()}
+                <span
+                    className="w-6 h-6 rounded-full bg-[#9A6840] flex items-center justify-center
+                    text-[0.6rem] font-semibold tracking-wide text-white select-none"
+                >
+                    {user.name?.[0]?.toUpperCase()}
+                    {user.surname?.[0]?.toUpperCase()}
                 </span>
                 <span className="flex flex-col gap-[3px]">
-                    <span className={`block w-4 h-px bg-[#FAF0E6] transition-all duration-300 origin-center
-                        ${open ? 'translate-y-[4px] rotate-45' : ''}`} />
-                    <span className={`block w-4 h-px bg-[#FAF0E6] transition-all duration-300
-                        ${open ? 'opacity-0' : ''}`} />
-                    <span className={`block w-4 h-px bg-[#FAF0E6] transition-all duration-300 origin-center
-                        ${open ? '-translate-y-[4px] -rotate-45' : ''}`} />
+                    <span
+                        className={`block w-4 h-px bg-[#FAF0E6] transition-all duration-300 origin-center
+                        ${open ? 'translate-y-[4px] rotate-45' : ''}`}
+                    />
+                    <span
+                        className={`block w-4 h-px bg-[#FAF0E6] transition-all duration-300
+                        ${open ? 'opacity-0' : ''}`}
+                    />
+                    <span
+                        className={`block w-4 h-px bg-[#FAF0E6] transition-all duration-300 origin-center
+                        ${open ? '-translate-y-[4px] -rotate-45' : ''}`}
+                    />
                 </span>
             </button>
 
             {/* Dropdown */}
             {open && (
-                <div className="absolute right-0 mt-2 w-52 bg-white border border-[#E8C9A0]
-                    rounded-xl shadow-lg overflow-hidden z-50">
+                <div
+                    className="absolute right-0 mt-2 w-52 bg-white border border-[#E8C9A0]
+                    rounded-xl shadow-lg overflow-hidden z-50"
+                >
                     {/* Nome utente — non cliccabile */}
                     <div className="px-4 py-3 border-b border-[#E8C9A0] bg-[#FAF5EE]">
                         <p className="text-[0.6rem] text-[#9A6840] uppercase tracking-widest mb-0.5">

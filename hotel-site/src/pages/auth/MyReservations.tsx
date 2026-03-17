@@ -73,7 +73,10 @@ function RoomCard({ r, onCancel }: { r: RoomReservation; onCancel: () => void })
                             <div className="flex items-center gap-2">
                                 <span className="text-xs text-[#9A6840] flex-1">Confermi l'annullamento?</span>
                                 <button
-                                    onClick={() => { onCancel(); setConfirming(false) }}
+                                    onClick={() => {
+                                        onCancel()
+                                        setConfirming(false)
+                                    }}
                                     className="text-xs px-3 py-1.5 rounded-lg bg-red-600 text-white hover:bg-red-700 transition-colors"
                                 >
                                     Sì, annulla
@@ -128,7 +131,10 @@ function DinnerCard({ d, onCancel }: { d: DinnerReservation; onCancel: () => voi
                             <div className="flex items-center gap-2">
                                 <span className="text-xs text-[#9A6840] flex-1">Confermi l'annullamento?</span>
                                 <button
-                                    onClick={() => { onCancel(); setConfirming(false) }}
+                                    onClick={() => {
+                                        onCancel()
+                                        setConfirming(false)
+                                    }}
                                     className="text-xs px-3 py-1.5 rounded-lg bg-red-600 text-white hover:bg-red-700 transition-colors"
                                 >
                                     Sì, annulla
@@ -150,7 +156,6 @@ function DinnerCard({ d, onCancel }: { d: DinnerReservation; onCancel: () => voi
                         )}
                     </div>
                 )}
-
             </div>
         </div>
     )
@@ -161,29 +166,24 @@ export default function MyReservations() {
     const isAuthenticated = useIsAuthenticated()
     const [activeTab, setActiveTab] = useState<Tab>('camere')
 
-    const [roomReservations, setRoomReservations] = useState<RoomReservation[]>(
-        () => mockRoomReservations.filter(r => r.userEmail === user?.email)
+    const [roomReservations, setRoomReservations] = useState<RoomReservation[]>(() =>
+        mockRoomReservations.filter((r) => r.userEmail === user?.email),
     )
-    const [dinnerReservations, setDinnerReservations] = useState<DinnerReservation[]>(
-        () => mockDinnerReservations.filter(d => d.userEmail === user?.email)
+    const [dinnerReservations, setDinnerReservations] = useState<DinnerReservation[]>(() =>
+        mockDinnerReservations.filter((d) => d.userEmail === user?.email),
     )
-
 
     const handleCancelRoom = (id: string) => {
-            setRoomReservations(prev =>
-                prev.map(r => r.id === id ? { ...r, status: 'annullata' } : r)
-            )
-        }
+        setRoomReservations((prev) => prev.map((r) => (r.id === id ? { ...r, status: 'annullata' } : r)))
+    }
 
-        const handleCancelDinner = (id: string) => {
-            setDinnerReservations(prev =>
-                prev.map(d => d.id === id ? { ...d, status: 'annullata' } : d)
-            )
-        }
+    const handleCancelDinner = (id: string) => {
+        setDinnerReservations((prev) => prev.map((d) => (d.id === id ? { ...d, status: 'annullata' } : d)))
+    }
 
-        if (!isAuthenticated || user?.role !== 'client') {
-            return <Navigate to="/login" replace />
-        }
+    if (!isAuthenticated || user?.role !== 'client') {
+        return <Navigate to="/login" replace />
+    }
 
     const activeRooms = roomReservations.filter((r) => r.status !== 'annullata')
     const activeDinners = dinnerReservations.filter((d) => d.status !== 'annullata')
@@ -259,7 +259,7 @@ export default function MyReservations() {
                             dinnerReservations.map((d) => (
                                 <DinnerCard key={d.id} d={d} onCancel={() => handleCancelDinner(d.id)} />
                             ))
-                       )}
+                        )}
                     </div>
                 )}
             </div>
