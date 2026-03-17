@@ -6,16 +6,15 @@ export interface RoomReservation {
     roomName: string
     roomType: RoomType
     roomNumber: string
-    roomCapacity: number       // capacità massima della camera
-    dinnerCode: string         // codice 5 cifre consegnato al check-in
-    checkIn: string            // 'YYYY-MM-DD'
+    roomCapacity: number // capacità massima della camera
+    dinnerCode: string // codice 5 cifre consegnato al check-in
+    checkIn: string // 'YYYY-MM-DD'
     checkOut: string
     nights: number
     pricePerNight: number
     totalPrice: number
     status: 'confermata' | 'in_attesa' | 'annullata'
 }
-
 
 export interface DinnerOrder {
     coverNumber: number
@@ -30,5 +29,5 @@ export interface DinnerReservation {
     day: string
     totalCovers: number
     orders: DinnerOrder[]
-    status: 'bozza' |'confermata' | 'annullata'
+    status: 'bozza' | 'confermata' | 'annullata'
 }

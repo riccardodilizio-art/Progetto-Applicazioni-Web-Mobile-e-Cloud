@@ -27,11 +27,9 @@ function DishCard({ dish }: { dish: Dish }) {
 }
 
 export default function Menu() {
-
     const [selectedDay, setSelectedDay] = useState(0)
 
     const currentMenu = weeklyMenu[selectedDay]
-
 
     return (
         <div className="min-h-screen bg-[#FAF0E6]">
@@ -279,7 +277,6 @@ export default function Menu() {
                                 >
                                     Prenota la Cena
                                 </Link>
-
                             </div>
                         </div>
                     </div>

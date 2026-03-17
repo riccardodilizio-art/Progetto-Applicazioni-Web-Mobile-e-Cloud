@@ -48,7 +48,6 @@ export default function App() {
                     <Route path="/menu" element={<Menu />} />
                     <Route path="/ristorante" element={<Restaurant />} />
 
-
                     {/* Auth client */}
                     <Route path="/login" element={<ClientLogin />} />
                     <Route path="/register" element={<Register />} />

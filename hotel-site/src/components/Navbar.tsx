@@ -25,12 +25,11 @@ export default function Navbar() {
     const isAdmin = isAuthenticated && user?.role === 'admin'
 
     const navLinks = [
-        { to: '/',           label: 'Home'       },
-        { to: '/rooms',      label: 'Camere'     },
-        { to: '/ristorante', label: 'Ristorante' },  // ← cambia solo il to
-        { to: '/contacts',   label: 'Contatti'   },
+        { to: '/', label: 'Home' },
+        { to: '/rooms', label: 'Camere' },
+        { to: '/ristorante', label: 'Ristorante' }, // ← cambia solo il to
+        { to: '/contacts', label: 'Contatti' },
     ]
-
 
     const clientMenuItems = [
         { to: '/prenotazioni', label: 'Le mie prenotazioni' },
