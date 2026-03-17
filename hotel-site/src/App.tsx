@@ -17,6 +17,8 @@ import Register from './pages/auth/Register'
 import Profile from './pages/auth/Profile'
 import Edit from './pages/auth/Edit'
 import MyReservations from './pages/auth/MyReservations'
+import ForgotPassword from './pages/auth/ForgotPassword'
+import ResetPassword  from './pages/auth/ResetPassword'
 
 function ProtectedRoute({ children, redirectTo = '/login' }: { children: React.ReactNode; redirectTo?: string }) {
     const isAuthenticated = useIsAuthenticated()
@@ -45,6 +47,8 @@ export default function App() {
                     {/* Auth client */}
                     <Route path="/login" element={<ClientLogin />} />
                     <Route path="/register" element={<Register />} />
+                    <Route path="/forgot-password" element={<ForgotPassword />} />
+                    <Route path="/reset-password"  element={<ResetPassword />} />
                     <Route
                         path="/profile"
                         element={
