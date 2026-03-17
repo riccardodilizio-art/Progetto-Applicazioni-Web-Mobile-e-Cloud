@@ -5,6 +5,7 @@ export interface RoomReservation {
     userEmail: string
     roomName: string
     roomType: RoomType
+    roomNumber: string
     roomCapacity: number       // capacità massima della camera
     dinnerCode: string         // codice 5 cifre consegnato al check-in
     checkIn: string            // 'YYYY-MM-DD'

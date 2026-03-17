@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { mockRoomReservations, mockDinnerReservations } from '../data/Reservations'
 import type { DinnerOrder, DinnerReservation, RoomReservation } from '../types/Reservation'
@@ -9,6 +9,10 @@ import {
     getMenuForDate,
     isBeforeCutoff,
     isTodayInStay,
+    getRLStatus,
+    recordFailedAttempt,
+    recordSuccess,
+    type RLStatus,
 } from '../lib/dinnerUtils'
 
 // ── Stili badge per categoria piatto ────────────────────────────
@@ -26,60 +30,119 @@ type PageState = 'idle' | 'booking' | 'locked' | 'error' | 'success'
 // ════════════════════════════════════════════════════════════════
 export default function Restaurant() {
     const [code, setCode]                   = useState('')
+    const [roomNumber, setRoomNumber]       = useState('')
     const [pageState, setPageState]         = useState<PageState>('idle')
     const [errorMsg, setErrorMsg]           = useState('')
-    const [reservation, setReservation]     = useState<RoomReservation | null>(null)
-    const [todayMenu, setTodayMenu]         = useState<DayMenu | null>(null)
-    const [existingDinner, setExistingDinner] = useState<DinnerReservation | null>(null)
-    const [covers, setCovers]               = useState(1)
-    const [orders, setOrders]               = useState<DinnerOrder[]>([])
+    const [rlStatus, setRlStatus]           = useState<RLStatus>({
+        blocked: false,
+        remainingAttempts: 5,
+        unblockAt: null,
+    })
+
+    // Controlla rate limit all'avvio e ogni 30 secondi se bloccato
+    useEffect(() => {
+        setRlStatus(getRLStatus())
+    }, [])
+
+    useEffect(() => {
+        if (!rlStatus.blocked) return
+        const interval = setInterval(() => {
+            const status = getRLStatus()
+            setRlStatus(status)
+            if (!status.blocked) clearInterval(interval)
+        }, 30_000)
+        return () => clearInterval(interval)
+    }, [rlStatus.blocked])
+
+    const [reservation, setReservation]         = useState<RoomReservation | null>(null)
+    const [todayMenu, setTodayMenu]             = useState<DayMenu | null>(null)
+    const [existingDinner, setExistingDinner]   = useState<DinnerReservation | null>(null)
+    const [covers, setCovers]                   = useState(1)
+    const [orders, setOrders]                   = useState<DinnerOrder[]>([])
     const [validationError, setValidationError] = useState('')
 
     const today = new Date().toISOString().split('T')[0]
 
-    // ── Validazione codice ──────────────────────────────────────
+    // ── Validazione codice ───────────────────────────────────────
     function handleSubmitCode(e: React.FormEvent) {
         e.preventDefault()
 
-        const found = findReservationByCode(code.trim(), mockRoomReservations)
+        // Controlla blocco prima di tutto
+        const currentRL = getRLStatus()
+        if (currentRL.blocked) {
+            setRlStatus(currentRL)
+            return
+        }
+
+        const found = findReservationByCode(code.trim(), roomNumber.trim(), mockRoomReservations)
         if (!found) {
-            setErrorMsg('Codice non valido. Controlla il codice ricevuto al check-in.')
-            setPageState('error')
-            return
-        }
-        if (!isTodayInStay(found.checkIn, found.checkOut)) {
-            setErrorMsg('Il tuo soggiorno non è attivo oggi.')
-            setPageState('error')
-            return
-        }
-        if (!isBeforeCutoff()) {
-            setErrorMsg('Il termine per prenotare la cena è le 18:00. Riprova domani.')
+            const newRL = recordFailedAttempt()
+            setRlStatus(newRL)
+            if (newRL.blocked) {
+                setErrorMsg('Troppi tentativi falliti. Riprova tra 15 minuti.')
+            } else {
+                setErrorMsg(
+                    `Codice o numero di camera non validi. Tentativi rimasti: ${newRL.remainingAttempts}.`
+                )
+            }
             setPageState('error')
             return
         }
 
-        const menu     = getMenuForDate(today)
-        const existing = findDinnerByDate(today, code.trim(), mockDinnerReservations)
-
+        // Codice valido: resetta rate limit
+        recordSuccess()
+        setRlStatus({ blocked: false, remainingAttempts: 5, unblockAt: null })
         setReservation(found)
+
+        // Controlla che il soggiorno sia attivo oggi
+        if (!isTodayInStay(found.checkIn, found.checkOut)) {
+            setErrorMsg(
+                'Il tuo soggiorno non è attivo oggi. La prenotazione cena è disponibile solo durante il soggiorno.'
+            )
+            setPageState('error')
+            return
+        }
+
+        // Recupera menu di oggi
+        const menu = getMenuForDate(today)
         setTodayMenu(menu)
+
+        // Controlla se esiste già una prenotazione per stasera
+        const existing = findDinnerByDate(today, found.dinnerCode, mockDinnerReservations)
         setExistingDinner(existing ?? null)
 
-        if (existing?.status === 'confermata') {
+        // Cena già confermata → sola lettura
+        if (existing && existing.status === 'confermata') {
             setPageState('locked')
-        } else if (existing?.status === 'bozza') {
-            // Pre-compila il form con la prenotazione in bozza
-            setCovers(existing.totalCovers)
-            setOrders(existing.orders)
-            setPageState('booking')
-        } else {
-            setCovers(1)
-            setOrders([{ coverNumber: 1, primo: '', secondo: '' }])
-            setPageState('booking')
+            return
         }
+
+        // Verifica cutoff (solo se non c'è già una bozza in corso)
+        if (!existing && !isBeforeCutoff()) {
+            setErrorMsg('Il termine per la prenotazione della cena è le 18:00. Riprova domani.')
+            setPageState('error')
+            return
+        }
+
+        // Inizializza coperti e ordini (da bozza o da zero)
+        const n = existing?.totalCovers ?? 1
+        setCovers(n)
+        if (existing?.status === 'bozza') {
+            setOrders(existing.orders.map(o => ({ ...o })))
+        } else {
+            setOrders(
+                Array.from({ length: n }, (_, i) => ({
+                    coverNumber: i + 1,
+                    primo:       '',
+                    secondo:     '',
+                }))
+            )
+        }
+
+        setPageState('booking')
     }
 
-    // ── Gestione coperti ────────────────────────────────────────
+    // ── Gestione coperti ─────────────────────────────────────────
     function handleCoversChange(n: number) {
         setCovers(n)
         setOrders(
@@ -91,13 +154,13 @@ export default function Restaurant() {
         )
     }
 
-    // ── Aggiornamento singolo ordine ────────────────────────────
+    // ── Aggiornamento singolo ordine ─────────────────────────────
     function updateOrder(index: number, field: 'primo' | 'secondo', value: string) {
         setOrders(prev => prev.map((o, i) => (i === index ? { ...o, [field]: value } : o)))
         setValidationError('')
     }
 
-    // ── Conferma prenotazione ───────────────────────────────────
+    // ── Conferma prenotazione ────────────────────────────────────
     function handleConfirm() {
         if (orders.some(o => !o.primo || !o.secondo)) {
             setValidationError('Seleziona primo e secondo per ogni coperto.')
@@ -107,9 +170,10 @@ export default function Restaurant() {
         setPageState('success')
     }
 
-    // ── Reset completo ──────────────────────────────────────────
+    // ── Reset completo ───────────────────────────────────────────
     function handleReset() {
         setCode('')
+        setRoomNumber('')
         setPageState('idle')
         setErrorMsg('')
         setReservation(null)
@@ -119,7 +183,7 @@ export default function Restaurant() {
         setValidationError('')
     }
 
-    // ── Header comune a tutte le pagine ─────────────────────────
+    // ── Header comune a tutte le pagine ──────────────────────────
     const PageHeader = () => (
         <div className="text-center mb-10">
             <h1 className="text-4xl font-bold text-[#3B2010] mb-3">Ristorante</h1>
@@ -154,9 +218,41 @@ export default function Restaurant() {
                             rounded-lg px-4 py-4 bg-[#FAF0E6] text-[#3B2010] focus:outline-none
                             focus:border-[#9A6840] transition-colors"
                     />
+
+                    <label className="block text-xs uppercase tracking-widest text-[#9A6840] mt-5 mb-2">
+                        Numero di camera
+                    </label>
+                    <input
+                        type="text"
+                        maxLength={10}
+                        value={roomNumber}
+                        onChange={e => setRoomNumber(e.target.value)}
+                        placeholder="es. 204"
+                        className="w-full text-center text-xl border border-[#C4A070]/60 rounded-lg px-4 py-3
+                            bg-[#FAF0E6] text-[#3B2010] focus:outline-none focus:border-[#9A6840] transition-colors"
+                    />
+
+                    {/* Feedback rate limit */}
+                    {rlStatus.remainingAttempts < 5 && !rlStatus.blocked && (
+                        <p className="mt-3 text-xs text-amber-700 text-center">
+                            Tentativi rimasti: <strong>{rlStatus.remainingAttempts}</strong> su 5
+                        </p>
+                    )}
+                    {rlStatus.blocked && (
+                        <p className="mt-3 text-xs text-red-600 text-center">
+                            Accesso bloccato. Riprova alle{' '}
+                            <strong>
+                                {rlStatus.unblockAt?.toLocaleTimeString('it-IT', {
+                                    hour:   '2-digit',
+                                    minute: '2-digit',
+                                })}
+                            </strong>
+                        </p>
+                    )}
+
                     <button
                         type="submit"
-                        disabled={code.length !== 5}
+                        disabled={code.length !== 5 || roomNumber.trim() === '' || rlStatus.blocked}
                         className="mt-5 w-full py-3 bg-[#3B2010] text-[#FAF0E6] text-sm uppercase tracking-widest
                             rounded-lg hover:bg-[#6B4828] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                     >
@@ -183,13 +279,15 @@ export default function Restaurant() {
                 <div className="bg-red-50 border border-red-200 rounded-2xl p-8 w-full max-w-sm text-center shadow-sm">
                     <p className="text-3xl mb-3">⚠️</p>
                     <p className="text-red-700 text-sm leading-relaxed mb-6">{errorMsg}</p>
-                    <button
-                        onClick={handleReset}
-                        className="px-6 py-2.5 bg-[#3B2010] text-[#FAF0E6] text-sm uppercase tracking-widest
-                            rounded-lg hover:bg-[#6B4828] transition-colors"
-                    >
-                        Riprova
-                    </button>
+                    {!rlStatus.blocked && (
+                        <button
+                            onClick={handleReset}
+                            className="px-6 py-2.5 bg-[#3B2010] text-[#FAF0E6] text-sm uppercase tracking-widest
+                                rounded-lg hover:bg-[#6B4828] transition-colors"
+                        >
+                            Riprova
+                        </button>
+                    )}
                 </div>
             </div>
         )
