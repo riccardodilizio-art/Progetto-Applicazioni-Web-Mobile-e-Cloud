@@ -5,12 +5,14 @@ import useSignIn from 'react-auth-kit/hooks/useSignIn'
 import type { UserState } from '../../types/User'
 import ProfileForm from './ProfileForm'
 import PasswordForm from './PasswordForm'
+import useAuthHeader from 'react-auth-kit/hooks/useAuthHeader'
 
 export default function Edit() {
     const user            = useAuthUser<UserState>()
     const isAuthenticated = useIsAuthenticated()
     const navigate        = useNavigate()
     const signIn          = useSignIn<UserState>()
+    const authHeader = useAuthHeader()
 
     if (!isAuthenticated || !user) {
         return <Navigate to="/login" replace />
@@ -18,9 +20,10 @@ export default function Edit() {
 
     const handleSaveProfile = (name: string, surname: string, phone: string) => {
         // TODO: chiamata API per aggiornare il profilo
+        const currentToken = (authHeader ?? '').replace('Bearer ', '')
         signIn({
             auth: {
-                token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjbGllbnRAaG90ZWxleGNlbHNpb3IuaXQiLCJyb2xlIjoiY2xpZW50IiwiZXhwIjo5OTk5OTk5OTk5fQ.dGVzdC1zaWduYXR1cmU',
+                token: currentToken,
                 type: 'Bearer',
             },
             userState: { ...user, name, surname, phone },

@@ -25,6 +25,12 @@ export default function Register() {
         e.preventDefault()
         setError('')
 
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+        if (!emailRegex.test(email)) {
+            setError('Inserisci un indirizzo email valido')
+            return
+        }
+
         if (password.length < 8) {
             setError('La password deve contenere almeno 8 caratteri')
             return
