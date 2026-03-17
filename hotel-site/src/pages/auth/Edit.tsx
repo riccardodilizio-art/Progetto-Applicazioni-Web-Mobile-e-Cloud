@@ -27,8 +27,13 @@ export default function Edit() {
         })
     }
 
-    const handleSavePassword = (_current: string, _next: string) => {
-        // TODO: chiamata API per cambiare la password
+    const handleRequest2FA = async (_current: string, _next: string): Promise<void> => {
+        // TODO: POST /auth/request-password-change
+        // Il backend verifica la password attuale e invia l'OTP via email
+    }
+
+    const handleSavePassword = (_current: string, _next: string, _otp: string) => {
+        // TODO: POST /auth/confirm-password-change con { current, next, otp }
     }
 
     return (
@@ -42,7 +47,11 @@ export default function Edit() {
                     onSave={handleSaveProfile}
                     onCancel={() => navigate(-1)}
                 />
-                <PasswordForm onSave={handleSavePassword} />
+                <PasswordForm
+                    onRequest2FA={handleRequest2FA}
+                    onSave={handleSavePassword}
+                    onForgotPassword={() => navigate('/forgot-password')}
+                />
             </div>
         </div>
     )

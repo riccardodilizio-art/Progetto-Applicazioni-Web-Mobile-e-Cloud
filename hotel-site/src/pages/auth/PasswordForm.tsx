@@ -1,12 +1,18 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
 type Props = {
-    onSave: (current: string, next: string) => void
+    onRequest2FA: (current: string, next: string) => Promise<void>
+    onSave: (current: string, next: string, otp: string) => void
+    onForgotPassword: () => void
 }
 
+type Step = 'form' | 'verify'
 type Fields = { current: string; next: string; confirm: string }
 type Visibility = Record<keyof Fields, boolean>
 
+const OTP_EXPIRY_SEC = 60
+
+// ── Icona occhio ───────────────────────────────────────────
 function EyeIcon({ visible }: { visible: boolean }) {
     return (
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -33,21 +39,214 @@ function EyeIcon({ visible }: { visible: boolean }) {
     )
 }
 
-export default function PasswordForm({ onSave }: Props) {
-    const [fields, setFields]   = useState<Fields>({ current: '', next: '', confirm: '' })
-    const [error, setError]     = useState('')
-    const [saved, setSaved]     = useState(false)
-    const [show, setShow]       = useState<Visibility>({ current: false, next: false, confirm: false })
+// ── Campo password ─────────────────────────────────────────
+type PasswordFieldProps = {
+    label: string
+    value: string
+    show: boolean
+    required?: boolean
+    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+    onToggleShow: () => void
+    hint?: React.ReactNode
+}
 
-    const set = (key: keyof Fields) => (e: React.ChangeEvent<HTMLInputElement>) =>
-        setFields(prev => ({ ...prev, [key]: e.target.value }))
+function PasswordField({ label, value, show, required = true, onChange, onToggleShow, hint }: PasswordFieldProps) {
+    return (
+        <div>
+            <div className="flex items-center justify-between mb-1">
+                <label className="block text-sm font-medium text-[#3B2010]">{label}</label>
+                {hint}
+            </div>
+            <div className="relative">
+                <input
+                    type={show ? 'text' : 'password'}
+                    required={required}
+                    value={value}
+                    onChange={onChange}
+                    className="w-full border border-[#C4A070] rounded-lg px-4 py-2 pr-10
+                        text-[#3B2010] focus:outline-none focus:ring-2 focus:ring-[#9A6840]
+                        focus:border-transparent"
+                />
+                <button type="button" onClick={onToggleShow}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9A6840]
+                        hover:text-[#3B2010] transition-colors cursor-pointer"
+                        aria-label={show ? 'Nascondi' : 'Mostra'}>
+                    <EyeIcon visible={show} />
+                </button>
+            </div>
+        </div>
+    )
+}
 
-    const toggleShow = (key: keyof Fields) =>
-        setShow(prev => ({ ...prev, [key]: !prev[key] }))
+// ── Forza password ─────────────────────────────────────────
+function getStrength(pwd: string) {
+    if (!pwd) return { level: 0, label: '', color: '' }
+    const score = [
+        pwd.length >= 8, /[a-zA-Z]/.test(pwd), /[0-9]/.test(pwd),
+        /[^a-zA-Z0-9]/.test(pwd), pwd.length >= 12,
+    ].filter(Boolean).length
+    if (score <= 2) return { level: 1, label: 'Debole',     color: 'bg-red-400'    }
+    if (score === 3) return { level: 2, label: 'Media',      color: 'bg-yellow-400' }
+    if (score === 4) return { level: 3, label: 'Forte',      color: 'bg-green-500'  }
+    return             { level: 4, label: 'Molto forte', color: 'bg-green-700'  }
+}
+
+function StrengthBar({ password }: { password: string }) {
+    const { level, label, color } = getStrength(password)
+    if (!password) return null
+    return (
+        <div className="mt-1.5">
+            <div className="flex gap-1 mb-1">
+                {[1, 2, 3, 4].map(i => (
+                    <div key={i} className={`h-1 flex-1 rounded-full transition-all duration-300
+                        ${i <= level ? color : 'bg-[#E8C9A0]'}`} />
+                ))}
+            </div>
+            <p className={`text-xs ${level === 1 ? 'text-red-500' : level <= 2 ? 'text-yellow-600' : 'text-green-600'}`}>
+                {label}
+            </p>
+        </div>
+    )
+}
+
+// ── Step 2: verifica OTP ───────────────────────────────────
+type OtpStepProps = {
+    onConfirm: (otp: string) => void
+    onResend: () => Promise<void>
+    onBack: () => void
+    error: string
+}
+
+function OtpStep({ onConfirm, onResend, onBack, error }: OtpStepProps) {
+    const [otp, setOtp]           = useState('')
+    const [seconds, setSeconds]   = useState(OTP_EXPIRY_SEC)
+    const [resending, setResending] = useState(false)
+    const inputRef = useRef<HTMLInputElement>(null)
+
+    // countdown
+    useEffect(() => {
+        if (seconds <= 0) return
+        const id = setInterval(() => setSeconds(s => s - 1), 1000)
+        return () => clearInterval(id)
+    }, [seconds])
+
+    useEffect(() => { inputRef.current?.focus() }, [])
+
+    const handleResend = async () => {
+        setResending(true)
+        await onResend()
+        setSeconds(OTP_EXPIRY_SEC)
+        setOtp('')
+        setResending(false)
+    }
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
+        if (otp.trim().length > 0) onConfirm(otp.trim())
+    }
+
+    const expired = seconds <= 0
+
+    return (
+        <form onSubmit={handleSubmit} className="space-y-5">
+            <div className="text-center">
+                {/* icona lock */}
+                <div className="mx-auto w-12 h-12 rounded-full bg-[#F5ECD7] flex items-center justify-center mb-3">
+                    <svg className="w-6 h-6 text-[#9A6840]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                              d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    </svg>
+                </div>
+                <p className="text-sm text-[#3B2010] font-medium">Codice di verifica inviato</p>
+                <p className="text-xs text-[#9A6840] mt-1">
+                    Controlla la tua email e inserisci il codice a 6 cifre.
+                </p>
+            </div>
+
+            <div>
+                <label className="block text-sm font-medium text-[#3B2010] mb-1">Codice OTP</label>
+                <input
+                    ref={inputRef}
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    maxLength={6}
+                    required
+                    value={otp}
+                    onChange={e => setOtp(e.target.value.replace(/\D/g, ''))}
+                    placeholder="123456"
+                    className="w-full border border-[#C4A070] rounded-lg px-4 py-2
+                        text-[#3B2010] text-center tracking-[0.4em] text-lg font-mono
+                        focus:outline-none focus:ring-2 focus:ring-[#9A6840] focus:border-transparent"
+                />
+
+                {/* countdown / scaduto */}
+                <div className="flex items-center justify-between mt-2">
+                    <p className={`text-xs ${expired ? 'text-red-500' : 'text-[#9A6840]'}`}>
+                        {expired
+                            ? 'Codice scaduto.'
+                            : `Scade tra ${seconds}s`}
+                    </p>
+                    <button
+                        type="button"
+                        onClick={handleResend}
+                        disabled={resending || (!expired && seconds > OTP_EXPIRY_SEC - 10)}
+                        className="text-xs text-[#9A6840] hover:text-[#3B2010] hover:underline
+                            transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                    >
+                        {resending ? 'Invio…' : 'Rinvia codice'}
+                    </button>
+                </div>
+            </div>
+
+            {error && (
+                <p className="text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg px-4 py-2">
+                    {error}
+                </p>
+            )}
+
+            <button
+                type="submit"
+                disabled={otp.length !== 6 || expired}
+                className="w-full bg-[#3B2010] text-white font-medium py-2.5 rounded-lg
+                    hover:bg-[#6B4828] transition-colors cursor-pointer
+                    disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+                Conferma
+            </button>
+
+            <button type="button" onClick={onBack}
+                    className="w-full text-sm text-[#9A6840] hover:text-[#3B2010] hover:underline
+                    transition-colors cursor-pointer">
+                ← Torna indietro
+            </button>
+        </form>
+    )
+}
+
+// ── Componente principale ──────────────────────────────────
+export default function PasswordForm({ onRequest2FA, onSave, onForgotPassword }: Props) {
+    const [step, setStep]     = useState<Step>('form')
+    const [fields, setFields] = useState<Fields>({ current: '', next: '', confirm: '' })
+    const [show, setShow]     = useState<Visibility>({ current: false, next: false, confirm: false })
+    const [error, setError]   = useState('')
+    const [saved, setSaved]   = useState(false)
+    const [loading, setLoading] = useState(false)
+
+    const forgotMode = fields.current === '' && (fields.next !== '' || fields.confirm !== '')
+
+    const handleChange = (key: keyof Fields) => (e: React.ChangeEvent<HTMLInputElement>) =>
+        setFields(prev => ({ ...prev, [key]: e.target.value }))
+
+    const handleToggle = (key: keyof Fields) =>
+        setShow(prev => ({ ...prev, [key]: !prev[key] }))
+
+    // Step 1 → richiede il codice OTP al backend
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault()
         setError('')
+
+        if (forgotMode) { onForgotPassword(); return }
 
         if (fields.next.length < 8) {
             setError('La nuova password deve essere di almeno 8 caratteri.')
@@ -58,77 +257,102 @@ export default function PasswordForm({ onSave }: Props) {
             return
         }
 
-        onSave(fields.current, fields.next)
+        setLoading(true)
+        try {
+            await onRequest2FA(fields.current, fields.next)
+            setStep('verify')
+        } catch {
+            setError('Impossibile inviare il codice. Controlla la password attuale.')
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    // Step 2 → conferma con OTP
+    const handleOtpConfirm = (otp: string) => {
+        setError('')
+        onSave(fields.current, fields.next, otp)
         setFields({ current: '', next: '', confirm: '' })
+        setStep('form')
         setSaved(true)
         setTimeout(() => setSaved(false), 3000)
     }
-
-    const field = (key: keyof Fields, label: string) => (
-        <div>
-            <div className="flex items-center justify-between mb-1">
-                <label className="block text-sm font-medium text-[#3B2010]">{label}</label>
-                {key === 'current' && (
-                    <a
-                        href="/forgot-password"
-                        className="text-xs text-[#9A6840] hover:text-[#3B2010] hover:underline transition-colors"
-                    >
-                        Password dimenticata?
-                    </a>
-                )}
-            </div>
-            <div className="relative">
-                <input
-                    type={show[key] ? 'text' : 'password'}
-                    required
-                    value={fields[key]}
-                    onChange={set(key)}
-                    className="w-full border border-[#C4A070] rounded-lg px-4 py-2 pr-10
-                    text-[#3B2010] focus:outline-none focus:ring-2 focus:ring-[#9A6840]
-                    focus:border-transparent"
-                />
-                <button
-                    type="button"
-                    onClick={() => toggleShow(key)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9A6840]
-                    hover:text-[#3B2010] transition-colors cursor-pointer"
-                    aria-label={show[key] ? 'Nascondi password' : 'Mostra password'}
-                >
-                    <EyeIcon visible={show[key]} />
-                </button>
-            </div>
-        </div>
-    )
 
     return (
         <div className="bg-white rounded-2xl shadow-lg p-8">
             <h2 className="text-lg font-semibold text-[#3B2010] mb-1">Cambia password</h2>
             <p className="text-sm text-[#9A6840] mb-5">Minimo 8 caratteri.</p>
 
-            <form onSubmit={handleSubmit} className="space-y-5">
-                {field('current', 'Password attuale')}
-                {field('next',    'Nuova password')}
-                {field('confirm', 'Conferma nuova password')}
+            {step === 'verify' ? (
+                <OtpStep
+                    onConfirm={handleOtpConfirm}
+                    onResend={() => onRequest2FA(fields.current, fields.next)}
+                    onBack={() => { setStep('form'); setError('') }}
+                    error={error}
+                />
+            ) : (
+                <form onSubmit={handleSubmit} className="space-y-5">
+                    <PasswordField
+                        label="Password attuale"
+                        value={fields.current}
+                        show={show.current}
+                        required={false}
+                        onChange={handleChange('current')}
+                        onToggleShow={() => handleToggle('current')}
+                        hint={
+                            <button type="button" onClick={onForgotPassword}
+                                    className="text-xs text-[#9A6840] hover:text-[#3B2010] hover:underline transition-colors">
+                                Password dimenticata?
+                            </button>
+                        }
+                    />
 
-                {error && (
-                    <p className="text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg px-4 py-2">
-                        {error}
-                    </p>
-                )}
-                {saved && (
-                    <p className="text-sm text-green-700 bg-green-50 border border-green-200 rounded-lg px-4 py-2">
-                        Password aggiornata con successo.
-                    </p>
-                )}
+                    <div>
+                        <PasswordField
+                            label="Nuova password"
+                            value={fields.next}
+                            show={show.next}
+                            onChange={handleChange('next')}
+                            onToggleShow={() => handleToggle('next')}
+                        />
+                        <StrengthBar password={fields.next} />
+                    </div>
 
-                <button
-                    type="submit"
-                    className="w-full bg-[#3B2010] text-white font-medium py-2.5
-                        rounded-lg hover:bg-[#6B4828] transition-colors cursor-pointer"
-                >
-                    Aggiorna password
-                </button>
-            </form>
+                    <PasswordField
+                        label="Conferma nuova password"
+                        value={fields.confirm}
+                        show={show.confirm}
+                        onChange={handleChange('confirm')}
+                        onToggleShow={() => handleToggle('confirm')}
+                    />
+
+                    {forgotMode && (
+                        <p className="text-sm text-blue-700 bg-blue-50 border border-blue-200 rounded-lg px-4 py-2">
+                            Hai lasciato vuota la password attuale. Riceverai un link via email per reimpostarla.
+                        </p>
+                    )}
+                    {error && (
+                        <p className="text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg px-4 py-2">
+                            {error}
+                        </p>
+                    )}
+                    {saved && (
+                        <p className="text-sm text-green-700 bg-green-50 border border-green-200 rounded-lg px-4 py-2">
+                            Password aggiornata con successo.
+                        </p>
+                    )}
+
+                    <button
+                        type="submit"
+                        disabled={loading}
+                        className="w-full bg-[#3B2010] text-white font-medium py-2.5
+                            rounded-lg hover:bg-[#6B4828] transition-colors cursor-pointer
+                            disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        {loading ? 'Invio codice…' : forgotMode ? 'Invia link di reset' : 'Continua'}
+                    </button>
+                </form>
+            )}
         </div>
     )
 }
