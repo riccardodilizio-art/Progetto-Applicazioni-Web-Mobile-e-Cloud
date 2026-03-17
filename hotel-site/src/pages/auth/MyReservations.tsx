@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Link, Navigate } from 'react-router-dom'
 import useAuthUser from 'react-auth-kit/hooks/useAuthUser'
 import useIsAuthenticated from 'react-auth-kit/hooks/useIsAuthenticated'
@@ -157,14 +157,19 @@ function DinnerCard({ d, onCancel }: { d: DinnerReservation; onCancel: () => voi
 }
 
 export default function MyReservations() {
-        const user = useAuthUser<UserState>()
-        const isAuthenticated = useIsAuthenticated()
-        const [activeTab, setActiveTab] = useState<Tab>('camere')
+    const user = useAuthUser<UserState>()
+    const isAuthenticated = useIsAuthenticated()
+    const [activeTab, setActiveTab] = useState<Tab>('camere')
 
-        const [roomReservations, setRoomReservations] = useState<RoomReservation[]>([])
-        const [dinnerReservations, setDinnerReservations] = useState<DinnerReservation[]>([])
+    const [roomReservations, setRoomReservations] = useState<RoomReservation[]>(
+        () => mockRoomReservations.filter(r => r.userEmail === user?.email)
+    )
+    const [dinnerReservations, setDinnerReservations] = useState<DinnerReservation[]>(
+        () => mockDinnerReservations.filter(d => d.userEmail === user?.email)
+    )
 
-        const handleCancelRoom = (id: string) => {
+
+    const handleCancelRoom = (id: string) => {
             setRoomReservations(prev =>
                 prev.map(r => r.id === id ? { ...r, status: 'annullata' } : r)
             )
@@ -175,12 +180,6 @@ export default function MyReservations() {
                 prev.map(d => d.id === id ? { ...d, status: 'annullata' } : d)
             )
         }
-
-        useEffect(() => {
-            if (!user?.email) return
-            setRoomReservations(mockRoomReservations.filter(r => r.userEmail === user.email))
-            setDinnerReservations(mockDinnerReservations.filter(d => d.userEmail === user.email))
-        }, [user?.email])
 
         if (!isAuthenticated || user?.role !== 'client') {
             return <Navigate to="/login" replace />

@@ -9,9 +9,14 @@ export default function ForgotPassword() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         setLoading(true)
-        // TODO: POST /auth/forgot-password  { email }
-        setSent(true)
-        setLoading(false)
+        try {
+            // TODO: POST /auth/forgot-password  { email }
+            setSent(true)
+        } catch {
+            // TODO: gestire errore (es. email non trovata)
+        } finally {
+            setLoading(false)
+        }
     }
 
     return (
