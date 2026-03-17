@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { mockRoomReservations, mockDinnerReservations } from '../data/Reservations'
 import type { DinnerOrder, DinnerReservation, RoomReservation } from '../types/Reservation'
-import type { DayMenu, Dish } from '../types/Menu'
+import type { DayMenu } from '../types/Menu'
 import {
     findReservationByCode,
     findDinnerByDate,
@@ -14,33 +14,11 @@ import {
     recordSuccess,
     type RLStatus,
 } from '../lib/dinnerUtils'
+import PageHeader from '../components/restaurant/PageHeader'
+import CoverCard from '../components/restaurant/CoverCard'
 
-// ── Stili badge per categoria piatto ────────────────────────────
-const CATEGORY_STYLE: Record<string, string> = {
-    pesce: 'bg-blue-100 text-blue-700',
-    carne: 'bg-red-100 text-red-700',
-    vegetariano: 'bg-green-100 text-green-700',
-}
-
-// ── Tipi interni ─────────────────────────────────────────────────
 type PageState = 'idle' | 'booking' | 'locked' | 'error' | 'success'
 
-// ── Header comune a tutte le pagine ─────────────────────────────
-function PageHeader() {
-    return (
-        <div className="text-center mb-10">
-            <h1 className="text-4xl font-bold text-[#3B2010] mb-3">Ristorante</h1>
-            <p className="text-[#6B4828] max-w-md mx-auto text-sm leading-relaxed">
-                Prenota la tua cena inserendo il codice a 5 cifre ricevuto al check-in. Il termine per la prenotazione è
-                le <strong>18:00</strong>.
-            </p>
-        </div>
-    )
-}
-
-// ════════════════════════════════════════════════════════════════
-// COMPONENTE PRINCIPALE
-// ════════════════════════════════════════════════════════════════
 export default function Restaurant() {
     const [code, setCode] = useState('')
     const [roomNumber, setRoomNumber] = useState('')
@@ -67,7 +45,6 @@ export default function Restaurant() {
 
     const today = new Date().toISOString().split('T')[0]
 
-    // ── Validazione codice ───────────────────────────────────────
     function handleSubmitCode(e: React.FormEvent) {
         e.preventDefault()
 
@@ -75,13 +52,7 @@ export default function Restaurant() {
         if (currentRL.blocked) {
             setRlStatus(currentRL)
             setErrorMsg(
-                `Accesso bloccato per troppi tentativi. Riprova alle ${currentRL.unblockAt?.toLocaleTimeString(
-                    'it-IT',
-                    {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                    },
-                )}.`,
+                `Accesso bloccato per troppi tentativi. Riprova alle ${currentRL.unblockAt?.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })}.`,
             )
             setPageState('error')
             return
@@ -91,11 +62,11 @@ export default function Restaurant() {
         if (!found) {
             const newRL = recordFailedAttempt()
             setRlStatus(newRL)
-            if (newRL.blocked) {
-                setErrorMsg('Troppi tentativi falliti. Riprova tra 15 minuti.')
-            } else {
-                setErrorMsg(`Codice o numero di camera non validi. Tentativi rimasti: ${newRL.remainingAttempts}.`)
-            }
+            setErrorMsg(
+                newRL.blocked
+                    ? 'Troppi tentativi falliti. Riprova tra 15 minuti.'
+                    : `Codice o numero di camera non validi. Tentativi rimasti: ${newRL.remainingAttempts}.`,
+            )
             setPageState('error')
             return
         }
@@ -131,22 +102,14 @@ export default function Restaurant() {
 
         const n = existing?.totalCovers ?? 1
         setCovers(n)
-        if (existing?.status === 'bozza') {
-            setOrders(existing.orders.map((o) => ({ ...o })))
-        } else {
-            setOrders(
-                Array.from({ length: n }, (_, i) => ({
-                    coverNumber: i + 1,
-                    primo: '',
-                    secondo: '',
-                })),
-            )
-        }
-
+        setOrders(
+            existing?.status === 'bozza'
+                ? existing.orders.map((o) => ({ ...o }))
+                : Array.from({ length: n }, (_, i) => ({ coverNumber: i + 1, primo: '', secondo: '' })),
+        )
         setPageState('booking')
     }
 
-    // ── Gestione coperti ─────────────────────────────────────────
     function handleCoversChange(n: number) {
         setCovers(n)
         setOrders(
@@ -158,19 +121,16 @@ export default function Restaurant() {
         )
     }
 
-    // ── Aggiornamento singolo ordine ─────────────────────────────
     function updateOrder(index: number, field: 'primo' | 'secondo', value: string) {
         setOrders((prev) => prev.map((o, i) => (i === index ? { ...o, [field]: value } : o)))
         setValidationError('')
     }
 
-    // ── Conferma prenotazione ────────────────────────────────────
     async function handleConfirm() {
         if (orders.some((o) => !o.primo || !o.secondo)) {
             setValidationError('Seleziona primo e secondo per ogni coperto.')
             return
         }
-
         try {
             const response = await fetch('/api/dinner-reservations', {
                 method: existingDinner?.status === 'bozza' ? 'PUT' : 'POST',
@@ -183,14 +143,12 @@ export default function Restaurant() {
                     orders,
                 }),
             })
-
             if (!response.ok) {
                 const data = await response.json().catch(() => ({}))
                 setErrorMsg(data.message ?? 'Errore durante la prenotazione. Riprova.')
                 setPageState('error')
                 return
             }
-
             setPageState('success')
         } catch {
             setErrorMsg('Errore di rete. Controlla la connessione e riprova.')
@@ -198,7 +156,6 @@ export default function Restaurant() {
         }
     }
 
-    // ── Reset completo ───────────────────────────────────────────
     function handleReset() {
         setCode('')
         setRoomNumber('')
@@ -211,9 +168,6 @@ export default function Restaurant() {
         setValidationError('')
     }
 
-    // ════════════════════════════════════════════════════════════
-    // STATO: inserimento codice
-    // ════════════════════════════════════════════════════════════
     if (pageState === 'idle') {
         return (
             <div className="min-h-screen bg-[#FAF0E6] flex flex-col items-center justify-center px-4 py-16">
@@ -230,10 +184,8 @@ export default function Restaurant() {
                         onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))}
                         placeholder="_ _ _ _ _"
                         className="w-full text-center text-3xl tracking-[0.5em] font-mono border border-[#C4A070]/60
-                            rounded-lg px-4 py-4 bg-[#FAF0E6] text-[#3B2010] focus:outline-none
-                            focus:border-[#9A6840] transition-colors"
+                            rounded-lg px-4 py-4 bg-[#FAF0E6] text-[#3B2010] focus:outline-none focus:border-[#9A6840] transition-colors"
                     />
-
                     <label className="block text-xs uppercase tracking-widest text-[#9A6840] mt-5 mb-2">
                         Numero di camera
                     </label>
@@ -246,7 +198,6 @@ export default function Restaurant() {
                         className="w-full text-center text-xl border border-[#C4A070]/60 rounded-lg px-4 py-3
                             bg-[#FAF0E6] text-[#3B2010] focus:outline-none focus:border-[#9A6840] transition-colors"
                     />
-
                     {rlStatus.remainingAttempts < 5 && !rlStatus.blocked && (
                         <p className="mt-3 text-xs text-amber-700 text-center">
                             Tentativi rimasti: <strong>{rlStatus.remainingAttempts}</strong> su 5
@@ -263,7 +214,6 @@ export default function Restaurant() {
                             </strong>
                         </p>
                     )}
-
                     <button
                         type="submit"
                         disabled={code.length !== 5 || roomNumber.trim() === '' || rlStatus.blocked}
@@ -283,9 +233,6 @@ export default function Restaurant() {
         )
     }
 
-    // ════════════════════════════════════════════════════════════
-    // STATO: errore
-    // ════════════════════════════════════════════════════════════
     if (pageState === 'error') {
         return (
             <div className="min-h-screen bg-[#FAF0E6] flex flex-col items-center justify-center px-4 py-16">
@@ -296,8 +243,7 @@ export default function Restaurant() {
                     {!rlStatus.blocked && (
                         <button
                             onClick={handleReset}
-                            className="px-6 py-2.5 bg-[#3B2010] text-[#FAF0E6] text-sm uppercase tracking-widest
-                                rounded-lg hover:bg-[#6B4828] transition-colors"
+                            className="px-6 py-2.5 bg-[#3B2010] text-[#FAF0E6] text-sm uppercase tracking-widest rounded-lg hover:bg-[#6B4828] transition-colors"
                         >
                             Riprova
                         </button>
@@ -307,9 +253,6 @@ export default function Restaurant() {
         )
     }
 
-    // ════════════════════════════════════════════════════════════
-    // STATO: cena confermata (non modificabile)
-    // ════════════════════════════════════════════════════════════
     if (pageState === 'locked' && existingDinner && reservation) {
         return (
             <div className="min-h-screen bg-[#FAF0E6] px-4 py-16">
@@ -328,12 +271,10 @@ export default function Restaurant() {
                                 Confermata
                             </span>
                         </div>
-
                         <p className="text-sm text-[#6B4828] mb-5">
                             {existingDinner.totalCovers} {existingDinner.totalCovers === 1 ? 'coperto' : 'coperti'} ·
                             ore 19:30 · {reservation.roomName}
                         </p>
-
                         <div className="space-y-3">
                             {existingDinner.orders.map((o) => (
                                 <div key={o.coverNumber} className="border border-[#E8C9A0] rounded-xl p-4">
@@ -345,7 +286,6 @@ export default function Restaurant() {
                                 </div>
                             ))}
                         </div>
-
                         <p className="text-xs text-[#9A6840] mt-5 text-center">
                             La prenotazione è confermata e non può essere modificata.
                         </p>
@@ -362,18 +302,12 @@ export default function Restaurant() {
         )
     }
 
-    // ════════════════════════════════════════════════════════════
-    // STATO: selezione cena (nuova o in modifica)
-    // ════════════════════════════════════════════════════════════
     if (pageState === 'booking' && reservation && todayMenu) {
         const isEditing = existingDinner?.status === 'bozza'
-
         return (
             <div className="min-h-screen bg-[#FAF0E6] px-4 py-16">
                 <div className="max-w-2xl mx-auto">
                     <PageHeader />
-
-                    {/* Riepilogo soggiorno */}
                     <div className="bg-white/70 border border-[#C4A070]/40 rounded-xl p-4 mb-6 flex items-center justify-between">
                         <div>
                             <p className="text-xs uppercase tracking-widest text-[#9A6840]">{reservation.roomName}</p>
@@ -389,8 +323,6 @@ export default function Restaurant() {
                             </span>
                         )}
                     </div>
-
-                    {/* Selezione numero coperti */}
                     <div className="mb-6">
                         <p className="text-xs uppercase tracking-widest text-[#9A6840] mb-3">Quanti coperti stasera?</p>
                         <div className="flex gap-2">
@@ -411,8 +343,6 @@ export default function Restaurant() {
                             ))}
                         </div>
                     </div>
-
-                    {/* Card per ogni coperto */}
                     <div className="space-y-5 mb-6">
                         {orders.map((order, index) => (
                             <CoverCard
@@ -424,21 +354,17 @@ export default function Restaurant() {
                             />
                         ))}
                     </div>
-
                     {validationError && <p className="text-red-600 text-sm mb-4 text-center">{validationError}</p>}
-
                     <div className="flex flex-col gap-3">
                         <button
                             onClick={handleConfirm}
-                            className="w-full py-3 bg-[#3B2010] text-[#FAF0E6] text-sm uppercase tracking-widest
-                                rounded-xl hover:bg-[#6B4828] transition-colors"
+                            className="w-full py-3 bg-[#3B2010] text-[#FAF0E6] text-sm uppercase tracking-widest rounded-xl hover:bg-[#6B4828] transition-colors"
                         >
                             {isEditing ? 'Salva modifiche' : 'Conferma prenotazione'}
                         </button>
                         <button
                             onClick={handleReset}
-                            className="w-full py-2.5 border border-[#C4A070]/60 text-[#6B4828] text-sm
-                                uppercase tracking-widest rounded-xl hover:bg-[#E8C9A0]/40 transition-colors"
+                            className="w-full py-2.5 border border-[#C4A070]/60 text-[#6B4828] text-sm uppercase tracking-widest rounded-xl hover:bg-[#E8C9A0]/40 transition-colors"
                         >
                             Annulla
                         </button>
@@ -448,9 +374,6 @@ export default function Restaurant() {
         )
     }
 
-    // ════════════════════════════════════════════════════════════
-    // STATO: prenotazione completata con successo
-    // ════════════════════════════════════════════════════════════
     if (pageState === 'success') {
         return (
             <div className="min-h-screen bg-[#FAF0E6] flex flex-col items-center justify-center px-4 py-16">
@@ -461,7 +384,6 @@ export default function Restaurant() {
                     <p className="text-[#9A6840] text-sm mb-6">
                         {covers} {covers === 1 ? 'coperto' : 'coperti'} · ore 19:30
                     </p>
-
                     <div className="bg-white/70 border border-[#C4A070]/40 rounded-xl p-5 text-left mb-5 space-y-4">
                         {orders.map((o) => (
                             <div key={o.coverNumber} className="border-b border-[#E8C9A0] last:border-0 pb-3 last:pb-0">
@@ -473,15 +395,12 @@ export default function Restaurant() {
                             </div>
                         ))}
                     </div>
-
                     <p className="text-xs text-[#9A6840] mb-6">
                         Puoi modificare la tua prenotazione fino alle 18:00 reinserendo il codice.
                     </p>
-
                     <button
                         onClick={handleReset}
-                        className="px-6 py-2.5 bg-[#3B2010] text-[#FAF0E6] text-sm uppercase tracking-widest
-                            rounded-lg hover:bg-[#6B4828] transition-colors"
+                        className="px-6 py-2.5 bg-[#3B2010] text-[#FAF0E6] text-sm uppercase tracking-widest rounded-lg hover:bg-[#6B4828] transition-colors"
                     >
                         Torna all'inizio
                     </button>
@@ -491,98 +410,4 @@ export default function Restaurant() {
     }
 
     return null
-}
-
-// ════════════════════════════════════════════════════════════════
-// SOTTO-COMPONENTE: card di un coperto
-// ════════════════════════════════════════════════════════════════
-function CoverCard({
-    coverNumber,
-    order,
-    menu,
-    onUpdate,
-}: {
-    coverNumber: number
-    order: DinnerOrder
-    menu: DayMenu
-    onUpdate: (field: 'primo' | 'secondo', value: string) => void
-}) {
-    return (
-        <div className="border border-[#C4A070]/50 rounded-xl p-5 bg-white/60">
-            <h3 className="text-xs font-semibold text-[#3B2010] mb-4 uppercase tracking-widest">
-                Coperto {coverNumber}
-            </h3>
-
-            <p className="text-xs uppercase tracking-widest text-[#9A6840] mb-2">Primo piatto</p>
-            <div className="flex flex-col gap-2 mb-5">
-                {menu.dinner.primi.map((dish) => (
-                    <DishRadio
-                        key={dish.name}
-                        dish={dish}
-                        groupName={`primo-${coverNumber}`}
-                        checked={order.primo === dish.name}
-                        onChange={() => onUpdate('primo', dish.name)}
-                    />
-                ))}
-            </div>
-
-            <p className="text-xs uppercase tracking-widest text-[#9A6840] mb-2">Secondo piatto</p>
-            <div className="flex flex-col gap-2">
-                {menu.dinner.secondi.map((dish) => (
-                    <DishRadio
-                        key={dish.name}
-                        dish={dish}
-                        groupName={`secondo-${coverNumber}`}
-                        checked={order.secondo === dish.name}
-                        onChange={() => onUpdate('secondo', dish.name)}
-                    />
-                ))}
-            </div>
-        </div>
-    )
-}
-
-// ════════════════════════════════════════════════════════════════
-// SOTTO-COMPONENTE: radio button per un piatto
-// ════════════════════════════════════════════════════════════════
-function DishRadio({
-    dish,
-    groupName,
-    checked,
-    onChange,
-}: {
-    dish: Dish
-    groupName: string
-    checked: boolean
-    onChange: () => void
-}) {
-    return (
-        <label
-            className={`flex items-start gap-3 p-3 border rounded-lg cursor-pointer transition-all duration-200
-                ${
-                    checked
-                        ? 'border-[#9A6840] bg-[#E8C9A0]/60'
-                        : 'border-[#C4A070]/40 hover:border-[#9A6840]/60 hover:bg-[#E8C9A0]/30'
-                }`}
-        >
-            <input
-                type="radio"
-                name={groupName}
-                checked={checked}
-                onChange={onChange}
-                className="mt-1 accent-[#6B4828] shrink-0"
-            />
-            <div className="flex flex-col gap-1 min-w-0">
-                <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-sm font-medium text-[#3B2010]">{dish.name}</span>
-                    <span
-                        className={`text-[0.65rem] px-1.5 py-0.5 rounded uppercase tracking-wider font-medium shrink-0 ${CATEGORY_STYLE[dish.category]}`}
-                    >
-                        {dish.category}
-                    </span>
-                </div>
-                <p className="text-xs text-[#6B4828] leading-relaxed">{dish.description}</p>
-            </div>
-        </label>
-    )
 }
