@@ -20,6 +20,7 @@ import MyReservations from './pages/auth/MyReservations'
 import ForgotPassword from './pages/auth/ForgotPassword'
 import ResetPassword from './pages/auth/ResetPassword'
 import { useApiSetup } from './hooks/useApiSetup'
+import Restaurant from './pages/Restaurant'
 
 function ProtectedRoute({ children, redirectTo = '/login' }: { children: React.ReactNode; redirectTo?: string }) {
     const isAuthenticated = useIsAuthenticated()
@@ -45,6 +46,8 @@ export default function App() {
                     <Route path="/rooms/:id" element={<RoomDetail />} />
                     <Route path="/contacts" element={<Contacts />} />
                     <Route path="/menu" element={<Menu />} />
+                    <Route path="/ristorante" element={<Restaurant />} />
+
 
                     {/* Auth client */}
                     <Route path="/login" element={<ClientLogin />} />

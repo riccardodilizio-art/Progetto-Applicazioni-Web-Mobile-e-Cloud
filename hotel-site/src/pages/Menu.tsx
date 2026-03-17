@@ -1,8 +1,5 @@
 import { useState } from 'react'
-import useAuthUser from 'react-auth-kit/hooks/useAuthUser'
-import useIsAuthenticated from 'react-auth-kit/hooks/useIsAuthenticated'
 import { Link } from 'react-router-dom'
-import type { UserState } from '../types/User'
 import type { Dish } from '../types/Menu'
 import { breakfastItems, lunchItems, weeklyMenu } from '../data/Menu'
 
@@ -30,30 +27,11 @@ function DishCard({ dish }: { dish: Dish }) {
 }
 
 export default function Menu() {
-    const user = useAuthUser<UserState>()
-    const isAuthenticated = useIsAuthenticated()
-    const isClient = isAuthenticated && user?.role === 'client'
 
     const [selectedDay, setSelectedDay] = useState(0)
-    const [showModal, setShowModal] = useState(false)
-    const [selectedPrimo, setSelectedPrimo] = useState<number | null>(null)
-    const [selectedSecondo, setSelectedSecondo] = useState<number | null>(null)
-    const [reservationConfirmed, setReservationConfirmed] = useState(false)
 
     const currentMenu = weeklyMenu[selectedDay]
 
-    const openModal = () => {
-        setSelectedPrimo(null)
-        setSelectedSecondo(null)
-        setReservationConfirmed(false)
-        setShowModal(true)
-    }
-
-    const handleConfirm = () => {
-        if (selectedPrimo !== null && selectedSecondo !== null) {
-            setReservationConfirmed(true)
-        }
-    }
 
     return (
         <div className="min-h-screen bg-[#FAF0E6]">
@@ -295,265 +273,18 @@ export default function Menu() {
                                         credenziali della tua camera d'hotel.
                                     </p>
                                 </div>
-                                <button
-                                    onClick={openModal}
-                                    className="bg-[#3B2010] text-[#E8C9A0] px-6 py-2.5 rounded-xl text-sm font-medium hover:bg-[#6B4828] transition-colors duration-200 whitespace-nowrap flex-shrink-0"
+                                <Link
+                                    to="/ristorante"
+                                    className="bg-[#3B2010] text-[#E8C9A0] px-6 py-2.5 rounded-xl text-sm font-medium hover:bg-[#6B4828] transition-colors duration-200 whitespace-nowrap flex-shrink-0 text-center"
                                 >
                                     Prenota la Cena
-                                </button>
+                                </Link>
+
                             </div>
                         </div>
                     </div>
                 </div>
             </section>
-
-            {/* Modal prenotazione */}
-            {showModal && (
-                <div
-                    className="fixed inset-0 bg-[#3B2010]/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-                    onClick={(e) => {
-                        if (e.target === e.currentTarget) setShowModal(false)
-                    }}
-                >
-                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
-                        <div className="bg-[#3B2010] rounded-t-2xl px-6 py-5 flex items-center justify-between sticky top-0 z-10">
-                            <div>
-                                <h2 className="font-heading text-xl text-white font-medium">Prenotazione Cena</h2>
-                                <p className="text-[#E8C9A0] text-sm mt-0.5">{currentMenu.day} · ore 19:30</p>
-                            </div>
-                            <button
-                                onClick={() => setShowModal(false)}
-                                className="text-[#E8C9A0] hover:text-white transition-colors p-1 rounded-lg hover:bg-white/10"
-                            >
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M6 18L18 6M6 6l12 12"
-                                    />
-                                </svg>
-                            </button>
-                        </div>
-
-                        <div className="p-6">
-                            {!isClient ? (
-                                <div className="text-center py-6">
-                                    <div className="w-16 h-16 bg-[#FAF0E6] rounded-full flex items-center justify-center mx-auto mb-4">
-                                        <svg
-                                            className="w-8 h-8 text-[#9A6840]"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            viewBox="0 0 24 24"
-                                        >
-                                            <path
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                strokeWidth={1.5}
-                                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                                            />
-                                        </svg>
-                                    </div>
-                                    <h3 className="font-heading text-xl text-[#3B2010] mb-2">Accesso richiesto</h3>
-                                    <p className="text-[#9A6840] text-sm mb-6 leading-relaxed max-w-xs mx-auto">
-                                        Per prenotare la cena è necessario accedere con le credenziali della propria
-                                        camera d'hotel.
-                                    </p>
-                                    <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                                        <Link
-                                            to="/login"
-                                            onClick={() => setShowModal(false)}
-                                            className="bg-[#3B2010] text-[#E8C9A0] px-6 py-2.5 rounded-xl text-sm font-medium hover:bg-[#6B4828] transition-colors duration-200 text-center"
-                                        >
-                                            Accedi
-                                        </Link>
-                                        <Link
-                                            to="/register"
-                                            onClick={() => setShowModal(false)}
-                                            className="border border-[#C4A070] text-[#6B4828] px-6 py-2.5 rounded-xl text-sm font-medium hover:bg-[#FAF0E6] transition-colors duration-200 text-center"
-                                        >
-                                            Registrati
-                                        </Link>
-                                    </div>
-                                </div>
-                            ) : reservationConfirmed ? (
-                                <div className="text-center py-6">
-                                    <div className="w-16 h-16 bg-[#E0F0D8] rounded-full flex items-center justify-center mx-auto mb-4">
-                                        <svg
-                                            className="w-8 h-8 text-[#3A6B28]"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            viewBox="0 0 24 24"
-                                        >
-                                            <path
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                strokeWidth={2}
-                                                d="M5 13l4 4L19 7"
-                                            />
-                                        </svg>
-                                    </div>
-                                    <h3 className="font-heading text-xl text-[#3B2010] mb-2">
-                                        Prenotazione confermata!
-                                    </h3>
-                                    <p className="text-[#9A6840] text-sm mb-5 leading-relaxed">
-                                        La tua cena per <strong className="text-[#3B2010]">{currentMenu.day}</strong> è
-                                        stata prenotata. Ti aspettiamo alle 19:30.
-                                    </p>
-                                    <div className="bg-[#FAF0E6] rounded-xl p-4 text-left mb-6">
-                                        <p className="text-xs text-[#9A6840] uppercase tracking-wide mb-3 font-medium">
-                                            Riepilogo
-                                        </p>
-                                        <div className="space-y-2">
-                                            <div className="flex gap-2">
-                                                <span className="text-xs text-[#9A6840] w-16 flex-shrink-0">
-                                                    Ospite
-                                                </span>
-                                                <span className="text-sm text-[#3B2010]">
-                                                    {user?.name} {user?.surname}
-                                                </span>
-                                            </div>
-                                            <div className="flex gap-2">
-                                                <span className="text-xs text-[#9A6840] w-16 flex-shrink-0">Primo</span>
-                                                <span className="text-sm text-[#3B2010]">
-                                                    {selectedPrimo !== null
-                                                        ? currentMenu.dinner.primi[selectedPrimo].name
-                                                        : '—'}
-                                                </span>
-                                            </div>
-                                            <div className="flex gap-2">
-                                                <span className="text-xs text-[#9A6840] w-16 flex-shrink-0">
-                                                    Secondo
-                                                </span>
-                                                <span className="text-sm text-[#3B2010]">
-                                                    {selectedSecondo !== null
-                                                        ? currentMenu.dinner.secondi[selectedSecondo].name
-                                                        : '—'}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <button
-                                        onClick={() => setShowModal(false)}
-                                        className="bg-[#3B2010] text-[#E8C9A0] px-6 py-2.5 rounded-xl text-sm font-medium hover:bg-[#6B4828] transition-colors duration-200"
-                                    >
-                                        Chiudi
-                                    </button>
-                                </div>
-                            ) : (
-                                <div className="space-y-6">
-                                    <p className="text-[#9A6840] text-sm leading-relaxed">
-                                        Buonasera <strong className="text-[#3B2010]">{user?.name}</strong>! Seleziona i
-                                        piatti per la tua cena di {currentMenu.day}. Antipasti e dolci sono inclusi a
-                                        buffet.
-                                    </p>
-
-                                    <div>
-                                        <h4 className="text-[#3B2010] font-medium text-sm mb-3">
-                                            Scegli il primo piatto
-                                        </h4>
-                                        <div className="space-y-2">
-                                            {currentMenu.dinner.primi.map((dish, i) => {
-                                                const pcfg = categoryConfig[dish.category]
-                                                return (
-                                                    <label
-                                                        key={i}
-                                                        className={`flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition-all duration-200 ${
-                                                            selectedPrimo === i
-                                                                ? 'border-[#9A6840] bg-[#FAF0E6]'
-                                                                : 'border-[#E8C9A0] hover:border-[#C4A070]'
-                                                        }`}
-                                                    >
-                                                        <input
-                                                            type="radio"
-                                                            name="primo"
-                                                            checked={selectedPrimo === i}
-                                                            onChange={() => setSelectedPrimo(i)}
-                                                            className="mt-1 accent-[#6B4828]"
-                                                        />
-                                                        <div className="flex-1 min-w-0">
-                                                            <div className="flex items-center gap-2 flex-wrap">
-                                                                <span className="text-[#3B2010] text-sm font-medium">
-                                                                    {dish.name}
-                                                                </span>
-                                                                <span
-                                                                    className={`text-xs px-2 py-0.5 rounded-full border ${pcfg.bg} ${pcfg.text} ${pcfg.border}`}
-                                                                >
-                                                                    {pcfg.label}
-                                                                </span>
-                                                            </div>
-                                                            <p className="text-[#9A6840] text-xs mt-1 leading-relaxed">
-                                                                {dish.description}
-                                                            </p>
-                                                        </div>
-                                                    </label>
-                                                )
-                                            })}
-                                        </div>
-                                    </div>
-
-                                    <div>
-                                        <h4 className="text-[#3B2010] font-medium text-sm mb-3">
-                                            Scegli il secondo piatto
-                                        </h4>
-                                        <div className="space-y-2">
-                                            {currentMenu.dinner.secondi.map((dish, i) => {
-                                                const scfg = categoryConfig[dish.category]
-                                                return (
-                                                    <label
-                                                        key={i}
-                                                        className={`flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition-all duration-200 ${
-                                                            selectedSecondo === i
-                                                                ? 'border-[#9A6840] bg-[#FAF0E6]'
-                                                                : 'border-[#E8C9A0] hover:border-[#C4A070]'
-                                                        }`}
-                                                    >
-                                                        <input
-                                                            type="radio"
-                                                            name="secondo"
-                                                            checked={selectedSecondo === i}
-                                                            onChange={() => setSelectedSecondo(i)}
-                                                            className="mt-1 accent-[#6B4828]"
-                                                        />
-                                                        <div className="flex-1 min-w-0">
-                                                            <div className="flex items-center gap-2 flex-wrap">
-                                                                <span className="text-[#3B2010] text-sm font-medium">
-                                                                    {dish.name}
-                                                                </span>
-                                                                <span
-                                                                    className={`text-xs px-2 py-0.5 rounded-full border ${scfg.bg} ${scfg.text} ${scfg.border}`}
-                                                                >
-                                                                    {scfg.label}
-                                                                </span>
-                                                            </div>
-                                                            <p className="text-[#9A6840] text-xs mt-1 leading-relaxed">
-                                                                {dish.description}
-                                                            </p>
-                                                        </div>
-                                                    </label>
-                                                )
-                                            })}
-                                        </div>
-                                    </div>
-
-                                    <button
-                                        onClick={handleConfirm}
-                                        disabled={selectedPrimo === null || selectedSecondo === null}
-                                        className="w-full bg-[#3B2010] text-[#E8C9A0] py-3 rounded-xl text-sm font-medium hover:bg-[#6B4828] transition-colors duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
-                                    >
-                                        Conferma Prenotazione
-                                    </button>
-                                    {(selectedPrimo === null || selectedSecondo === null) && (
-                                        <p className="text-center text-xs text-[#9A6840]">
-                                            Seleziona un primo e un secondo per procedere
-                                        </p>
-                                    )}
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                </div>
-            )}
         </div>
     )
 }

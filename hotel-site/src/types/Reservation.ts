@@ -5,7 +5,9 @@ export interface RoomReservation {
     userEmail: string
     roomName: string
     roomType: RoomType
-    checkIn: string // 'YYYY-MM-DD'
+    roomCapacity: number       // capacità massima della camera
+    dinnerCode: string         // codice 5 cifre consegnato al check-in
+    checkIn: string            // 'YYYY-MM-DD'
     checkOut: string
     nights: number
     pricePerNight: number
@@ -13,12 +15,19 @@ export interface RoomReservation {
     status: 'confermata' | 'in_attesa' | 'annullata'
 }
 
-export interface DinnerReservation {
-    id: string
-    userEmail: string
-    date: string // 'YYYY-MM-DD'
-    day: string
+
+export interface DinnerOrder {
+    coverNumber: number
     primo: string
     secondo: string
-    status: 'confermata' | 'annullata'
+}
+
+export interface DinnerReservation {
+    id: string
+    dinnerCode: string
+    date: string // 'YYYY-MM-DD'
+    day: string
+    totalCovers: number
+    orders: DinnerOrder[]
+    status: 'bozza' |'confermata' | 'annullata'
 }
