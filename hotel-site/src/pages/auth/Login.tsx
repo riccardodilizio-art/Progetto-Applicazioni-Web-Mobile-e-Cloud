@@ -6,13 +6,19 @@ import type { UserState } from '../../types/User'
 
 const mockClients = [
     {
-        email: 'cliente@hotelexcelsior.it',
-        password: 'cliente123',
+        email: import.meta.env.VITE_CLIENT_EMAIL,
+        password: import.meta.env.VITE_CLIENT_PASSWORD,
         name: 'Mario',
         surname: 'Rossi',
         phone: '333 1234567',
     },
-    { email: 'guest@hotelexcelsior.it', password: 'guest123', name: 'Laura', surname: 'Bianchi', phone: '340 9876543' },
+    {
+        email: import.meta.env.VITE_GUEST_EMAIL,
+        password: import.meta.env.VITE_GUEST_PASSWORD,
+        name: 'Laura',
+        surname: 'Bianchi',
+        phone: '340 9876543',
+    },
 ]
 
 export default function Login() {

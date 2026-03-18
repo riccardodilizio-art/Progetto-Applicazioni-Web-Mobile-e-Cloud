@@ -1,0 +1,177 @@
+import { useState, useEffect } from 'react'
+import { mockRoomReservations, mockDinnerReservations } from '../data/Reservations'
+import type { DinnerOrder, DinnerReservation, RoomReservation } from '../types/Reservation'
+import type { DayMenu } from '../types/Menu'
+import {
+    findReservationByCode,
+    findDinnerByDate,
+    getMenuForDate,
+    isBeforeCutoff,
+    isTodayInStay,
+    getRLStatus,
+    recordFailedAttempt,
+    recordSuccess,
+    type RLStatus,
+} from '../lib/dinnerUtils'
+
+export type PageState = 'idle' | 'booking' | 'locked' | 'error' | 'success'
+
+export function useRestaurantBooking() {
+    const today = useState(() => new Date().toISOString().split('T')[0])[0]
+
+    const [code, setCode] = useState('')
+    const [roomNumber, setRoomNumber] = useState('')
+    const [pageState, setPageState] = useState<PageState>('idle')
+    const [errorMsg, setErrorMsg] = useState('')
+    const [rlStatus, setRlStatus] = useState<RLStatus>(() => getRLStatus())
+    const [reservation, setReservation] = useState<RoomReservation | null>(null)
+    const [todayMenu, setTodayMenu] = useState<DayMenu | null>(null)
+    const [existingDinner, setExistingDinner] = useState<DinnerReservation | null>(null)
+    const [covers, setCovers] = useState(1)
+    const [orders, setOrders] = useState<DinnerOrder[]>([])
+    const [validationError, setValidationError] = useState('')
+
+    useEffect(() => {
+        if (!rlStatus.blocked) return
+        const interval = setInterval(() => {
+            const status = getRLStatus()
+            setRlStatus(status)
+            if (!status.blocked) clearInterval(interval)
+        }, 30_000)
+        return () => clearInterval(interval)
+    }, [rlStatus.blocked])
+
+    function handleSubmitCode(e: React.FormEvent) {
+        e.preventDefault()
+        const currentRL = getRLStatus()
+        if (currentRL.blocked) {
+            setRlStatus(currentRL)
+            setErrorMsg(
+                `Accesso bloccato. Riprova alle ${currentRL.unblockAt?.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })}.`,
+            )
+            setPageState('error')
+            return
+        }
+        const found = findReservationByCode(code.trim(), roomNumber.trim(), mockRoomReservations)
+        if (!found) {
+            const newRL = recordFailedAttempt()
+            setRlStatus(newRL)
+            setErrorMsg(
+                newRL.blocked
+                    ? 'Troppi tentativi falliti. Riprova tra 15 minuti.'
+                    : `Codice o numero di camera non validi. Tentativi rimasti: ${newRL.remainingAttempts}.`,
+            )
+            setPageState('error')
+            return
+        }
+        recordSuccess()
+        setRlStatus({ blocked: false, remainingAttempts: 5, unblockAt: null })
+        setReservation(found)
+        if (!isTodayInStay(found.checkIn, found.checkOut)) {
+            setErrorMsg('Il tuo soggiorno non è attivo oggi.')
+            setPageState('error')
+            return
+        }
+        const menu = getMenuForDate(today)
+        setTodayMenu(menu)
+        const existing = findDinnerByDate(today, found.dinnerCode, mockDinnerReservations)
+        setExistingDinner(existing ?? null)
+        if (existing?.status === 'confermata') {
+            setPageState('locked')
+            return
+        }
+        if (!existing && !isBeforeCutoff()) {
+            setErrorMsg('Il termine per la prenotazione è le 18:00. Riprova domani.')
+            setPageState('error')
+            return
+        }
+        const n = existing?.totalCovers ?? 1
+        setCovers(n)
+        setOrders(
+            existing?.status === 'bozza'
+                ? existing.orders.map((o) => ({ ...o }))
+                : Array.from({ length: n }, (_, i) => ({ coverNumber: i + 1, primo: '', secondo: '' })),
+        )
+        setPageState('booking')
+    }
+
+    function handleCoversChange(n: number) {
+        setCovers(n)
+        setOrders(
+            Array.from({ length: n }, (_, i) => ({
+                coverNumber: i + 1,
+                primo: orders[i]?.primo ?? '',
+                secondo: orders[i]?.secondo ?? '',
+            })),
+        )
+    }
+
+    function updateOrder(index: number, field: 'primo' | 'secondo', value: string) {
+        setOrders((prev) => prev.map((o, i) => (i === index ? { ...o, [field]: value } : o)))
+        setValidationError('')
+    }
+
+    async function handleConfirm() {
+        if (orders.some((o) => !o.primo || !o.secondo)) {
+            setValidationError('Seleziona primo e secondo per ogni coperto.')
+            return
+        }
+        try {
+            const response = await fetch('/api/dinner-reservations', {
+                method: existingDinner?.status === 'bozza' ? 'PUT' : 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    dinnerCode: reservation!.dinnerCode,
+                    date: today,
+                    day: todayMenu!.day,
+                    totalCovers: covers,
+                    orders,
+                }),
+            })
+            if (!response.ok) {
+                const data = await response.json().catch(() => ({}))
+                setErrorMsg(data.message ?? 'Errore durante la prenotazione.')
+                setPageState('error')
+                return
+            }
+            setPageState('success')
+        } catch {
+            setErrorMsg('Errore di rete. Controlla la connessione.')
+            setPageState('error')
+        }
+    }
+
+    function handleReset() {
+        setCode('')
+        setRoomNumber('')
+        setPageState('idle')
+        setErrorMsg('')
+        setReservation(null)
+        setTodayMenu(null)
+        setExistingDinner(null)
+        setOrders([])
+        setValidationError('')
+    }
+
+    return {
+        today,
+        code,
+        setCode,
+        roomNumber,
+        setRoomNumber,
+        pageState,
+        errorMsg,
+        rlStatus,
+        reservation,
+        todayMenu,
+        existingDinner,
+        covers,
+        orders,
+        validationError,
+        handleSubmitCode,
+        handleCoversChange,
+        updateOrder,
+        handleConfirm,
+        handleReset,
+    }
+}
