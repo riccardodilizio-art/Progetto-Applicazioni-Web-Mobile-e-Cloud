@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { mockRoomReservations, mockDinnerReservations } from '../data/Reservations'
 import type { DinnerOrder, DinnerReservation, RoomReservation } from '../types/Reservation'
 import type { DayMenu } from '../types/Menu'
@@ -8,11 +8,8 @@ import {
     getMenuForDate,
     isBeforeCutoff,
     isTodayInStay,
-    getRLStatus,
-    recordFailedAttempt,
-    recordSuccess,
-    type RLStatus,
 } from '../lib/dinnerUtils'
+import { useRateLimit } from './useRateLimit'
 
 export type PageState = 'idle' | 'booking' | 'locked' | 'error' | 'success'
 
@@ -21,7 +18,7 @@ export function useDinnerReservation() {
     const [roomNumber, setRoomNumber] = useState('')
     const [pageState, setPageState] = useState<PageState>('idle')
     const [errorMsg, setErrorMsg] = useState('')
-    const [rlStatus, setRlStatus] = useState<RLStatus>(() => getRLStatus())
+    const { status: rlStatus, onFailure, onSuccess } = useRateLimit()
     const [reservation, setReservation] = useState<RoomReservation | null>(null)
     const [todayMenu, setTodayMenu] = useState<DayMenu | null>(null)
     const [existingDinner, setExistingDinner] = useState<DinnerReservation | null>(null)
@@ -31,31 +28,23 @@ export function useDinnerReservation() {
 
     const today = new Date().toISOString().split('T')[0]
 
-    useEffect(() => {
-        if (!rlStatus.blocked) return
-        const interval = setInterval(() => {
-            const status = getRLStatus()
-            setRlStatus(status)
-            if (!status.blocked) clearInterval(interval)
-        }, 30_000)
-        return () => clearInterval(interval)
-    }, [rlStatus.blocked])
+    // useEffect RIMOSSO: il polling è già gestito dentro useRateLimit
 
     function handleSubmitCode(e: React.FormEvent) {
         e.preventDefault()
-        const currentRL = getRLStatus()
-        if (currentRL.blocked) {
-            setRlStatus(currentRL)
+
+        // usa rlStatus direttamente, è già aggiornato da useRateLimit
+        if (rlStatus.blocked) {
             setErrorMsg(
-                `Accesso bloccato per troppi tentativi. Riprova alle ${currentRL.unblockAt?.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })}.`,
+                `Accesso bloccato per troppi tentativi. Riprova alle ${rlStatus.unblockAt?.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })}.`,
             )
             setPageState('error')
             return
         }
+
         const found = findReservationByCode(code.trim(), roomNumber.trim(), mockRoomReservations)
         if (!found) {
-            const newRL = recordFailedAttempt()
-            setRlStatus(newRL)
+            const newRL = onFailure()
             setErrorMsg(
                 newRL.blocked
                     ? 'Troppi tentativi falliti. Riprova tra 15 minuti.'
@@ -64,9 +53,10 @@ export function useDinnerReservation() {
             setPageState('error')
             return
         }
-        recordSuccess()
-        setRlStatus({ blocked: false, remainingAttempts: 5, unblockAt: null })
+
+        onSuccess()
         setReservation(found)
+
         if (!isTodayInStay(found.checkIn, found.checkOut)) {
             setErrorMsg(
                 'Il tuo soggiorno non è attivo oggi. La prenotazione cena è disponibile solo durante il soggiorno.',
@@ -74,19 +64,24 @@ export function useDinnerReservation() {
             setPageState('error')
             return
         }
+
         const menu = getMenuForDate(today)
         setTodayMenu(menu)
+
         const existing = findDinnerByDate(today, found.dinnerCode, mockDinnerReservations)
         setExistingDinner(existing ?? null)
+
         if (existing && existing.status === 'confermata') {
             setPageState('locked')
             return
         }
+
         if (!existing && !isBeforeCutoff()) {
             setErrorMsg('Il termine per la prenotazione della cena è le 18:00. Riprova domani.')
             setPageState('error')
             return
         }
+
         const n = existing?.totalCovers ?? 1
         setCovers(n)
         setOrders(

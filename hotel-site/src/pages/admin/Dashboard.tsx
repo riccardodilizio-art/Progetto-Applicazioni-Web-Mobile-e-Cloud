@@ -15,17 +15,14 @@ export default function Dashboard() {
     const [isLoading] = [false]
 
     const {
-        rooms,
-        filteredRooms,
-        deleteId,
-        setDeleteId,
-        searchQuery,
-        setSearchQuery,
-        filterType,
-        setFilterType,
-        handleDelete,
+        rooms, filteredRooms,
+        deleteId, setDeleteId,
+        searchQuery, setSearchQuery,
+        filterType, setFilterType,
+        handleDelete, handleToggleAvailability,  // ← assicurati che ci sia
         clearFilters,
     } = useRooms()
+
 
     if (isLoading) return <LoadingSpinner message="Caricamento camere..." />
 
@@ -114,7 +111,119 @@ export default function Dashboard() {
                     </select>
                 </div>
 
-                {/* ... tabella desktop + card mobile identiche a prima ... */}
+                {/* Tabella camere - Desktop */}
+                <div className="hidden md:block bg-white rounded-xl shadow-sm border border-[#E8C9A0]/50 overflow-hidden">
+                    <table className="w-full">
+                        <thead>
+                        <tr className="bg-[#FAF5EE] border-b border-[#E8C9A0]/50">
+                            <th className="text-left text-xs font-semibold text-[#9A6840] uppercase tracking-wider px-6 py-3">Camera</th>
+                            <th className="text-left text-xs font-semibold text-[#9A6840] uppercase tracking-wider px-6 py-3">Tipo</th>
+                            <th className="text-left text-xs font-semibold text-[#9A6840] uppercase tracking-wider px-6 py-3">Prezzo</th>
+                            <th className="text-left text-xs font-semibold text-[#9A6840] uppercase tracking-wider px-6 py-3">Capacità</th>
+                            <th className="text-left text-xs font-semibold text-[#9A6840] uppercase tracking-wider px-6 py-3">Stato</th>
+                            <th className="text-right text-xs font-semibold text-[#9A6840] uppercase tracking-wider px-6 py-3">Azioni</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {filteredRooms.map((room) => (
+                            <tr key={room.id} className="border-b border-[#E8C9A0]/30 hover:bg-[#FAF5EE]/50 transition-colors">
+                                <td className="px-6 py-4">
+                                    <div className="flex items-center gap-3">
+                                        <img src={room.images[0]} alt={room.name} className="w-12 h-12 rounded-lg object-cover" />
+                                        <div>
+                                            <p className="font-medium text-[#3B2010]">{room.name}</p>
+                                            <p className="text-xs text-[#9A6840]">#{room.roomNumber} · Piano {room.floor}</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td className="px-6 py-4">
+                                    <span className="text-sm text-[#6B4828]">{typeLabels[room.type]}</span>
+                                </td>
+                                <td className="px-6 py-4">
+                                    <span className="text-sm font-semibold text-[#3B2010]">€{room.pricePerNight}</span>
+                                    <span className="text-xs text-[#9A6840]"> /notte</span>
+                                </td>
+                                <td className="px-6 py-4">
+                        <span className="text-sm text-[#6B4828]">
+                            {room.capacity} {room.capacity === 1 ? 'ospite' : 'ospiti'}
+                        </span>
+                                </td>
+                                <td className="px-6 py-4">
+                                    <button
+                                        onClick={() => handleToggleAvailability(room.id)}
+                                        className={`text-xs font-semibold px-3 py-1 rounded-full cursor-pointer transition-colors ${
+                                            room.available
+                                                ? 'bg-green-100 text-green-700 hover:bg-green-200'
+                                                : 'bg-red-100 text-red-700 hover:bg-red-200'
+                                        }`}
+                                    >
+                                        {room.available ? 'Disponibile' : 'Non disponibile'}
+                                    </button>
+                                </td>
+                                <td className="px-6 py-4 text-right">
+                                    <div className="flex justify-end gap-2">
+                                        <Link
+                                            to={`/admin/rooms/edit/${room.id}`}
+                                            className="text-sm text-[#6B4828] border border-[#C4A070] px-3 py-1.5 rounded-lg hover:bg-[#FAF5EE] transition-colors"
+                                        >
+                                            Modifica
+                                        </Link>
+                                        <button
+                                            onClick={() => setDeleteId(room.id)}
+                                            className="text-sm text-red-600 border border-red-200 px-3 py-1.5 rounded-lg hover:bg-red-50 transition-colors cursor-pointer"
+                                        >
+                                            Elimina
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        ))}
+                        </tbody>
+                    </table>
+                </div>
+
+                {/* Card camere - Mobile */}
+                <div className="md:hidden space-y-4">
+                    {filteredRooms.map((room) => (
+                        <div key={room.id} className="bg-white rounded-xl shadow-sm border border-[#E8C9A0]/50 p-4">
+                            <div className="flex gap-4">
+                                <img src={room.images[0]} alt={room.name} className="w-20 h-20 rounded-lg object-cover" />
+                                <div className="flex-1">
+                                    <h3 className="font-medium text-[#3B2010]">{room.name}</h3>
+                                    <p className="text-xs text-[#9A6840]">
+                                        #{room.roomNumber} · {typeLabels[room.type]} · {room.size}m²
+                                    </p>
+                                    <p className="text-sm font-semibold text-[#3B2010] mt-1">
+                                        €{room.pricePerNight}{' '}
+                                        <span className="text-xs font-normal text-[#9A6840]">/notte</span>
+                                    </p>
+                                </div>
+                                <button
+                                    onClick={() => handleToggleAvailability(room.id)}
+                                    className={`self-start text-xs font-semibold px-2.5 py-1 rounded-full cursor-pointer ${
+                                        room.available ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                                    }`}
+                                >
+                                    {room.available ? 'Disp.' : 'N/D'}
+                                </button>
+                            </div>
+                            <div className="flex gap-2 mt-3 pt-3 border-t border-[#E8C9A0]/30">
+                                <Link
+                                    to={`/admin/rooms/edit/${room.id}`}
+                                    className="flex-1 text-center text-sm text-[#6B4828] border border-[#C4A070] py-2 rounded-lg hover:bg-[#FAF5EE] transition-colors"
+                                >
+                                    Modifica
+                                </Link>
+                                <button
+                                    onClick={() => setDeleteId(room.id)}
+                                    className="flex-1 text-sm text-red-600 border border-red-200 py-2 rounded-lg hover:bg-red-50 transition-colors cursor-pointer"
+                                >
+                                    Elimina
+                                </button>
+                            </div>
+                        </div>
+                    ))}
+                </div>
 
                 {filteredRooms.length === 0 && (
                     <div className="text-center py-16">
@@ -142,8 +251,7 @@ export default function Dashboard() {
 
             {deleteId !== null && (
                 <DeleteConfirmModal
-                    rooms={rooms}
-                    deleteId={deleteId}
+                    roomName={rooms.find((r) => r.id === deleteId)?.name ?? ''}
                     onConfirm={handleDelete}
                     onCancel={() => setDeleteId(null)}
                 />

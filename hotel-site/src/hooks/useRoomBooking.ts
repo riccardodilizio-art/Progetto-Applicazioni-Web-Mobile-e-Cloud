@@ -15,7 +15,9 @@ export function useRoomBooking(capacity: number) {
     const [guests, setGuests] = useState(1)
     const [bookingDone, setBookingDone] = useState(false)
 
-    const today = toISODate(new Date())
+    // useMemo con [] → calcolato una volta sola al mount, stabile per tutta la sessione
+    const today = useMemo(() => toISODate(new Date()), [])
+
     const minCheckOut = useMemo(() => {
         return checkIn
             ? toISODate(new Date(new Date(checkIn).getTime() + 86_400_000))

@@ -1,13 +1,10 @@
-import type { Room } from '../../types/Room'
-
 interface Props {
-    rooms: Room[]
-    deleteId: number
+    roomName: string
     onConfirm: () => void
     onCancel: () => void
 }
 
-export default function DeleteConfirmModal({ rooms, deleteId, onConfirm, onCancel }: Props) {
+export default function DeleteConfirmModal({ roomName, onConfirm, onCancel }: Props) {
     return (
         <div
             className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4"
@@ -27,7 +24,7 @@ export default function DeleteConfirmModal({ rooms, deleteId, onConfirm, onCance
                 <h3 className="text-lg font-semibold text-[#3B2010] text-center mb-2">Elimina camera</h3>
                 <p className="text-sm text-[#9A6840] text-center mb-6">
                     Sei sicuro di voler eliminare{' '}
-                    <strong className="text-[#3B2010]">{rooms.find((r) => r.id === deleteId)?.name}</strong>?
+                    <strong className="text-[#3B2010]">{roomName}</strong>?
                     <br />
                     Questa azione non può essere annullata.
                 </p>
