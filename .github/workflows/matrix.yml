@@ -1,4 +1,42 @@
-name: matrix.yml
+name: CI Matrix
+
 on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
 
 jobs:
+  build:
+    name: Node ${{ matrix.node-version }} on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        node-version: ['18', '20', '22']
+
+    defaults:
+      run:
+        working-directory: ./hotel-site
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+          cache-dependency-path: hotel-site/package-lock.json
+
+      - name: Installa dipendenze
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build
+        run: npm run build
