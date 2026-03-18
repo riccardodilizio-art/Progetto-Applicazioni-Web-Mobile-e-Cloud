@@ -27,7 +27,8 @@ export default function Navbar() {
     const navLinks = [
         { to: '/', label: 'Home' },
         { to: '/rooms', label: 'Camere' },
-        { to: '/ristorante', label: 'Ristorante' }, // ← cambia solo il to
+        { to: '/menu', label: 'Menu' },
+        { to: '/ristorante', label: 'Prenota la cena' },
         { to: '/contacts', label: 'Contatti' },
     ]
 
