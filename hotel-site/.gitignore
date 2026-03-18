@@ -22,3 +22,9 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Visual Studio
+Backend-hotel-site/.vs/
+Backend-hotel-site/bin/
+Backend-hotel-site/obj/
+Backend-hotel-site/*.user
