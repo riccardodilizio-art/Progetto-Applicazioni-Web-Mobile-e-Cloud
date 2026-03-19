@@ -13,7 +13,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: ./hotel-site
+        working-directory: ./Frontend-hotel-site
 
     steps:
       - name: Checkout code
@@ -29,7 +29,7 @@ jobs:
         id: cache-npm
         with:
           path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('hotel-site/package-lock.json') }}
+          key: ${{ runner.os }}-node-${{ hashFiles('Frontend-hotel-site/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
 

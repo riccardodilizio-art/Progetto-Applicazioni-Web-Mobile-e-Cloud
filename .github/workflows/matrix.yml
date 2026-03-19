@@ -19,7 +19,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: ./hotel-site
+        working-directory: ./Frontend-hotel-site
 
     steps:
       - name: Checkout code
@@ -30,7 +30,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: npm
-          cache-dependency-path: hotel-site/package-lock.json
+          cache-dependency-path: Frontend-hotel-site/package-lock.json
 
       - name: Installa dipendenze
         run: npm ci
