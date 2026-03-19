@@ -30,8 +30,6 @@ export function useDinnerReservation() {
 
     const today = useMemo(() => new Date().toISOString().split('T')[0], [])
 
-
-
     function handleSubmitCode(e: React.FormEvent) {
         e.preventDefault()
 

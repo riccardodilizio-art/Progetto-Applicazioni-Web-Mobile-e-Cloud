@@ -6,8 +6,7 @@ export function useRooms() {
     const [rooms, setRooms] = useState(initialRooms)
     const [deleteId, setDeleteId] = useState<number | null>(null)
 
-    const { searchQuery, setSearchQuery, filterType, setFilterType, filteredRooms, reset } =
-        useRoomFilter(rooms)
+    const { searchQuery, setSearchQuery, filterType, setFilterType, filteredRooms, reset } = useRoomFilter(rooms)
 
     function handleDelete() {
         if (deleteId === null) return

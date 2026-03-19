@@ -23,8 +23,7 @@ export default function DeleteConfirmModal({ roomName, onConfirm, onCancel }: Pr
                 </div>
                 <h3 className="text-lg font-semibold text-[#3B2010] text-center mb-2">Elimina camera</h3>
                 <p className="text-sm text-[#9A6840] text-center mb-6">
-                    Sei sicuro di voler eliminare{' '}
-                    <strong className="text-[#3B2010]">{roomName}</strong>?
+                    Sei sicuro di voler eliminare <strong className="text-[#3B2010]">{roomName}</strong>?
                     <br />
                     Questa azione non può essere annullata.
                 </p>
