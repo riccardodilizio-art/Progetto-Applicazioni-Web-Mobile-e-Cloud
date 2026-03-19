@@ -1,7 +1,9 @@
-import { useState } from 'react'
 import { mockRoomReservations, mockDinnerReservations } from '../data/Reservations'
 import type { DinnerOrder, DinnerReservation, RoomReservation } from '../types/Reservation'
 import type { DayMenu } from '../types/Menu'
+import { useState, useMemo } from 'react'
+import { apiFetch } from '../lib/apiClient'
+
 import {
     findReservationByCode,
     findDinnerByDate,
@@ -26,14 +28,13 @@ export function useDinnerReservation() {
     const [orders, setOrders] = useState<DinnerOrder[]>([])
     const [validationError, setValidationError] = useState('')
 
-    const today = new Date().toISOString().split('T')[0]
+    const today = useMemo(() => new Date().toISOString().split('T')[0], [])
 
-    // useEffect RIMOSSO: il polling è già gestito dentro useRateLimit
+
 
     function handleSubmitCode(e: React.FormEvent) {
         e.preventDefault()
 
-        // usa rlStatus direttamente, è già aggiornato da useRateLimit
         if (rlStatus.blocked) {
             setErrorMsg(
                 `Accesso bloccato per troppi tentativi. Riprova alle ${rlStatus.unblockAt?.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })}.`,
@@ -114,9 +115,8 @@ export function useDinnerReservation() {
             return
         }
         try {
-            const response = await fetch('/api/dinner-reservations', {
+            await apiFetch('/dinner-reservations', {
                 method: existingDinner?.status === 'bozza' ? 'PUT' : 'POST',
-                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     dinnerCode: reservation!.dinnerCode,
                     date: today,
@@ -125,15 +125,11 @@ export function useDinnerReservation() {
                     orders,
                 }),
             })
-            if (!response.ok) {
-                const data = await response.json().catch(() => ({}))
-                setErrorMsg(data.message ?? 'Errore durante la prenotazione. Riprova.')
-                setPageState('error')
-                return
-            }
             setPageState('success')
-        } catch {
-            setErrorMsg('Errore di rete. Controlla la connessione e riprova.')
+        } catch (err) {
+            // 401 già gestito da apiFetch → onUnauthorized → redirect login
+            if (err instanceof Error && err.message === 'Sessione scaduta') return
+            setErrorMsg('Errore durante la prenotazione. Riprova.')
             setPageState('error')
         }
     }
