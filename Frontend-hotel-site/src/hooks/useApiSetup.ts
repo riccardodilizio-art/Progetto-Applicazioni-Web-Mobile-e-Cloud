@@ -12,5 +12,6 @@ export function useApiSetup() {
             signOut()
             navigate('/login', { replace: true })
         })
+        return () => registerUnauthorizedHandler(null)
     }, [signOut, navigate])
 }

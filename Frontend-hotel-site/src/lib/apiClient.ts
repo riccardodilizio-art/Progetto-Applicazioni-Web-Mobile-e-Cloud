@@ -1,7 +1,8 @@
 // Callback registrato da useApiSetup (non può essere un hook qui)
 let onUnauthorized: (() => void) | null = null
 
-export function registerUnauthorizedHandler(fn: () => void) {
+export function registerUnauthorizedHandler(fn: (() => void) | null) {
+
     onUnauthorized = fn
 }
 

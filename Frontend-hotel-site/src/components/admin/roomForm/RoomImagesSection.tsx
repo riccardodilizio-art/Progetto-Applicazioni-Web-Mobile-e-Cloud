@@ -70,7 +70,11 @@ export default function RoomImagesSection({ images, error, onAdd, onRemove, onMo
                                     alt={`Immagine ${index + 1}`}
                                     className="w-16 h-16 rounded-lg object-cover flex-shrink-0 bg-[#E8C9A0]"
                                     onError={(e) => {
-                                        ;(e.target as HTMLImageElement).src = IMG_FALLBACK
+                                        const img = e.target as HTMLImageElement
+                                        if (!img.dataset.fallback) {
+                                            img.dataset.fallback = 'true'
+                                            img.src = IMG_FALLBACK
+                                        }
                                     }}
                                 />
                                 <div className="flex-1 min-w-0">

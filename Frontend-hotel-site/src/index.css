@@ -1,4 +1,11 @@
 @import 'tailwindcss';
 @theme {
     --font-heading: 'Cormorant Garamond', serif;
+    --color-hotel-dark: #3B2010;
+    --color-hotel-brown: #6B4828;
+    --color-hotel-tan: #E8C9A0;
+    --color-hotel-muted: #9A6840;
+    --color-hotel-gold: #C4A070;
+    --color-hotel-cream: #FAF0E6;
+    --color-hotel-light: #FAF5EE;
 }

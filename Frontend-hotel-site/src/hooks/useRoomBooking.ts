@@ -5,7 +5,9 @@ function toISODate(d: Date) {
 }
 export function nightsBetween(from: string, to: string): number {
     if (!from || !to) return 0
-    return Math.max(0, Math.round((new Date(to).getTime() - new Date(from).getTime()) / 86_400_000))
+    const a = new Date(from)
+    const b = new Date(to)
+    return Math.max(0, Math.round((Date.UTC(b.getFullYear(), b.getMonth(), b.getDate()) - Date.UTC(a.getFullYear(), a.getMonth(), a.getDate())) / 86_400_000))
 }
 
 export function useRoomBooking(capacity: number) {
@@ -15,13 +17,13 @@ export function useRoomBooking(capacity: number) {
     const [guests, setGuests] = useState(1)
     const [bookingDone, setBookingDone] = useState(false)
 
-    // useMemo con [] → calcolato una volta sola al mount, stabile per tutta la sessione
     const today = useMemo(() => toISODate(new Date()), [])
 
     const minCheckOut = useMemo(() => {
-        return checkIn
-            ? toISODate(new Date(new Date(checkIn).getTime() + 86_400_000))
-            : toISODate(new Date(new Date().getTime() + 86_400_000))
+        const base = checkIn ? new Date(checkIn) : new Date()
+        const next = new Date(base)
+        next.setDate(next.getDate() + 1)
+        return toISODate(next)
     }, [checkIn])
 
     const nights = nightsBetween(checkIn, checkOut)

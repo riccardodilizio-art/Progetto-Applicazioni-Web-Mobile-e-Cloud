@@ -235,6 +235,8 @@ export default function Contacts() {
                                             name="phone"
                                             value={formData.phone}
                                             onChange={handleChange}
+                                            pattern="^\+?[0-9\s\-]{7,15}$"
+                                            title="Inserisci un numero di telefono valido (es. +39 333 640 5167)"
                                             placeholder="+39 000 000 0000"
                                             className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-[#6B4828] focus:border-transparent transition text-sm"
                                         />

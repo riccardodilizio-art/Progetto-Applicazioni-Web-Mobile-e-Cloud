@@ -167,8 +167,8 @@ export default function Menu() {
                         </div>
                         <div className="p-6">
                             <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                {breakfastItems.map((item, i) => (
-                                    <li key={i} className="flex items-start gap-3">
+                                {breakfastItems.map((item) => (
+                                    <li key={item} className="flex items-start gap-3">
                                         <span className="mt-2 w-1.5 h-1.5 rounded-full bg-[#C4A070] flex-shrink-0" />
                                         <span className="text-[#6B4828] text-sm">{item}</span>
                                     </li>
@@ -190,8 +190,8 @@ export default function Menu() {
                         </div>
                         <div className="p-6">
                             <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                {lunchItems.map((item, i) => (
-                                    <li key={i} className="flex items-start gap-3">
+                                {lunchItems.map((item) => (
+                                    <li key={item} className= "flex items-start gap-3">
                                         <span className="mt-2 w-1.5 h-1.5 rounded-full bg-[#C4A070] flex-shrink-0" />
                                         <span className="text-[#6B4828] text-sm">{item}</span>
                                     </li>
@@ -233,8 +233,8 @@ export default function Menu() {
                                     Primi Piatti — uno a scelta
                                 </h4>
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                    {currentMenu.dinner.primi.map((dish, i) => (
-                                        <DishCard key={i} dish={dish} />
+                                    {currentMenu.dinner.primi.map((dish) => (
+                                        <DishCard key={dish.name} dish={dish} />
                                     ))}
                                 </div>
                             </div>
@@ -244,8 +244,8 @@ export default function Menu() {
                                     Secondi Piatti — uno a scelta
                                 </h4>
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                    {currentMenu.dinner.secondi.map((dish, i) => (
-                                        <DishCard key={i} dish={dish} />
+                                    {currentMenu.dinner.secondi.map((dish) => (
+                                        <DishCard key={dish.name} dish={dish} />
                                     ))}
                                 </div>
                             </div>

@@ -39,7 +39,7 @@ export default function Register() {
         try {
             const success = signIn({
                 auth: {
-                    token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjbGllbnRAaG90ZWxleGNlbHNpb3IuaXQiLCJyb2xlIjoiY2xpZW50IiwiZXhwIjo5OTk5OTk5OTk5fQ.dGVzdC1zaWduYXR1cmU',
+                    token: 'eyJhbGci...',
                     type: 'Bearer',
                 },
                 userState: { email, role: 'client', name, surname, phone },
@@ -49,6 +49,8 @@ export default function Register() {
             } else {
                 setError('Errore durante la registrazione')
             }
+        } catch {
+            setError('Errore di rete. Riprova più tardi.')
         } finally {
             setIsLoading(false)
         }

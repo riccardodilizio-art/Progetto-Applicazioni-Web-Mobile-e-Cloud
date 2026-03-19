@@ -12,7 +12,8 @@ export default function Dashboard() {
     const signOut = useSignOut()
     const navigate = useNavigate()
     const authUser = useAuthUser<UserState>()
-    const [isLoading] = [false]
+    const isLoading = false
+
 
     const {
         rooms,
