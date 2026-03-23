@@ -4,7 +4,6 @@
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <RootNamespace>Backend_hotel_site</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,10 +12,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Infrastructure\" />
-    <Folder Include="Domain\Entities\" />
-    <Folder Include="Application\" />
-    <Folder Include="API\" />
+    <ProjectReference Include="..\Hotel.Infrastructure\Hotel.Infrastructure.csproj" />
+    <ProjectReference Include="..\Hotel.Application\Hotel.Application.csproj" />
   </ItemGroup>
 
 </Project>
