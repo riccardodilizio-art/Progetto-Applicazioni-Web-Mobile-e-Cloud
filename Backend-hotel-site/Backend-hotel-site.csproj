@@ -13,7 +13,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Hotel.Domain\Models\" />
     <Folder Include="Infrastructure\" />
     <Folder Include="Domain\Entities\" />
     <Folder Include="Application\" />
