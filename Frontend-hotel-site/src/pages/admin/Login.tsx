@@ -23,7 +23,7 @@ export default function Login() {
         setError('')
 
         // --- MOCK: sostituire con chiamata API al backend ---
-        if (email === import.meta.env.VITE_ADMIN_EMAIL && password === import.meta.env.VITE_ADMIN_PASSWORD) {
+        if (email === 'admin@hotelexcelsior.it' && password === 'admin123') {
             const success = signIn({
                 auth: {
                     token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkBob3RlbGV4Y2Vsc2lvci5pdCIsInJvbGUiOiJhZG1pbiIsImV4cCI6OTk5OTk5OTk5OX0.dGVzdC1zaWduYXR1cmU',

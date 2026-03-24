@@ -6,15 +6,15 @@ import type { UserState } from '../../types/User'
 
 const mockClients = [
     {
-        email: import.meta.env.VITE_CLIENT_EMAIL,
-        password: import.meta.env.VITE_CLIENT_PASSWORD,
+        email: 'cliente@hotelexcelsior.it',
+        password: 'cliente123',
         name: 'Mario',
         surname: 'Rossi',
         phone: '333 1234567',
     },
     {
-        email: import.meta.env.VITE_GUEST_EMAIL,
-        password: import.meta.env.VITE_GUEST_PASSWORD,
+        email: 'guest@hotelexcelsior.it',
+        password: 'guest123',
         name: 'Laura',
         surname: 'Bianchi',
         phone: '340 9876543',
