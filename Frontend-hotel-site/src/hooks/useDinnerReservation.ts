@@ -40,8 +40,16 @@ export function useDinnerReservation() {
             setPageState('error')
             return
         }
+        const trimmedCode = code.trim()
+        const trimmedRoom = roomNumber.trim()
 
-        const found = findReservationByCode(code.trim(), roomNumber.trim(), mockRoomReservations)
+        if (!trimmedCode || !trimmedRoom) {
+            setErrorMsg('Inserisci codice prenotazione e numero camera.')
+            setPageState('error')
+            return
+        }
+
+        const found = findReservationByCode(trimmedCode, trimmedRoom, mockRoomReservations)
         if (!found) {
             const newRL = onFailure()
             setErrorMsg(

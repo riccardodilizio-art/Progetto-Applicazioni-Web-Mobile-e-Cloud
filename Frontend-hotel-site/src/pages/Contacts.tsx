@@ -8,14 +8,17 @@ export default function Contacts() {
         message: '',
     })
     const [submitted, setSubmitted] = useState(false)
+    const [isLoading, setIsLoading] = useState(false)
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value })
     }
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
+        setIsLoading(true)
         // TODO: chiamata API per inviare il messaggio
+        setIsLoading(false)
         setSubmitted(true)
     }
 
@@ -255,11 +258,15 @@ export default function Contacts() {
                                             className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-[#6B4828] focus:border-transparent transition resize-none text-sm"
                                         />
                                     </div>
+
                                     <button
                                         type="submit"
+                                        disabled={isLoading}
                                         className="w-full text-white font-semibold py-3 rounded-lg transition relative overflow-hidden bg-[#6B4828]"
                                     >
-                                        <span className="relative z-10">Invia messaggio</span>
+                                        <span className="relative z-10">
+                                            {isLoading ? 'Invio in corso...' : 'Invia messaggio'}
+                                        </span>
                                         <svg
                                             className="absolute bottom-0 left-0 w-full opacity-25"
                                             viewBox="0 0 400 24"

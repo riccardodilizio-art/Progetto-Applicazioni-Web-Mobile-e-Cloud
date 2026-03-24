@@ -39,7 +39,7 @@ export default function Register() {
         try {
             const success = signIn({
                 auth: {
-                    token: 'eyJhbGci...',
+                    token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkBob3RlbGV4Y2Vsc2lvci5pdCIsInJvbGUiOiJhZG1pbiIsImV4cCI6OTk5OTk5OTk5OX0.dGVzdC1zaWduYXR1cmU',
                     type: 'Bearer',
                 },
                 userState: { email, role: 'client', name, surname, phone },

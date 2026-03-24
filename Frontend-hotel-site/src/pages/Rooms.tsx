@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { rooms } from '../data/Rooms'
 import RoomCard from '../components/RoomCard'
 import type { RoomType } from '../types/Room'
-import LoadingSpinner from '../components/LoadingSpinner'
 
 const filters: { label: string; value: RoomType | 'all' }[] = [
     { label: 'Tutte', value: 'all' },
@@ -14,11 +13,8 @@ const filters: { label: string; value: RoomType | 'all' }[] = [
 
 export default function Rooms() {
     const [activeFilter, setActiveFilter] = useState<RoomType | 'all'>('all')
-    const [isLoading] = useState(false)
 
     const filteredRooms = activeFilter === 'all' ? rooms : rooms.filter((r) => r.type === activeFilter)
-
-    if (isLoading) return <LoadingSpinner message="Caricamento camere..." />
 
     return (
         <div className="min-h-screen bg-[#FAF0E6]">

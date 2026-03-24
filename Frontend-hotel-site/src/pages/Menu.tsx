@@ -191,7 +191,7 @@ export default function Menu() {
                         <div className="p-6">
                             <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 {lunchItems.map((item) => (
-                                    <li key={item} className= "flex items-start gap-3">
+                                    <li key={item} className="flex items-start gap-3">
                                         <span className="mt-2 w-1.5 h-1.5 rounded-full bg-[#C4A070] flex-shrink-0" />
                                         <span className="text-[#6B4828] text-sm">{item}</span>
                                     </li>

@@ -4,7 +4,6 @@ import useAuthUser from 'react-auth-kit/hooks/useAuthUser'
 import { typeLabels } from '../../data/roomUtils'
 import type { RoomType } from '../../types/Room'
 import type { UserState } from '../../types/User'
-import LoadingSpinner from '../../components/LoadingSpinner'
 import DeleteConfirmModal from '../../components/admin/DeleteConfirmModal'
 import { useRooms } from '../../hooks/useRooms'
 
@@ -12,8 +11,6 @@ export default function Dashboard() {
     const signOut = useSignOut()
     const navigate = useNavigate()
     const authUser = useAuthUser<UserState>()
-    const isLoading = false
-
 
     const {
         rooms,
@@ -25,11 +22,9 @@ export default function Dashboard() {
         filterType,
         setFilterType,
         handleDelete,
-        handleToggleAvailability, // ← assicurati che ci sia
+        handleToggleAvailability,
         clearFilters,
     } = useRooms()
-
-    if (isLoading) return <LoadingSpinner message="Caricamento camere..." />
 
     const handleLogout = () => {
         signOut()

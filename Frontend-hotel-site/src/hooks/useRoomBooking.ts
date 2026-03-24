@@ -7,7 +7,14 @@ export function nightsBetween(from: string, to: string): number {
     if (!from || !to) return 0
     const a = new Date(from)
     const b = new Date(to)
-    return Math.max(0, Math.round((Date.UTC(b.getFullYear(), b.getMonth(), b.getDate()) - Date.UTC(a.getFullYear(), a.getMonth(), a.getDate())) / 86_400_000))
+    return Math.max(
+        0,
+        Math.round(
+            (Date.UTC(b.getFullYear(), b.getMonth(), b.getDate()) -
+                Date.UTC(a.getFullYear(), a.getMonth(), a.getDate())) /
+                86_400_000,
+        ),
+    )
 }
 
 export function useRoomBooking(capacity: number) {

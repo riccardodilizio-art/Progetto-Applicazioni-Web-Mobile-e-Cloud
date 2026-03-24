@@ -1,4 +1,5 @@
 import type { Room } from '../../types/Room'
+import { useEffect } from 'react'
 
 interface Props {
     room: Room
@@ -33,10 +34,22 @@ export default function BookingModal({
 }: Props) {
     const total = nights * room.pricePerNight
 
+    useEffect(() => {
+        const handler = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') onClose()
+        }
+        document.addEventListener('keydown', handler)
+        return () => document.removeEventListener('keydown', handler)
+    }, [onClose])
+
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
-            <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 z-10">
+            <div
+                role="dialog"
+                aria-modal="true"
+                className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 z-10"
+            >
                 {bookingDone ? (
                     <div className="text-center py-4">
                         <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">

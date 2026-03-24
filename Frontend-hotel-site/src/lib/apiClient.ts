@@ -2,20 +2,20 @@
 let onUnauthorized: (() => void) | null = null
 
 export function registerUnauthorizedHandler(fn: (() => void) | null) {
-
     onUnauthorized = fn
 }
 
 export async function apiFetch<T = unknown>(path: string, options: RequestInit = {}): Promise<T> {
     const baseUrl = import.meta.env.VITE_API_URL ?? '/api'
 
+    const { headers: customHeaders, ...rest } = options
     const res = await fetch(`${baseUrl}${path}`, {
+        ...rest,
         headers: {
             'Content-Type': 'application/json',
-            ...options.headers,
+            ...customHeaders,
         },
-        credentials: 'include', // invia il cookie JWT di react-auth-kit
-        ...options,
+        credentials: 'include',
     })
 
     if (res.status === 401) {

@@ -1,17 +1,17 @@
 import { Link } from 'react-router-dom'
 import { rooms } from '../data/Rooms'
 import { services } from '../data/Services'
-
-const featuredRooms = rooms.filter((r) => r.available).slice(0, 3)
+import { useMemo } from 'react'
 
 export default function Home() {
+    const featuredRooms = useMemo(() => rooms.filter((r) => r.available).slice(0, 3), [rooms])
     return (
         <div>
             {/* ── Hero Section ── */}
-            <section className="relative h-[85vh] min-h-[500px] overflow-hidden">
+            <section className="relative h-[85vh] min-h-[500px] overflow-hidden bg-hotel-dark">
                 <img
                     src="https://images.unsplash.com/photo-1566073771259-6a8506099945?w=1600"
-                    alt="Hotel Excelsior"
+                    alt="Vista esterna dell'Hotel Excelsior Pesaro"
                     className="absolute inset-0 w-full h-full object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/10 to-[#E8C9A0]/60" />

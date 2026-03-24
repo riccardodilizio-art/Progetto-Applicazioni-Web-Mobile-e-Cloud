@@ -5,6 +5,7 @@ import LockedView from '../components/restaurant/LockedView'
 import SuccessView from '../components/restaurant/SuccessView'
 import PageHeader from '../components/restaurant/PageHeader'
 import CoverCard from '../components/restaurant/CoverCard'
+import LoadingSpinner from '../components/LoadingSpinner.tsx'
 
 export default function Restaurant() {
     const {
@@ -117,6 +118,5 @@ export default function Restaurant() {
             </div>
         )
     }
-
-    return null
+    return <LoadingSpinner message="Caricamento..." />
 }

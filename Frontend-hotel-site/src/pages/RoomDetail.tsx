@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { rooms } from '../data/Rooms'
-import LoadingSpinner from '../components/LoadingSpinner'
 import BookingModal from '../components/room/BookingModal'
 import { useRoomBooking } from '../hooks/useRoomBooking'
 import { typeLabels } from '../data/roomUtils'
@@ -10,7 +9,6 @@ export default function RoomDetail() {
     const { id } = useParams<{ id: string }>()
     const room = rooms.find((r) => r.id === Number(id))
     const [currentImage, setCurrentImage] = useState(0)
-    const [isLoading] = useState(false)
 
     const booking = useRoomBooking(room?.capacity ?? 1)
 
@@ -25,8 +23,6 @@ export default function RoomDetail() {
             </div>
         )
     }
-
-    if (isLoading) return <LoadingSpinner message="Caricamento camere..." />
 
     return (
         <div className="min-h-screen bg-[#FAF0E6]">
@@ -60,7 +56,6 @@ export default function RoomDetail() {
                             </div>
                         )}
                     </div>
-                    {/* Info */}
                     {/* Info */}
                     <div>
                         <div className="flex items-center gap-3 mb-3">
