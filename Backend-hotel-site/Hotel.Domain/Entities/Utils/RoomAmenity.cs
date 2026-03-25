@@ -8,7 +8,6 @@
 
         public Room Room { get; set; } = null!;
 
-        public RoomAmenity() { }
 
 
     }

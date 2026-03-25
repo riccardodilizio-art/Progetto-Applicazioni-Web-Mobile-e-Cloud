@@ -11,10 +11,12 @@ namespace Backend_hotel_site.Hotel.Domain.Entities
         public String CodiceCena { get; set; } = string.Empty;
         public DateOnly CheckIn { get; set; } = DateOnly.FromDateTime(DateTime.UtcNow);
         public DateOnly CheckOut { get; set; } = DateOnly.FromDateTime(DateTime.UtcNow);
-        private int _numeroNotti => this.CheckOut.DayNumber - this.CheckIn.DayNumber;
-        public double PrezzoTotale { get; set; }
+        public int NumeroNotti => CheckOut.DayNumber - CheckIn.DayNumber;
+        public decimal PrezzoTotale { get; set; }
         public State Stato { get; set; } = State.IN_ATTESA;
         public DateTime DataPrenotazione { get; set; } = DateTime.UtcNow;
+
+        public decimal PrezzoPerNotte { get; set; };
         public virtual User User { get; set; } = null!;
         public virtual Room Room { get; set; } = null!;
 

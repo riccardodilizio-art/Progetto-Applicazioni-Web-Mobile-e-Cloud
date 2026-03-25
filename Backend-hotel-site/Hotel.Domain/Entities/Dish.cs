@@ -10,5 +10,8 @@ namespace Backend_hotel_site.Hotel.Domain.Entities
         public String Descrizione { get; set; } = string.Empty;
         public DishCategory Categoria { get; set; }
         public DishType TipoPiatto { get; set; }
+
+        public Guid MenuId { get; set; }
+        public Menu Menu { get; set; } = null!;
     }
 }
