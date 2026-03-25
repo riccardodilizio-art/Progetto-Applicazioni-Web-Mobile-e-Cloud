@@ -16,7 +16,7 @@ namespace Backend_hotel_site.Hotel.Domain.Entities
         public State Stato { get; set; } = State.IN_ATTESA;
         public DateTime DataPrenotazione { get; set; } = DateTime.UtcNow;
 
-        public decimal PrezzoPerNotte { get; set; };
+        public decimal PrezzoPerNotte { get; set; }
         public virtual User User { get; set; } = null!;
         public virtual Room Room { get; set; } = null!;
 
