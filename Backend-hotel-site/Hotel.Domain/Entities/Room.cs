@@ -1,5 +1,4 @@
-﻿using Backend_hotel_site.Hotel.Domain.Entities.Enums;
-using Backend_hotel_site.Hotel.Domain.Entities.Utils;
+﻿using Hotel.Domain.Enums;
 
 namespace Hotel.Domain.Entities
 {

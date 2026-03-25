@@ -1,7 +1,6 @@
-﻿using Backend_hotel_site.Hotel.Domain.Entities.Enums;
-using Hotel.Domain.Entities;
+﻿using Hotel.Domain.Enums;
 
-namespace Hotel.Domain.Entitiess
+namespace Hotel.Domain.Entities
 {
     public class RoomReservation
     {

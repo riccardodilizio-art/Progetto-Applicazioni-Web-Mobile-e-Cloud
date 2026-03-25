@@ -1,4 +1,4 @@
-﻿namespace Backend_hotel_site.Hotel.Domain.Entities.Utils
+﻿namespace Hotel.Domain.Entities
 {
     public class RoomAmenity
     {

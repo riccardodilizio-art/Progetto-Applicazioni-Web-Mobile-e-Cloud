@@ -1,4 +1,4 @@
-﻿using Backend_hotel_site.Hotel.Domain.Entities.Enums;
+﻿using Hotel.Domain.Enums;
 
 namespace Hotel.Domain.Entities
 {
