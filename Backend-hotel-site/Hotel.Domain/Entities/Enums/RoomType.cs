@@ -1,4 +1,4 @@
-﻿namespace Backend_hotel_site.Hotel.Domain.Entities.Enums
+﻿namespace Hotel.Domain.Enums
 {
     public enum RoomType
     {

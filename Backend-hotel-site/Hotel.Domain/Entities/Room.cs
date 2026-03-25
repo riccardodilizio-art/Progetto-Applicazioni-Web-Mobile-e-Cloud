@@ -1,7 +1,7 @@
 ﻿using Backend_hotel_site.Hotel.Domain.Entities.Enums;
 using Backend_hotel_site.Hotel.Domain.Entities.Utils;
 
-namespace Backend_hotel_site.Hotel.Domain.Entities
+namespace Hotel.Domain.Entities
 {
     public class Room
     {
