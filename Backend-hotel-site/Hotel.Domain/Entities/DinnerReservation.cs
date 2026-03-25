@@ -17,7 +17,7 @@ namespace Backend_hotel_site.Hotel.Domain.Entities
         public DateTime dataCreazione { get; set; } = DateTime.UtcNow;
 
         public virtual RoomReservation RoomReservation { get; set; } = null!;
-        public virtual ICollection<DinnerOrder> Ordini { get; set; } = new HashSet<DinnerCode>();
+        public virtual ICollection<DinnerOrder> Ordini { get; set; } = new HashSet<DinnerOrder>();
 
 
 
