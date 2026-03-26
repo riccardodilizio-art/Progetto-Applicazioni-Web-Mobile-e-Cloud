@@ -71,6 +71,7 @@ export default function Menu() {
                     <div className="bg-white rounded-2xl shadow-sm border border-[#E8C9A0] p-6 text-center">
                         <div className="w-12 h-12 bg-[#E8C9A0] rounded-full flex items-center justify-center mx-auto mb-4">
                             <svg
+                                aria-hidden="true"
                                 className="w-6 h-6 text-[#6B4828]"
                                 fill="none"
                                 stroke="currentColor"
@@ -93,6 +94,7 @@ export default function Menu() {
                     <div className="bg-white rounded-2xl shadow-sm border border-[#E8C9A0] p-6 text-center">
                         <div className="w-12 h-12 bg-[#E8C9A0] rounded-full flex items-center justify-center mx-auto mb-4">
                             <svg
+                                aria-hidden="true"
                                 className="w-6 h-6 text-[#6B4828]"
                                 fill="none"
                                 stroke="currentColor"
@@ -115,6 +117,7 @@ export default function Menu() {
                     <div className="bg-white rounded-2xl shadow-sm border border-[#E8C9A0] p-6 text-center">
                         <div className="w-12 h-12 bg-[#E8C9A0] rounded-full flex items-center justify-center mx-auto mb-4">
                             <svg
+                                aria-hidden="true"
                                 className="w-6 h-6 text-[#6B4828]"
                                 fill="none"
                                 stroke="currentColor"
@@ -142,6 +145,7 @@ export default function Menu() {
                         <button
                             key={d.id}
                             onClick={() => setSelectedDay(d.id)}
+                            aria-pressed={selectedDay === d.id}
                             className={`px-5 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
                                 selectedDay === d.id
                                     ? 'bg-[#3B2010] text-[#E8C9A0] shadow-md'

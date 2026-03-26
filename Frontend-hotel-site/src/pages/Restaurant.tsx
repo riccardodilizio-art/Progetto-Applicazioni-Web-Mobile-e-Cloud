@@ -5,7 +5,7 @@ import LockedView from '../components/restaurant/LockedView'
 import SuccessView from '../components/restaurant/SuccessView'
 import PageHeader from '../components/restaurant/PageHeader'
 import CoverCard from '../components/restaurant/CoverCard'
-import LoadingSpinner from '../components/LoadingSpinner.tsx'
+import LoadingSpinner from '../components/LoadingSpinner'
 
 export default function Restaurant() {
     const {

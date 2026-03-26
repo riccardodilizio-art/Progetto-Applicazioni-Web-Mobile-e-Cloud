@@ -16,8 +16,17 @@ export default function Navbar() {
     const signOut = useSignOut()
 
     useEffect(() => {
-        const handleScroll = () => setScrolled(window.scrollY > 20)
-        window.addEventListener('scroll', handleScroll)
+        let ticking = false
+        const handleScroll = () => {
+            if (!ticking) {
+                requestAnimationFrame(() => {
+                    setScrolled(window.scrollY > 20)
+                    ticking = false
+                })
+                ticking = true
+            }
+        }
+        window.addEventListener('scroll', handleScroll, { passive: true })
         return () => window.removeEventListener('scroll', handleScroll)
     }, [])
 
@@ -111,6 +120,7 @@ export default function Navbar() {
                     className="md:hidden flex flex-col gap-1.5 p-1 bg-transparent border-none cursor-pointer"
                     onClick={() => setIsOpen(!isOpen)}
                     aria-label="Menu"
+                    aria-expanded={isOpen}
                 >
                     <span
                         className={`block w-6 h-px bg-[#3B2010] transition-all duration-300 origin-center
@@ -130,8 +140,8 @@ export default function Navbar() {
             {/* Mobile drawer */}
             <div
                 className={`md:hidden flex flex-col px-6 border-t border-[#9A6840]/20
-                    bg-[#E8C9A0]/70 backdrop-blur-md overflow-hidden transition-all duration-300
-                    ${isOpen ? 'max-h-screen py-6' : 'max-h-0 py-0'}`}
+                    bg-[#E8C9A0]/70 backdrop-blur-md overflow-hidden transition-all duration-300`}
+                aria-hidden={!isOpen}
             >
                 {/* Navlink principali */}
                 <div className="flex flex-col gap-5">

@@ -34,6 +34,7 @@ export default function ForgotPassword() {
                         <div className="mx-auto w-14 h-14 rounded-full bg-[#F5ECD7] flex items-center justify-center">
                             {/* icona email */}
                             <svg
+                                aria-hidden="true"
                                 className="w-7 h-7 text-[#9A6840]"
                                 fill="none"
                                 stroke="currentColor"

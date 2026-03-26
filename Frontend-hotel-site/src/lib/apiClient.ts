@@ -8,11 +8,14 @@ export function registerUnauthorizedHandler(fn: (() => void) | null) {
 export async function apiFetch<T = unknown>(path: string, options: RequestInit = {}): Promise<T> {
     const baseUrl = import.meta.env.VITE_API_URL ?? '/api'
 
-    const { headers: customHeaders, ...rest } = options
+    const { headers: customHeaders, body, ...rest } = options
+    const isFormData = body instanceof FormData
+    const defaultHeaders: Record<string, string> = isFormData ? {} : { 'Content-Type': 'application/json' }
     const res = await fetch(`${baseUrl}${path}`, {
         ...rest,
+        body,
         headers: {
-            'Content-Type': 'application/json',
+            ...defaultHeaders,
             ...customHeaders,
         },
         credentials: 'include',
@@ -24,7 +27,8 @@ export async function apiFetch<T = unknown>(path: string, options: RequestInit =
     }
 
     if (!res.ok) {
-        throw new Error(`Errore ${res.status}`)
+        const errorBody = await res.text().catch(() => '')
+        throw new Error(`Errore ${res.status}: ${errorBody}`)
     }
 
     // 204 No Content (es. DELETE)

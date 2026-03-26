@@ -34,26 +34,29 @@ export default function BookingModal({
 }: Props) {
     const total = nights * room.pricePerNight
 
+    // Lock body scroll
     useEffect(() => {
-        const handler = (e: KeyboardEvent) => {
-            if (e.key === 'Escape') onClose()
+        document.body.style.overflow = 'hidden'
+        return () => {
+            document.body.style.overflow = ''
         }
-        document.addEventListener('keydown', handler)
-        return () => document.removeEventListener('keydown', handler)
-    }, [onClose])
+    }, [])
+
+    // Focus trap
+    useEffect(() => {
+        const dialog = document.querySelector('[role="dialog"]') as HTMLElement
+        if (dialog) dialog.focus()
+    }, [])
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
-            <div
-                role="dialog"
-                aria-modal="true"
-                className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 z-10"
-            >
+            <div role="dialog" aria-modal="true" aria-labelledby="booking-title" tabIndex={-1} className="...">
                 {bookingDone ? (
                     <div className="text-center py-4">
                         <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                             <svg
+                                aria-hidden="true"
                                 className="w-8 h-8 text-green-600"
                                 fill="none"
                                 stroke="currentColor"
@@ -82,7 +85,9 @@ export default function BookingModal({
                     <>
                         <div className="flex justify-between items-start mb-5">
                             <div>
-                                <h2 className="text-xl font-bold text-[#3B2010]">Prenota {room.name}</h2>
+                                <h2 id="booking-title" className="...">
+                                    Prenota {room.name}
+                                </h2>
                                 <p className="text-sm text-[#9A6840]">€{room.pricePerNight} / notte</p>
                             </div>
                             <button
@@ -90,7 +95,13 @@ export default function BookingModal({
                                 className="text-gray-400 hover:text-gray-600 transition cursor-pointer"
                                 aria-label="Chiudi"
                             >
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg
+                                    aria-hidden="true"
+                                    className="w-5 h-5"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
                                     <path
                                         strokeLinecap="round"
                                         strokeLinejoin="round"

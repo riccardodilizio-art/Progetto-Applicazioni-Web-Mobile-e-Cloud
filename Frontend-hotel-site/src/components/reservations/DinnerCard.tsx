@@ -1,14 +1,11 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import type { DinnerReservation } from '../../types/Reservation'
 import StatusBadge from './StatusBadge'
-
-function formatDate(iso: string) {
-    return new Date(iso).toLocaleDateString('it-IT', { day: '2-digit', month: 'long', year: 'numeric' })
-}
+import { formatDate } from '../../lib/dateUtils'
 
 export default function DinnerCard({ d, onCancel }: { d: DinnerReservation; onCancel: () => void }) {
     const [confirming, setConfirming] = useState(false)
-    const today = new Date().toISOString().split('T')[0]
+    const today = useMemo(() => new Date().toISOString().split('T')[0], [])
     const isCancellable = d.status !== 'annullata' && d.date > today
 
     return (

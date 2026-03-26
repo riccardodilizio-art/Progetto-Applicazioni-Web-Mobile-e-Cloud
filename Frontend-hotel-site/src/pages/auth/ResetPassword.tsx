@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useSearchParams, useNavigate, Link } from 'react-router-dom'
+import { apiFetch } from '../../lib/apiClient.ts'
 
 export default function ResetPassword() {
     const [searchParams] = useSearchParams()
@@ -40,7 +41,10 @@ export default function ResetPassword() {
 
         setLoading(true)
         try {
-            // TODO: POST /auth/reset-password  { token, password: next }
+            await apiFetch('/auth/reset-password', {
+                method: 'POST',
+                body: JSON.stringify({ token, password: next }),
+            })
             navigate('/login')
         } catch {
             setError('Link scaduto o non valido. Richiedine uno nuovo.')

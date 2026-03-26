@@ -53,6 +53,9 @@ export default function RoomInfoSection({ data, errors, onChange }: Props) {
                 <div className="flex items-center gap-3 pt-6">
                     <button
                         type="button"
+                        role="switch"
+                        aria-checked={data.available}
+                        aria-label={data.available ? 'Camera disponibile' : 'Camera non disponibile'}
                         onClick={() => onChange('available', !data.available)}
                         className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 focus:outline-none ${
                             data.available ? 'bg-green-500' : 'bg-[#E8C9A0]'

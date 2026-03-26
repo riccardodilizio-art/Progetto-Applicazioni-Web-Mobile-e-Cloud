@@ -13,11 +13,12 @@ export function getMenuForDate(dateStr: string): DayMenu {
 
 // ── Date / Soggiorno ─────────────────────────────────────────────
 export function isBeforeCutoff(): boolean {
-    return new Date().getHours() < 18
+    return new Date().getHours() < 23
 }
 
 export function isTodayInStay(checkIn: string, checkOut: string): boolean {
-    const today = new Date().toISOString().split('T')[0]
+    const now = new Date()
+    const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
     return today >= checkIn && today < checkOut
 }
 

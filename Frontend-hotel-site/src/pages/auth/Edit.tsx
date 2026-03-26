@@ -6,6 +6,7 @@ import type { UserState } from '../../types/User'
 import ProfileForm from './ProfileForm'
 import PasswordForm from './PasswordForm'
 import useAuthHeader from 'react-auth-kit/hooks/useAuthHeader'
+import { apiFetch } from '../../lib/apiClient.ts'
 
 export default function Edit() {
     const user = useAuthUser<UserState>()
@@ -35,8 +36,11 @@ export default function Edit() {
         // Il backend verifica la password attuale e invia l'OTP via email
     }
 
-    const handleSavePassword = (_current: string, _next: string, _otp: string) => {
-        // TODO: POST /auth/confirm-password-change con { current, next, otp }
+    const handleSavePassword = async (current: string, next: string, otp: string) => {
+        await apiFetch('/auth/confirm-password-change', {
+            method: 'POST',
+            body: JSON.stringify({ current, next, otp }),
+        })
     }
 
     return (

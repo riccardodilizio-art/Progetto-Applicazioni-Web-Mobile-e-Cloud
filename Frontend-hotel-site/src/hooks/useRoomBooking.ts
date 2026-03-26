@@ -24,7 +24,7 @@ export function useRoomBooking(capacity: number) {
     const [guests, setGuests] = useState(1)
     const [bookingDone, setBookingDone] = useState(false)
 
-    const today = useMemo(() => toISODate(new Date()), [])
+    const today = toISODate(new Date())
 
     const minCheckOut = useMemo(() => {
         const base = checkIn ? new Date(checkIn) : new Date()

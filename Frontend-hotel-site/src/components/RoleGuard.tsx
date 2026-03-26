@@ -10,9 +10,10 @@ interface RoleGuardProps {
 
 export default function RoleGuard({ role, children, fallbackPath }: RoleGuardProps) {
     const authUser = useAuthUser<UserState>()
+    const defaultFallback = role === 'admin' ? '/admin/login' : '/login'
 
     if (!authUser || authUser.role !== role) {
-        return <Navigate to={fallbackPath || '/admin/login'} replace />
+        return <Navigate to={fallbackPath || defaultFallback} replace />
     }
 
     return <>{children}</>

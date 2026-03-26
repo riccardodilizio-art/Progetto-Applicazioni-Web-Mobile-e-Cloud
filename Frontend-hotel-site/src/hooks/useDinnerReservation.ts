@@ -1,7 +1,7 @@
 import { mockRoomReservations, mockDinnerReservations } from '../data/Reservations'
 import type { DinnerOrder, DinnerReservation, RoomReservation } from '../types/Reservation'
 import type { DayMenu } from '../types/Menu'
-import { useState, useMemo } from 'react'
+import { useState } from 'react'
 import { apiFetch } from '../lib/apiClient'
 
 import {
@@ -28,7 +28,7 @@ export function useDinnerReservation() {
     const [orders, setOrders] = useState<DinnerOrder[]>([])
     const [validationError, setValidationError] = useState('')
 
-    const today = useMemo(() => new Date().toISOString().split('T')[0], [])
+    const today = new Date().toISOString().split('T')[0]
 
     function handleSubmitCode(e: React.FormEvent) {
         e.preventDefault()
@@ -116,6 +116,7 @@ export function useDinnerReservation() {
     }
 
     async function handleConfirm() {
+        if (!reservation || !todayMenu) return
         if (orders.some((o) => !o.primo || !o.secondo)) {
             setValidationError('Seleziona primo e secondo per ogni coperto.')
             return
@@ -124,9 +125,9 @@ export function useDinnerReservation() {
             await apiFetch('/dinner-reservations', {
                 method: existingDinner?.status === 'bozza' ? 'PUT' : 'POST',
                 body: JSON.stringify({
-                    dinnerCode: reservation!.dinnerCode,
+                    dinnerCode: reservation.dinnerCode,
                     date: today,
-                    day: todayMenu!.day,
+                    day: todayMenu.day,
                     totalCovers: covers,
                     orders,
                 }),
