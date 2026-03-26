@@ -1,38 +1,41 @@
 import type { Room } from '../../types/Room'
-import { useEffect } from 'react'
+import type { useRoomBooking } from '../../hooks/useRoomBooking'
+import { useEffect, useRef } from 'react'
+
+type BookingState = ReturnType<typeof useRoomBooking>
 
 interface Props {
     room: Room
-    checkIn: string
-    checkOut: string
-    guests: number
-    nights: number
-    today: string
-    minCheckOut: string
-    bookingDone: boolean
-    onCheckInChange: (v: string) => void
-    onCheckOutChange: (v: string) => void
-    onGuestsChange: (n: number) => void
-    onSubmit: (e: React.FormEvent) => void
-    onClose: () => void
+    booking: BookingState
 }
 
-export default function BookingModal({
-    room,
-    checkIn,
-    checkOut,
-    guests,
-    nights,
-    today,
-    minCheckOut,
-    bookingDone,
-    onCheckInChange,
-    onCheckOutChange,
-    onGuestsChange,
-    onSubmit,
-    onClose,
-}: Props) {
+export default function BookingModal({ room, booking }: Props) {
+    const {
+        checkIn,
+        checkOut,
+        guests,
+        nights,
+        today,
+        minCheckOut,
+        bookingDone,
+        handleCheckInChange,
+        setCheckOut,
+        setGuests,
+        handleBook,
+        handleClose,
+    } = booking
+
     const total = nights * room.pricePerNight
+    const dialogRef = useRef<HTMLDivElement>(null)
+
+    // Escape per chiudere
+    useEffect(() => {
+        const handler = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') handleClose()
+        }
+        document.addEventListener('keydown', handler)
+        return () => document.removeEventListener('keydown', handler)
+    }, [handleClose])
 
     // Lock body scroll
     useEffect(() => {
@@ -44,14 +47,50 @@ export default function BookingModal({
 
     // Focus trap
     useEffect(() => {
-        const dialog = document.querySelector('[role="dialog"]') as HTMLElement
-        if (dialog) dialog.focus()
-    }, [])
+        const dialog = dialogRef.current
+        if (!dialog) return
+
+        dialog.focus()
+
+        const handleTab = (e: KeyboardEvent) => {
+            if (e.key !== 'Tab') return
+
+            const focusable = dialog.querySelectorAll<HTMLElement>(
+                'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+            )
+            if (focusable.length === 0) return
+
+            const first = focusable[0]
+            const last = focusable[focusable.length - 1]
+
+            if (e.shiftKey) {
+                if (document.activeElement === first) {
+                    e.preventDefault()
+                    last.focus()
+                }
+            } else {
+                if (document.activeElement === last) {
+                    e.preventDefault()
+                    first.focus()
+                }
+            }
+        }
+
+        dialog.addEventListener('keydown', handleTab)
+        return () => dialog.removeEventListener('keydown', handleTab)
+    }, [bookingDone])
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
-            <div role="dialog" aria-modal="true" aria-labelledby="booking-title" tabIndex={-1} className="...">
+            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={handleClose} />
+            <div
+                ref={dialogRef}
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="booking-title"
+                tabIndex={-1}
+                className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 z-10 outline-none"
+            >
                 {bookingDone ? (
                     <div className="text-center py-4">
                         <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -62,10 +101,17 @@ export default function BookingModal({
                                 stroke="currentColor"
                                 viewBox="0 0 24 24"
                             >
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M5 13l4 4L19 7"
+                                />
                             </svg>
                         </div>
-                        <h3 className="text-xl font-bold text-[#3B2010] mb-2">Prenotazione confermata!</h3>
+                        <h3 id="booking-title" className="text-xl font-bold text-[#3B2010] mb-2">
+                            Prenotazione confermata!
+                        </h3>
                         <p className="text-gray-600 text-sm mb-1">
                             <strong>{room.name}</strong>
                         </p>
@@ -75,7 +121,7 @@ export default function BookingModal({
                         </p>
                         <p className="text-[#6B4828] font-bold text-lg mb-5">Totale: €{total}</p>
                         <button
-                            onClick={onClose}
+                            onClick={handleClose}
                             className="w-full bg-[#3B2010] text-white py-2.5 rounded-lg font-medium hover:bg-[#6B4828] transition-colors cursor-pointer"
                         >
                             Chiudi
@@ -85,13 +131,13 @@ export default function BookingModal({
                     <>
                         <div className="flex justify-between items-start mb-5">
                             <div>
-                                <h2 id="booking-title" className="...">
+                                <h2 id="booking-title" className="text-xl font-bold text-[#3B2010]">
                                     Prenota {room.name}
                                 </h2>
                                 <p className="text-sm text-[#9A6840]">€{room.pricePerNight} / notte</p>
                             </div>
                             <button
-                                onClick={onClose}
+                                onClick={handleClose}
                                 className="text-gray-400 hover:text-gray-600 transition cursor-pointer"
                                 aria-label="Chiudi"
                             >
@@ -111,42 +157,54 @@ export default function BookingModal({
                                 </svg>
                             </button>
                         </div>
-                        <form onSubmit={onSubmit} className="space-y-4">
+                        <form onSubmit={handleBook} className="space-y-4">
                             <div className="grid grid-cols-2 gap-3">
                                 <div>
-                                    <label className="block text-xs font-semibold text-[#3B2010] uppercase tracking-wide mb-1">
+                                    <label
+                                        htmlFor="booking-checkin"
+                                        className="block text-xs font-semibold text-[#3B2010] uppercase tracking-wide mb-1"
+                                    >
                                         Check-in
                                     </label>
                                     <input
+                                        id="booking-checkin"
                                         type="date"
                                         required
                                         min={today}
                                         value={checkIn}
-                                        onChange={(e) => onCheckInChange(e.target.value)}
+                                        onChange={(e) => handleCheckInChange(e.target.value)}
                                         className="w-full border border-[#C4A070] rounded-lg px-3 py-2 text-sm text-[#3B2010] focus:outline-none focus:ring-2 focus:ring-[#9A6840]"
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-semibold text-[#3B2010] uppercase tracking-wide mb-1">
+                                    <label
+                                        htmlFor="booking-checkout"
+                                        className="block text-xs font-semibold text-[#3B2010] uppercase tracking-wide mb-1"
+                                    >
                                         Check-out
                                     </label>
                                     <input
+                                        id="booking-checkout"
                                         type="date"
                                         required
                                         min={minCheckOut}
                                         value={checkOut}
-                                        onChange={(e) => onCheckOutChange(e.target.value)}
+                                        onChange={(e) => setCheckOut(e.target.value)}
                                         className="w-full border border-[#C4A070] rounded-lg px-3 py-2 text-sm text-[#3B2010] focus:outline-none focus:ring-2 focus:ring-[#9A6840]"
                                     />
                                 </div>
                             </div>
                             <div>
-                                <label className="block text-xs font-semibold text-[#3B2010] uppercase tracking-wide mb-1">
+                                <label
+                                    htmlFor="booking-guests"
+                                    className="block text-xs font-semibold text-[#3B2010] uppercase tracking-wide mb-1"
+                                >
                                     Ospiti
                                 </label>
                                 <select
+                                    id="booking-guests"
                                     value={guests}
-                                    onChange={(e) => onGuestsChange(Number(e.target.value))}
+                                    onChange={(e) => setGuests(Number(e.target.value))}
                                     className="w-full border border-[#C4A070] rounded-lg px-3 py-2 text-sm text-[#3B2010] focus:outline-none focus:ring-2 focus:ring-[#9A6840] bg-white cursor-pointer"
                                 >
                                     {Array.from({ length: room.capacity }, (_, i) => i + 1).map((n) => (
@@ -175,7 +233,7 @@ export default function BookingModal({
                                 </button>
                                 <button
                                     type="button"
-                                    onClick={onClose}
+                                    onClick={handleClose}
                                     className="flex-1 border border-[#C4A070] text-[#6B4828] font-medium py-2.5 rounded-lg hover:bg-[#FAF5EE] transition-colors cursor-pointer"
                                 >
                                     Annulla

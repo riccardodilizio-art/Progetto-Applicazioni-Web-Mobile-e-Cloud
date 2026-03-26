@@ -203,22 +203,9 @@ export default function RoomDetail() {
                 </div>
             </div>
             {booking.showModal && (
-                <BookingModal
-                    room={room}
-                    checkIn={booking.checkIn}
-                    checkOut={booking.checkOut}
-                    guests={booking.guests}
-                    nights={booking.nights}
-                    today={booking.today}
-                    minCheckOut={booking.minCheckOut}
-                    bookingDone={booking.bookingDone}
-                    onCheckInChange={booking.handleCheckInChange}
-                    onCheckOutChange={booking.setCheckOut}
-                    onGuestsChange={booking.setGuests}
-                    onSubmit={booking.handleBook}
-                    onClose={booking.handleClose}
-                />
+                <BookingModal room={room} booking={booking} />
             )}
+
         </div>
     )
 }

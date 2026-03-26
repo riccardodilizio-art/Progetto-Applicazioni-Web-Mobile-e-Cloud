@@ -113,16 +113,9 @@ export default function Home() {
                                 className="bg-[#FAF5EE] p-6 text-center shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1"
                             >
                                 <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-[#E8C9A0]/60 text-[#3B2010] mb-4">
-                                    <svg
-                                        aria-hidden="true"
-                                        className="w-8 h-8"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        {service.icon}
-                                    </svg>
+                                    {service.icon}
                                 </div>
+
                                 <h3 className="text-base font-medium text-[#3B2010] mb-2 font-heading">
                                     {service.title}
                                 </h3>
