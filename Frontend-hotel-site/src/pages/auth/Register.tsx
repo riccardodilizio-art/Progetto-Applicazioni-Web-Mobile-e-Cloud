@@ -3,6 +3,7 @@ import { useNavigate, Navigate, Link } from 'react-router-dom'
 import useSignIn from 'react-auth-kit/hooks/useSignIn'
 import useIsAuthenticated from 'react-auth-kit/hooks/useIsAuthenticated'
 import type { UserState } from '../../types/User'
+import { apiFetch } from '../../lib/apiClient.ts'
 
 export default function Register() {
     const [name, setName] = useState('')
@@ -37,12 +38,13 @@ export default function Register() {
 
         setIsLoading(true)
         try {
+            const res = await apiFetch<{ token: string; user: UserState }>('/auth/register', {
+                method: 'POST',
+                body: JSON.stringify({ email, password, name, surname, phone }),
+            })
             const success = signIn({
-                auth: {
-                    token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkBob3RlbGV4Y2Vsc2lvci5pdCIsInJvbGUiOiJhZG1pbiIsImV4cCI6OTk5OTk5OTk5OX0.dGVzdC1zaWduYXR1cmU',
-                    type: 'Bearer',
-                },
-                userState: { email, role: 'client', name, surname, phone },
+                auth: { token: res.token, type: 'Bearer' },
+                userState: res.user,
             })
             if (success) {
                 navigate('/')

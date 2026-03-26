@@ -22,13 +22,20 @@ export default function UserMenu({ user, role }: Props) {
     const navigate = useNavigate()
 
     useEffect(() => {
-        const handler = (e: MouseEvent) => {
+        const handleClickOutside = (e: MouseEvent) => {
             if (ref.current && !ref.current.contains(e.target as Node)) {
                 setOpen(false)
             }
         }
-        document.addEventListener('mousedown', handler)
-        return () => document.removeEventListener('mousedown', handler)
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') setOpen(false)
+        }
+        document.addEventListener('mousedown', handleClickOutside)
+        document.addEventListener('keydown', handleKeyDown)
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside)
+            document.removeEventListener('keydown', handleKeyDown)
+        }
     }, [])
 
     const handleLogout = () => {
@@ -75,6 +82,7 @@ export default function UserMenu({ user, role }: Props) {
             {/* Dropdown */}
             {open && (
                 <div
+                    role="menu"
                     className="absolute right-0 mt-2 w-52 bg-white border border-[#E8C9A0]
                     rounded-xl shadow-lg overflow-hidden z-50"
                 >
@@ -94,6 +102,7 @@ export default function UserMenu({ user, role }: Props) {
                             <Link
                                 key={to}
                                 to={to}
+                                role="menuitem"
                                 onClick={() => setOpen(false)}
                                 className="block px-4 py-2.5 text-sm text-[#6B4828]
                                     hover:bg-[#FAF0E6] hover:text-[#3B2010] transition-colors duration-150"

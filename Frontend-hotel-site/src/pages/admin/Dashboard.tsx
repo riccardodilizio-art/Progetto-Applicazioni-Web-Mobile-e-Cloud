@@ -66,7 +66,7 @@ export default function Dashboard() {
                         },
                         {
                             label: 'Prezzo medio',
-                            value: `${Math.round(rooms.reduce((s, r) => s + r.pricePerNight, 0) / rooms.length)}€`,
+                            value: `${rooms.length > 0 ? Math.round(rooms.reduce((s, r) => s + r.pricePerNight, 0) / rooms.length) : 0}€`,
                             color: 'text-[#3B2010]',
                         },
                     ].map(({ label, value, color }) => (
@@ -145,7 +145,7 @@ export default function Dashboard() {
                                     <td className="px-6 py-4">
                                         <div className="flex items-center gap-3">
                                             <img
-                                                src={room.images[0]}
+                                                src={room.images[0] ?? '/images/LogoHotel.png'}
                                                 alt={room.name}
                                                 className="w-12 h-12 rounded-lg object-cover"
                                             />
@@ -211,7 +211,7 @@ export default function Dashboard() {
                         <div key={room.id} className="bg-white rounded-xl shadow-sm border border-[#E8C9A0]/50 p-4">
                             <div className="flex gap-4">
                                 <img
-                                    src={room.images[0]}
+                                    src={room.images[0] ?? '/images/LogoHotel.png'}
                                     alt={room.name}
                                     className="w-20 h-20 rounded-lg object-cover"
                                 />

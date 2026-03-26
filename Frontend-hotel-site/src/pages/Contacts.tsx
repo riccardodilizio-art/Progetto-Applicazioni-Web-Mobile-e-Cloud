@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { apiFetch } from '../lib/apiClient.ts'
 
 export default function Contacts() {
     const [formData, setFormData] = useState({
@@ -17,9 +18,17 @@ export default function Contacts() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         setIsLoading(true)
-        // TODO: chiamata API per inviare il messaggio
-        setIsLoading(false)
-        setSubmitted(true)
+        try {
+            await apiFetch('/contacts', {
+                method: 'POST',
+                body: JSON.stringify(formData),
+            })
+            setSubmitted(true)
+        } catch {
+            // TODO: gestire errore
+        } finally {
+            setIsLoading(false)
+        }
     }
 
     return (
@@ -67,6 +76,7 @@ export default function Contacts() {
                                 {/* Indirizzo */}
                                 <div className="flex items-start gap-3">
                                     <svg
+                                        aria-hidden="true"
                                         className="w-5 h-5 text-[#6B4828] mt-0.5 shrink-0"
                                         fill="none"
                                         stroke="currentColor"
@@ -94,6 +104,7 @@ export default function Contacts() {
                                 {/* Telefono */}
                                 <div className="flex items-start gap-3">
                                     <svg
+                                        aria-hidden="true"
                                         className="w-5 h-5 text-[#6B4828] mt-0.5 shrink-0"
                                         fill="none"
                                         stroke="currentColor"
@@ -115,6 +126,7 @@ export default function Contacts() {
                                 {/* Email */}
                                 <div className="flex items-start gap-3">
                                     <svg
+                                        aria-hidden="true"
                                         className="w-5 h-5 text-[#6B4828] mt-0.5 shrink-0"
                                         fill="none"
                                         stroke="currentColor"
@@ -136,6 +148,7 @@ export default function Contacts() {
                                 {/* Orari */}
                                 <div className="flex items-start gap-3">
                                     <svg
+                                        aria-hidden="true"
                                         className="w-5 h-5 text-[#6B4828] mt-0.5 shrink-0"
                                         fill="none"
                                         stroke="currentColor"
@@ -179,6 +192,7 @@ export default function Contacts() {
                             {submitted ? (
                                 <div className="text-center py-10">
                                     <svg
+                                        aria-hidden="true"
                                         className="w-14 h-14 text-green-500 mx-auto mb-4"
                                         fill="none"
                                         stroke="currentColor"
@@ -268,6 +282,7 @@ export default function Contacts() {
                                             {isLoading ? 'Invio in corso...' : 'Invia messaggio'}
                                         </span>
                                         <svg
+                                            aria-hidden="true"
                                             className="absolute bottom-0 left-0 w-full opacity-25"
                                             viewBox="0 0 400 24"
                                             preserveAspectRatio="none"

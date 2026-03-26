@@ -10,7 +10,7 @@ export default function RoomCard({ room }: { room: Room }) {
         >
             <div className="relative h-52 overflow-hidden">
                 <img
-                    src={room.images[0]}
+                    src={room.images[0] ?? '/images/LogoHotel.png'}
                     alt={room.name}
                     className={`w-full h-full object-cover transition-transform duration-500
                         ${room.available ? 'hover:scale-105' : ''}`}

@@ -42,19 +42,19 @@ export default function App() {
                 <Routes>
                     {/* Rotte pubbliche */}
                     <Route path="/" element={<Home />} />
-                    <Route path="/rooms" element={<Rooms />} />
-                    <Route path="/rooms/:id" element={<RoomDetail />} />
-                    <Route path="/contacts" element={<Contacts />} />
+                    <Route path="/camere" element={<Rooms />} />
+                    <Route path="/camere/:id" element={<RoomDetail />} />
+                    <Route path="/contatti" element={<Contacts />} />
                     <Route path="/menu" element={<Menu />} />
                     <Route path="/ristorante" element={<Restaurant />} />
 
                     {/* Auth client */}
-                    <Route path="/login" element={<ClientLogin />} />
-                    <Route path="/register" element={<Register />} />
-                    <Route path="/forgot-password" element={<ForgotPassword />} />
+                    <Route path="/accedi" element={<ClientLogin />} />
+                    <Route path="/registrazione" element={<Register />} />
+                    <Route path="/password-dimenticata" element={<ForgotPassword />} />
                     <Route path="/reset-password" element={<ResetPassword />} />
                     <Route
-                        path="/profile"
+                        path="/profilo"
                         element={
                             <ProtectedRoute>
                                 <Profile />
@@ -63,7 +63,7 @@ export default function App() {
                     />
 
                     <Route
-                        path="/profile/edit"
+                        path="/profilo/modifica"
                         element={
                             <ProtectedRoute>
                                 <Edit />
@@ -80,13 +80,13 @@ export default function App() {
                     />
 
                     {/* Login admin (pubblica) */}
-                    <Route path="/admin/login" element={<Login />} />
+                    <Route path="/admin/accedi" element={<Login />} />
 
                     {/* Rotte admin protette */}
                     <Route
                         path="/admin/dashboard"
                         element={
-                            <ProtectedRoute redirectTo="/admin/login">
+                            <ProtectedRoute redirectTo="/admin/accedi">
                                 <RoleGuard role="admin">
                                     <Dashboard />
                                 </RoleGuard>
@@ -95,9 +95,9 @@ export default function App() {
                     />
 
                     <Route
-                        path="/admin/rooms/new"
+                        path="/admin/camere/nuova"
                         element={
-                            <ProtectedRoute redirectTo="/admin/login">
+                            <ProtectedRoute redirectTo="/admin/accedi">
                                 <RoleGuard role="admin">
                                     <RoomForm />
                                 </RoleGuard>
@@ -105,9 +105,9 @@ export default function App() {
                         }
                     />
                     <Route
-                        path="/admin/rooms/edit/:id"
+                        path="/admin/camere/modifica/:id"
                         element={
-                            <ProtectedRoute redirectTo="/admin/login">
+                            <ProtectedRoute redirectTo="/admin/accedi">
                                 <RoleGuard role="admin">
                                     <RoomForm />
                                 </RoleGuard>

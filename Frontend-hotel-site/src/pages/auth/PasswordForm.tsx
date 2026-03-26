@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 
 type Props = {
     onRequest2FA: (current: string, next: string) => Promise<void>
-    onSave: (current: string, next: string, otp: string) => void
+    onSave: (current: string, next: string, otp: string) => Promise<void>
     onForgotPassword: () => void
 }
 
@@ -15,7 +15,7 @@ const OTP_EXPIRY_SEC = 60
 // ── Icona occhio ───────────────────────────────────────────
 function EyeIcon({ visible }: { visible: boolean }) {
     return (
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg aria-hidden="true" className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             {visible ? (
                 <path
                     strokeLinecap="round"
@@ -177,7 +177,13 @@ function OtpStep({ onConfirm, onResend, onBack, error }: OtpStepProps) {
             <div className="text-center">
                 {/* icona lock */}
                 <div className="mx-auto w-12 h-12 rounded-full bg-[#F5ECD7] flex items-center justify-center mb-3">
-                    <svg className="w-6 h-6 text-[#9A6840]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg
+                        aria-hidden="true"
+                        className="w-6 h-6 text-[#9A6840]"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
                         <path
                             strokeLinecap="round"
                             strokeLinejoin="round"
@@ -296,14 +302,17 @@ export default function PasswordForm({ onRequest2FA, onSave, onForgotPassword }:
         }
     }
 
-    // Step 2 → conferma con OTP
-    const handleOtpConfirm = (otp: string) => {
+    const handleOtpConfirm = async (otp: string) => {
         setError('')
-        onSave(fields.current, fields.next, otp)
-        setFields({ current: '', next: '', confirm: '' })
-        setStep('form')
-        setSaved(true)
-        setTimeout(() => setSaved(false), 3000)
+        try {
+            await onSave(fields.current, fields.next, otp)
+            setFields({ current: '', next: '', confirm: '' })
+            setStep('form')
+            setSaved(true)
+            setTimeout(() => setSaved(false), 3000)
+        } catch {
+            setError('Errore durante il salvataggio della password.')
+        }
     }
 
     return (

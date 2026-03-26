@@ -3,23 +3,7 @@ import { useNavigate, Navigate, Link } from 'react-router-dom'
 import useSignIn from 'react-auth-kit/hooks/useSignIn'
 import useIsAuthenticated from 'react-auth-kit/hooks/useIsAuthenticated'
 import type { UserState } from '../../types/User'
-
-const mockClients = [
-    {
-        email: import.meta.env.VITE_CLIENT_EMAIL,
-        password: import.meta.env.VITE_CLIENT_PASSWORD,
-        name: 'Mario',
-        surname: 'Rossi',
-        phone: '333 1234567',
-    },
-    {
-        email: import.meta.env.VITE_GUEST_EMAIL,
-        password: import.meta.env.VITE_GUEST_PASSWORD,
-        name: 'Laura',
-        surname: 'Bianchi',
-        phone: '340 9876543',
-    },
-]
+import { apiFetch } from '../../lib/apiClient.ts'
 
 export default function Login() {
     const [email, setEmail] = useState('')
@@ -40,29 +24,21 @@ export default function Login() {
         setError('')
         setIsLoading(true)
         try {
-            const client = mockClients.find((c) => c.email === email && c.password === password)
-            if (client) {
-                const success = signIn({
-                    auth: {
-                        token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjbGllbnRAaG90ZWxleGNlbHNpb3IuaXQiLCJyb2xlIjoiY2xpZW50IiwiZXhwIjo5OTk5OTk5OTk5fQ.dGVzdC1zaWduYXR1cmU',
-                        type: 'Bearer',
-                    },
-                    userState: {
-                        email: client.email,
-                        role: 'client',
-                        name: client.name,
-                        surname: client.surname,
-                        phone: client.phone,
-                    },
-                })
-                if (success) {
-                    navigate('/profile')
-                } else {
-                    setError('Errore durante il login')
-                }
+            const res = await apiFetch<{ token: string; user: UserState }>('/auth/login', {
+                method: 'POST',
+                body: JSON.stringify({ email, password }),
+            })
+            const success = signIn({
+                auth: { token: res.token, type: 'Bearer' },
+                userState: res.user,
+            })
+            if (success) {
+                navigate('/profile')
             } else {
-                setError('Email o password non validi')
+                setError('Errore durante il login')
             }
+        } catch {
+            setError('Email o password non validi')
         } finally {
             setIsLoading(false)
         }

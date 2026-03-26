@@ -13,7 +13,9 @@ const store = createStore({
     cookieSecure: import.meta.env.PROD,
 })
 
-createRoot(document.getElementById('root')!).render(
+const rootEl = document.getElementById('root')
+if (!rootEl) throw new Error('Root element #root not found')
+createRoot(rootEl).render(
     <StrictMode>
         <AuthProvider store={store}>
             <BrowserRouter>

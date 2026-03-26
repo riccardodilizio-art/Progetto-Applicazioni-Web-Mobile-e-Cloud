@@ -32,6 +32,7 @@ export default function Rooms() {
                     <button
                         key={f.value}
                         onClick={() => setActiveFilter(f.value)}
+                        aria-pressed={activeFilter === f.value}
                         className={`px-5 py-2 rounded-full text-sm font-semibold transition ${
                             activeFilter === f.value
                                 ? 'bg-[#6B4828] text-white shadow-md'

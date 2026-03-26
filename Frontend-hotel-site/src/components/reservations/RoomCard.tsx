@@ -1,21 +1,11 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import type { RoomReservation } from '../../types/Reservation'
 import StatusBadge from './StatusBadge'
-
-const roomTypeLabel: Record<string, string> = {
-    singola: 'Singola',
-    doppia: 'Doppia',
-    deluxe: 'Deluxe',
-    suite: 'Suite',
-}
-
-function formatDate(iso: string) {
-    return new Date(iso).toLocaleDateString('it-IT', { day: '2-digit', month: 'long', year: 'numeric' })
-}
+import { formatDate } from '../../lib/dateUtils'
 
 export default function RoomCard({ r, onCancel }: { r: RoomReservation; onCancel: () => void }) {
     const [confirming, setConfirming] = useState(false)
-    const today = new Date().toISOString().split('T')[0]
+    const today = useMemo(() => new Date().toISOString().split('T')[0], [])
     const isCancellable = r.status !== 'annullata' && r.checkIn > today
 
     return (
@@ -23,7 +13,7 @@ export default function RoomCard({ r, onCancel }: { r: RoomReservation; onCancel
             <div className="bg-[#FAF0E6] border-b border-[#E8C9A0] px-5 py-4 flex items-center justify-between gap-3">
                 <div>
                     <p className="text-xs text-[#9A6840] uppercase tracking-wide font-medium mb-0.5">
-                        {roomTypeLabel[r.roomType]}
+                        typeLabels[r.roomType as RoomType]
                     </p>
                     <h3 className="font-heading text-lg text-[#3B2010] font-medium leading-snug">{r.roomName}</h3>
                 </div>

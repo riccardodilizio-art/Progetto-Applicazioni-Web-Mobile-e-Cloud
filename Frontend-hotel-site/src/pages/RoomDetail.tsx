@@ -50,7 +50,12 @@ export default function RoomDetail() {
                                         onClick={() => setCurrentImage(i)}
                                         className={`rounded-lg overflow-hidden border-2 transition ${currentImage === i ? 'border-[#6B4828]' : 'border-transparent opacity-60 hover:opacity-100'}`}
                                     >
-                                        <img src={img} alt={`Miniatura ${i + 1}`} className="w-20 h-14 object-cover" />
+                                        <img
+                                            loading="lazy"
+                                            src={img}
+                                            alt={`Miniatura ${i + 1}`}
+                                            className="w-20 h-14 object-cover"
+                                        />
                                     </button>
                                 ))}
                             </div>
@@ -83,6 +88,7 @@ export default function RoomDetail() {
                         <div className="grid grid-cols-2 gap-4 mb-6">
                             <div className="bg-white rounded-xl p-4 text-center shadow-sm">
                                 <svg
+                                    aria-hidden="true"
                                     className="w-6 h-6 mx-auto text-[#6B4828] mb-1"
                                     fill="none"
                                     stroke="currentColor"
@@ -100,6 +106,7 @@ export default function RoomDetail() {
                             </div>
                             <div className="bg-white rounded-xl p-4 text-center shadow-sm">
                                 <svg
+                                    aria-hidden="true"
                                     className="w-6 h-6 mx-auto text-[#6B4828] mb-1"
                                     fill="none"
                                     stroke="currentColor"
@@ -117,6 +124,7 @@ export default function RoomDetail() {
                             </div>
                             <div className="bg-white rounded-xl p-4 text-center shadow-sm">
                                 <svg
+                                    aria-hidden="true"
                                     className="w-6 h-6 mx-auto text-[#6B4828] mb-1"
                                     fill="none"
                                     stroke="currentColor"
@@ -134,6 +142,7 @@ export default function RoomDetail() {
                             </div>
                             <div className="bg-white rounded-xl p-4 text-center shadow-sm">
                                 <svg
+                                    aria-hidden="true"
                                     className="w-6 h-6 mx-auto text-[#6B4828] mb-1"
                                     fill="none"
                                     stroke="currentColor"
@@ -160,6 +169,7 @@ export default function RoomDetail() {
                                         className="flex items-center gap-1.5 text-sm bg-white text-gray-700 px-3 py-1.5 rounded-full shadow-sm"
                                     >
                                         <svg
+                                            aria-hidden="true"
                                             className="w-4 h-4 text-green-500 shrink-0"
                                             fill="none"
                                             stroke="currentColor"

@@ -1,3 +1,5 @@
+import { useEffect } from 'react'
+
 interface Props {
     roomName: string
     onConfirm: () => void
@@ -5,19 +7,35 @@ interface Props {
 }
 
 export default function DeleteConfirmModal({ roomName, onConfirm, onCancel }: Props) {
+    useEffect(() => {
+        const handler = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') onCancel()
+        }
+        document.addEventListener('keydown', handler)
+        document.body.style.overflow = 'hidden'
+        return () => {
+            document.removeEventListener('keydown', handler)
+            document.body.style.overflow = ''
+        }
+    }, [onCancel])
+
     return (
-        <div
-            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-            onClick={onCancel}
-        >
+        <div className="fixed inset-0 ..." onClick={onCancel}>
             <div
                 role="dialog"
                 aria-modal="true"
+                aria-labelledby="delete-title"
                 className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6"
                 onClick={(e) => e.stopPropagation()}
             >
                 <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg
+                        aria-hidden="true"
+                        className="w-6 h-6 text-red-600"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
                         <path
                             strokeLinecap="round"
                             strokeLinejoin="round"
@@ -26,7 +44,9 @@ export default function DeleteConfirmModal({ roomName, onConfirm, onCancel }: Pr
                         />
                     </svg>
                 </div>
-                <h3 className="text-lg font-semibold text-[#3B2010] text-center mb-2">Elimina camera</h3>
+                <h3 id="delete-title" className="...">
+                    Elimina camera
+                </h3>
                 <p className="text-sm text-[#9A6840] text-center mb-6">
                     Sei sicuro di voler eliminare <strong className="text-[#3B2010]">{roomName}</strong>?
                     <br />

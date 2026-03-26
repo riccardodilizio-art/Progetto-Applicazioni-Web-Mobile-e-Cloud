@@ -61,6 +61,7 @@ export default function Home() {
                             >
                                 <div className="relative h-56 overflow-hidden">
                                     <img
+                                        loading="lazy"
                                         src={room.images[0]}
                                         alt={room.name}
                                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
@@ -112,7 +113,13 @@ export default function Home() {
                                 className="bg-[#FAF5EE] p-6 text-center shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1"
                             >
                                 <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-[#E8C9A0]/60 text-[#3B2010] mb-4">
-                                    <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg
+                                        aria-hidden="true"
+                                        className="w-8 h-8"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
                                         {service.icon}
                                     </svg>
                                 </div>
