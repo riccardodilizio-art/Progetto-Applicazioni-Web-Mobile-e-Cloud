@@ -1,19 +1,27 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { apiFetch } from '../../lib/apiClient'
 
 export default function ForgotPassword() {
     const [email, setEmail] = useState('')
     const [sent, setSent] = useState(false)
     const [loading, setLoading] = useState(false)
+    const [error, setError] = useState('')
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         setLoading(true)
+        setError('')
         try {
-            // TODO: POST /auth/forgot-password  { email }
+            await apiFetch('/auth/forgot-password', {
+                method: 'POST',
+                body: JSON.stringify({ email }),
+            })
             setSent(true)
-        } catch {
-            // TODO: gestire errore (es. email non trovata)
+        } catch (err) {
+            const message =
+                err instanceof Error ? err.message : 'Errore durante la richiesta'
+            setError(message)
         } finally {
             setLoading(false)
         }
@@ -32,7 +40,6 @@ export default function ForgotPassword() {
                 {sent ? (
                     <div className="text-center space-y-4">
                         <div className="mx-auto w-14 h-14 rounded-full bg-[#F5ECD7] flex items-center justify-center">
-                            {/* icona email */}
                             <svg
                                 aria-hidden="true"
                                 className="w-7 h-7 text-[#9A6840]"
@@ -61,9 +68,17 @@ export default function ForgotPassword() {
                     </div>
                 ) : (
                     <form onSubmit={handleSubmit} className="space-y-4">
+                        {error && (
+                            <p role="alert" className="text-sm text-red-600 bg-red-50 rounded-lg px-4 py-2">
+                                {error}
+                            </p>
+                        )}
                         <div>
-                            <label className="block text-sm font-medium text-[#3B2010] mb-1">Email</label>
+                            <label htmlFor="forgot-email" className="block text-sm font-medium text-[#3B2010] mb-1">
+                                Email
+                            </label>
                             <input
+                                id="forgot-email"
                                 type="email"
                                 required
                                 value={email}
@@ -86,7 +101,7 @@ export default function ForgotPassword() {
                         </button>
 
                         <p className="text-center text-sm text-[#6B4828]">
-                            <Link to="/login" className="text-[#9A6840] hover:underline">
+                            <Link to="/accedi" className="text-[#9A6840] hover:underline">
                                 ← Torna al login
                             </Link>
                         </p>
