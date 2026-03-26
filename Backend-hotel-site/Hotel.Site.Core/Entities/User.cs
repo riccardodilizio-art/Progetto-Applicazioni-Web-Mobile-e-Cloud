@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Hotel.Site.Core.Entities.Enums;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Text;

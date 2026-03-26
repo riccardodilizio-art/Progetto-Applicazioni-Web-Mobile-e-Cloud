@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Hotel.Site.Core.Entities.Enums;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -16,7 +17,6 @@ namespace Hotel.Site.Core.Entities
         public decimal PrezzoTotale { get; set; }
         public State Stato { get; set; } = State.IN_ATTESA;
         public DateTime DataPrenotazione { get; set; } = DateTime.UtcNow;
-
         public decimal PrezzoPerNotte { get; set; }
         public virtual User User { get; set; } = null!;
         public virtual Room Room { get; set; } = null!;

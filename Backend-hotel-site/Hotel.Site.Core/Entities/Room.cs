@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Hotel.Site.Core.Entities.Utils;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
