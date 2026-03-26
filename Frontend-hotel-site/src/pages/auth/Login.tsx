@@ -33,7 +33,7 @@ export default function Login() {
                 userState: res.user,
             })
             if (success) {
-                navigate('/profile')
+                navigate('/profilo')
             } else {
                 setError('Errore durante il login')
             }
@@ -95,7 +95,7 @@ export default function Login() {
 
                 <p className="text-center text-sm text-[#6B4828] mt-6">
                     Non hai un account?{' '}
-                    <Link to="/registrati" className="text-[#9A6840] font-medium hover:underline">
+                    <Link to="/registrazione" className="text-[#9A6840] font-medium hover:underline">
                         Registrati
                     </Link>
                 </p>

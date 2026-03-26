@@ -14,8 +14,8 @@ export default function RoomCard({ r, onCancel }: { r: RoomReservation; onCancel
         <div className="bg-white rounded-2xl border border-[#E8C9A0] shadow-sm overflow-hidden">
             <div className="bg-[#FAF0E6] border-b border-[#E8C9A0] px-5 py-4 flex items-center justify-between gap-3">
                 <div>
-                    <p className="...">
-                        {typeLabels[r.roomType as RoomType]}
+                    <p className="text-xs text-[#9A6840] uppercase tracking-wide font-medium">
+                    {typeLabels[r.roomType as RoomType]}
                     </p>
                     <h3 className="font-heading text-lg text-[#3B2010] font-medium leading-snug">{r.roomName}</h3>
                 </div>

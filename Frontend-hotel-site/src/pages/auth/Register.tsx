@@ -20,7 +20,7 @@ export default function Register() {
     const navigate = useNavigate()
 
     if (isAuthenticated) {
-        return <Navigate to="/profile" replace />
+        return <Navigate to="/profilo" replace />
     }
 
     const handleSubmit = async (e: React.FormEvent) => {

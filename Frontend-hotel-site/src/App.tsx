@@ -22,7 +22,7 @@ import ResetPassword from './pages/auth/ResetPassword'
 import { useApiSetup } from './hooks/useApiSetup'
 import Restaurant from './pages/Restaurant'
 
-function ProtectedRoute({ children, redirectTo = '/login' }: { children: React.ReactNode; redirectTo?: string }) {
+function ProtectedRoute({ children, redirectTo = '/accedi' }: { children: React.ReactNode; redirectTo?: string }) {
     const isAuthenticated = useIsAuthenticated()
 
     if (!isAuthenticated) {
