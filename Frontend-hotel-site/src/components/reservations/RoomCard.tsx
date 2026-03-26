@@ -2,6 +2,8 @@ import { useMemo, useState } from 'react'
 import type { RoomReservation } from '../../types/Reservation'
 import StatusBadge from './StatusBadge'
 import { formatDate } from '../../lib/dateUtils'
+import { typeLabels } from '../../data/roomUtils'
+import type { RoomType } from '../../types/Room'
 
 export default function RoomCard({ r, onCancel }: { r: RoomReservation; onCancel: () => void }) {
     const [confirming, setConfirming] = useState(false)
@@ -12,8 +14,8 @@ export default function RoomCard({ r, onCancel }: { r: RoomReservation; onCancel
         <div className="bg-white rounded-2xl border border-[#E8C9A0] shadow-sm overflow-hidden">
             <div className="bg-[#FAF0E6] border-b border-[#E8C9A0] px-5 py-4 flex items-center justify-between gap-3">
                 <div>
-                    <p className="text-xs text-[#9A6840] uppercase tracking-wide font-medium mb-0.5">
-                        typeLabels[r.roomType as RoomType]
+                    <p className="...">
+                        {typeLabels[r.roomType as RoomType]}
                     </p>
                     <h3 className="font-heading text-lg text-[#3B2010] font-medium leading-snug">{r.roomName}</h3>
                 </div>

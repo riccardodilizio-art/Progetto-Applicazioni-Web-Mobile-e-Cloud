@@ -35,15 +35,15 @@ export default function Navbar() {
 
     const navLinks = [
         { to: '/', label: 'Home' },
-        { to: '/rooms', label: 'Camere' },
+        { to: '/camere', label: 'Camere' },
         { to: '/menu', label: 'Menu' },
         { to: '/ristorante', label: 'Prenota la cena' },
-        { to: '/contacts', label: 'Contatti' },
+        { to: '/contatti', label: 'Contatti' },
     ]
 
     const clientMenuItems = [
         { to: '/prenotazioni', label: 'Le mie prenotazioni' },
-        { to: '/profile/edit', label: 'Modifica dati' },
+        { to: '/profilo/modifica', label: 'Modifica dati' },
     ]
 
     const adminMenuItems = [{ to: '/admin/dashboard', label: 'Dashboard' }]
@@ -105,7 +105,7 @@ export default function Navbar() {
                         <UserMenu user={user} role={user.role} />
                     ) : (
                         <Link
-                            to="/login"
+                            to="/accedi"
                             className="text-[0.7rem] tracking-[0.2em] uppercase font-medium
                                 text-[#FAF0E6] bg-[#3B2010]/80 px-5 py-2 border border-[#3B2010]/60
                                 hover:bg-[#3B2010] transition-all duration-300"
@@ -200,7 +200,7 @@ export default function Navbar() {
                         </>
                     ) : (
                         <Link
-                            to="/login"
+                            to="/accedi"
                             className="text-[0.7rem] tracking-[0.2em] uppercase font-medium
                                 text-[#FAF0E6] bg-[#3B2010]/80 px-5 py-2.5 self-start
                                 hover:bg-[#3B2010] transition-all duration-300 inline-block"

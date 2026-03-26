@@ -18,7 +18,7 @@ export default function ResetPassword() {
             <div className="min-h-screen flex items-center justify-center bg-[#FAF5EE] px-4">
                 <div className="bg-white rounded-2xl shadow-lg p-8 w-full max-w-md text-center space-y-4">
                     <p className="text-red-700 font-medium">Link non valido o scaduto.</p>
-                    <Link to="/forgot-password" className="text-sm text-[#9A6840] hover:underline">
+                    <Link to="/password-dimenticata" className="text-sm text-[#9A6840] hover:underline">
                         Richiedi un nuovo link
                     </Link>
                 </div>
@@ -45,7 +45,7 @@ export default function ResetPassword() {
                 method: 'POST',
                 body: JSON.stringify({ token, password: next }),
             })
-            navigate('/login')
+            navigate('/accedi')
         } catch {
             setError('Link scaduto o non valido. Richiedine uno nuovo.')
         } finally {

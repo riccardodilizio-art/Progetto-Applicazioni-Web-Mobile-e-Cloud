@@ -20,7 +20,7 @@ export default function DeleteConfirmModal({ roomName, onConfirm, onCancel }: Pr
     }, [onCancel])
 
     return (
-        <div className="fixed inset-0 ..." onClick={onCancel}>
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={onCancel}>
             <div
                 role="dialog"
                 aria-modal="true"
@@ -44,7 +44,8 @@ export default function DeleteConfirmModal({ roomName, onConfirm, onCancel }: Pr
                         />
                     </svg>
                 </div>
-                <h3 id="delete-title" className="...">
+
+                <h3 id="delete-title" className="text-lg font-semibold text-[#3B2010] text-center mb-2">
                     Elimina camera
                 </h3>
                 <p className="text-sm text-[#9A6840] text-center mb-6">

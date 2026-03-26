@@ -16,7 +16,7 @@ export default function Edit() {
     const authHeader = useAuthHeader()
 
     if (!isAuthenticated || !user) {
-        return <Navigate to="/login" replace />
+        return <Navigate to="/accedi" replace />
     }
 
     const handleSaveProfile = (name: string | undefined, surname: string | undefined, phone: string | undefined) => {
@@ -51,7 +51,7 @@ export default function Edit() {
                 <PasswordForm
                     onRequest2FA={handleRequest2FA}
                     onSave={handleSavePassword}
-                    onForgotPassword={() => navigate('/forgot-password')}
+                    onForgotPassword={() => navigate('/password-dimenticata')}
                 />
             </div>
         </div>

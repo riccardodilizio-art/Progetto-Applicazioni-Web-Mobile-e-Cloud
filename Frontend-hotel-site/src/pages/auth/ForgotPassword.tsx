@@ -53,7 +53,7 @@ export default function ForgotPassword() {
                             Controlla la tua casella di posta. Il link scade tra 30 minuti.
                         </p>
                         <Link
-                            to="/login"
+                            to="/accedi"
                             className="block text-sm text-[#9A6840] hover:text-[#3B2010] hover:underline transition-colors"
                         >
                             ← Torna al login

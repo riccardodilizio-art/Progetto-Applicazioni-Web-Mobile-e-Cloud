@@ -95,7 +95,7 @@ export default function Login() {
 
                 <p className="text-center text-sm text-[#6B4828] mt-6">
                     Non hai un account?{' '}
-                    <Link to="/register" className="text-[#9A6840] font-medium hover:underline">
+                    <Link to="/registrati" className="text-[#9A6840] font-medium hover:underline">
                         Registrati
                     </Link>
                 </p>
@@ -106,7 +106,7 @@ export default function Login() {
                     <div className="flex-1 h-px bg-[#C4A070]" />
                 </div>
 
-                <Link to="/admin/login" className="block text-center text-sm text-[#9A6840] hover:underline">
+                <Link to="/admin/accedi" className="block text-center text-sm text-[#9A6840] hover:underline">
                     Accedi come amministratore
                 </Link>
             </div>

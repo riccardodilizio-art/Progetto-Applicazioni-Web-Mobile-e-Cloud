@@ -20,17 +20,17 @@ export default function Footer() {
                             <Link to="/" className="block text-[#C4A070] text-sm hover:text-white transition">
                                 Home
                             </Link>
-                            <Link to="/rooms" className="block text-[#C4A070] text-sm hover:text-white transition">
+                            <Link to="/camere" className="block text-[#C4A070] text-sm hover:text-white transition">
                                 Camere
                             </Link>
                             <Link to="/menu" className="block text-[#C4A070] text-sm hover:text-white transition">
                                 Ristorante
                             </Link>
-                            <Link to="/contacts" className="block text-[#C4A070] text-sm hover:text-white transition">
+                            <Link to="/contatti" className="block text-[#C4A070] text-sm hover:text-white transition">
                                 Contatti
                             </Link>
                             <Link
-                                to="/admin/login"
+                                to="/admin/accedi"
                                 className="block text-[#C4A070] text-sm hover:text-white transition"
                             >
                                 Area Admin
