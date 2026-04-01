@@ -63,7 +63,7 @@ export default function RoomCard({ room }: { room: Room }) {
                     </p>
                     {room.available ? (
                         <Link
-                            to={`/rooms/${room.id}`}
+                            to={`/camere/${room.id}`}
                             className="text-sm font-semibold text-white bg-[#6B4828] px-4 py-2 rounded-lg hover:bg-[#3B2010] transition"
                         >
                             Scopri di più

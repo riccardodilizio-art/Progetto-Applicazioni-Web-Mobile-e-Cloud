@@ -17,7 +17,7 @@ export default function RoomDetail() {
             <div className="min-h-screen bg-[#FAF0E6] flex flex-col items-center justify-center px-4 text-center">
                 <h1 className="text-5xl font-bold text-[#6B4828] mb-4">Camera non trovata</h1>
                 <p className="text-gray-600 mb-6">La camera richiesta non esiste.</p>
-                <Link to="/rooms" className="text-[#6B4828] underline hover:opacity-70 transition">
+                <Link to="/camere" className="text-[#6B4828] underline hover:opacity-70 transition">
                     ← Torna alle camere
                 </Link>
             </div>
@@ -27,7 +27,7 @@ export default function RoomDetail() {
     return (
         <div className="min-h-screen bg-[#FAF0E6]">
             <div className="max-w-6xl mx-auto px-4 pt-6">
-                <Link to="/rooms" className="text-[#6B4828] hover:opacity-70 transition text-sm font-medium">
+                <Link to="/camere" className="text-[#6B4828] hover:opacity-70 transition text-sm font-medium">
                     ← Torna alle camere
                 </Link>
             </div>
