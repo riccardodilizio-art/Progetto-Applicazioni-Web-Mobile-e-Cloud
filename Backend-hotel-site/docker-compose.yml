@@ -1,0 +1,27 @@
+services:
+  postgres:
+    image: postgres:17
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=HotelSiteDb
+    ports:
+      - "5432:5432"
+ 
+	
+
+api:
+    build:
+      context: .
+      dockerfile: Hotel.Site.Api/Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - sqlserver
+environment:
+  - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=HotelSiteDb;Username=admin;Password=YourStrong!Password123
+Password123;TrustServerCertificate=True
+
+
+volumes:
+  postgres-data:

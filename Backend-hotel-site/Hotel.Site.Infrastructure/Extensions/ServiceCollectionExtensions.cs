@@ -25,7 +25,7 @@ namespace Hotel.Site.Infrastructure.Extensions
             services.AddScoped<IDinnerOrderRepository, DinnerOrderRepository>();
             services.AddDbContext<HotelSiteContext>(opt =>
             {
-                opt.UseSqlServer(connectionString);
+                opt.UseNpgsql(connectionString);  
             });
             return services;
         }
