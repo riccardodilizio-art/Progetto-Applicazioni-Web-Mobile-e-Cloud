@@ -7,21 +7,19 @@ services:
       - POSTGRES_DB=HotelSiteDb
     ports:
       - "5432:5432"
- 
-	
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
 
-api:
+  api:
     build:
       context: .
       dockerfile: Hotel.Site.Api/Dockerfile
     ports:
       - "8080:8080"
     depends_on:
-      - sqlserver
-environment:
-  - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=HotelSiteDb;Username=admin;Password=YourStrong!Password123
-Password123;TrustServerCertificate=True
-
+      - postgres
+    environment:
+      - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=HotelSiteDb;Username=admin;Password=admin
 
 volumes:
   postgres-data:
