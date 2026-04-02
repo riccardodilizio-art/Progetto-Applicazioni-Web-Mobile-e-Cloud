@@ -56,7 +56,7 @@ export default function Home() {
                         {featuredRooms.map((room) => (
                             <Link
                                 key={room.id}
-                                to={`/rooms/${room.id}`}
+                                to={`/camere/${room.id}`}
                                 className="group block overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300 bg-white"
                             >
                                 <div className="relative h-56 overflow-hidden">
@@ -86,7 +86,7 @@ export default function Home() {
 
                     <div className="text-center mt-10">
                         <Link
-                            to="/rooms"
+                            to="/camere"
                             className="inline-block border border-[#3B2010] text-[#3B2010] font-medium px-8 py-3 hover:bg-[#3B2010] hover:text-[#FAF5EE] transition-all duration-300 text-sm tracking-[0.15em] uppercase"
                         >
                             Vedi tutte le camere
