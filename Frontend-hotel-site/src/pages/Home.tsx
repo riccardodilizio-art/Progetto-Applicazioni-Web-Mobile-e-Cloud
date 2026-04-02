@@ -26,13 +26,13 @@ export default function Home() {
                     </p>
                     <div className="flex gap-4 mt-8">
                         <Link
-                            to="/rooms"
+                            to="/camere"
                             className="bg-white/90 text-[#3B2010] font-medium px-6 py-3 hover:bg-white transition text-sm tracking-[0.1em] uppercase border border-white/60"
                         >
                             Scopri le camere
                         </Link>
                         <Link
-                            to="/contacts"
+                            to="/contatti"
                             className="border border-white/70 text-white font-medium px-6 py-3 hover:bg-white/10 transition text-sm tracking-[0.1em] uppercase"
                         >
                             Contattaci
