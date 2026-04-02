@@ -21,6 +21,7 @@ import ForgotPassword from './pages/auth/ForgotPassword'
 import ResetPassword from './pages/auth/ResetPassword'
 import { useApiSetup } from './hooks/useApiSetup'
 import Restaurant from './pages/Restaurant'
+import { BookingProvider } from './context/BookingContext'
 
 function ProtectedRoute({ children, redirectTo = '/accedi' }: { children: React.ReactNode; redirectTo?: string }) {
     const isAuthenticated = useIsAuthenticated()
@@ -35,90 +36,92 @@ function ProtectedRoute({ children, redirectTo = '/accedi' }: { children: React.
 export default function App() {
     useApiSetup()
     return (
-        <div className="flex flex-col min-h-screen">
-            <Navbar />
+        <BookingProvider>
+            <div className="flex flex-col min-h-screen">
+                <Navbar />
 
-            <main className="flex-grow">
-                <Routes>
-                    {/* Rotte pubbliche */}
-                    <Route path="/" element={<Home />} />
-                    <Route path="/camere" element={<Rooms />} />
-                    <Route path="/camere/:id" element={<RoomDetail />} />
-                    <Route path="/contatti" element={<Contacts />} />
-                    <Route path="/menu" element={<Menu />} />
-                    <Route path="/ristorante" element={<Restaurant />} />
+                <main className="flex-grow">
+                    <Routes>
+                        {/* Rotte pubbliche */}
+                        <Route path="/" element={<Home />} />
+                        <Route path="/camere" element={<Rooms />} />
+                        <Route path="/camere/:id" element={<RoomDetail />} />
+                        <Route path="/contatti" element={<Contacts />} />
+                        <Route path="/menu" element={<Menu />} />
+                        <Route path="/ristorante" element={<Restaurant />} />
 
-                    {/* Auth client */}
-                    <Route path="/accedi" element={<ClientLogin />} />
-                    <Route path="/registrazione" element={<Register />} />
-                    <Route path="/password-dimenticata" element={<ForgotPassword />} />
-                    <Route path="/reset-password" element={<ResetPassword />} />
-                    <Route
-                        path="/profilo"
-                        element={
-                            <ProtectedRoute>
-                                <Profile />
-                            </ProtectedRoute>
-                        }
-                    />
+                        {/* Auth client */}
+                        <Route path="/accedi" element={<ClientLogin />} />
+                        <Route path="/registrazione" element={<Register />} />
+                        <Route path="/password-dimenticata" element={<ForgotPassword />} />
+                        <Route path="/reset-password" element={<ResetPassword />} />
+                        <Route
+                            path="/profilo"
+                            element={
+                                <ProtectedRoute>
+                                    <Profile />
+                                </ProtectedRoute>
+                            }
+                        />
 
-                    <Route
-                        path="/profilo/modifica"
-                        element={
-                            <ProtectedRoute>
-                                <Edit />
-                            </ProtectedRoute>
-                        }
-                    />
-                    <Route
-                        path="/prenotazioni"
-                        element={
-                            <ProtectedRoute>
-                                <MyReservations />
-                            </ProtectedRoute>
-                        }
-                    />
+                        <Route
+                            path="/profilo/modifica"
+                            element={
+                                <ProtectedRoute>
+                                    <Edit />
+                                </ProtectedRoute>
+                            }
+                        />
+                        <Route
+                            path="/prenotazioni"
+                            element={
+                                <ProtectedRoute>
+                                    <MyReservations />
+                                </ProtectedRoute>
+                            }
+                        />
 
-                    {/* Login admin (pubblica) */}
-                    <Route path="/admin/accedi" element={<Login />} />
+                        {/* Login admin (pubblica) */}
+                        <Route path="/admin/accedi" element={<Login />} />
 
-                    {/* Rotte admin protette */}
-                    <Route
-                        path="/admin/dashboard"
-                        element={
-                            <ProtectedRoute redirectTo="/admin/accedi">
-                                <RoleGuard role="admin">
-                                    <Dashboard />
-                                </RoleGuard>
-                            </ProtectedRoute>
-                        }
-                    />
+                        {/* Rotte admin protette */}
+                        <Route
+                            path="/admin/dashboard"
+                            element={
+                                <ProtectedRoute redirectTo="/admin/accedi">
+                                    <RoleGuard role="admin">
+                                        <Dashboard />
+                                    </RoleGuard>
+                                </ProtectedRoute>
+                            }
+                        />
 
-                    <Route
-                        path="/admin/camere/nuova"
-                        element={
-                            <ProtectedRoute redirectTo="/admin/accedi">
-                                <RoleGuard role="admin">
-                                    <RoomForm />
-                                </RoleGuard>
-                            </ProtectedRoute>
-                        }
-                    />
-                    <Route
-                        path="/admin/camere/modifica/:id"
-                        element={
-                            <ProtectedRoute redirectTo="/admin/accedi">
-                                <RoleGuard role="admin">
-                                    <RoomForm />
-                                </RoleGuard>
-                            </ProtectedRoute>
-                        }
-                    />
-                    <Route path="*" element={<NotFound />} />
-                </Routes>
-            </main>
+                        <Route
+                            path="/admin/camere/nuova"
+                            element={
+                                <ProtectedRoute redirectTo="/admin/accedi">
+                                    <RoleGuard role="admin">
+                                        <RoomForm />
+                                    </RoleGuard>
+                                </ProtectedRoute>
+                            }
+                        />
+                        <Route
+                            path="/admin/camere/modifica/:id"
+                            element={
+                                <ProtectedRoute redirectTo="/admin/accedi">
+                                    <RoleGuard role="admin">
+                                        <RoomForm />
+                                    </RoleGuard>
+                                </ProtectedRoute>
+                            }
+                        />
+                        <Route path="*" element={<NotFound />} />
+                    </Routes>
+                </main>
 
-            <Footer />
-        </div>
+                <Footer />
+            </div>
+        </BookingProvider>
     )
 }

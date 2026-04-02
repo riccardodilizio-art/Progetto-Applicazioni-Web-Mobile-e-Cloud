@@ -1,16 +1,19 @@
 import { useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { rooms } from '../data/Rooms'
-import BookingModal from '../components/room/BookingModal'
-import { useRoomBooking } from '../hooks/useRoomBooking'
 import { typeLabels } from '../data/roomUtils'
+import { useBooking } from '../context/BookingContext'
+import { nightsBetween } from '../hooks/useRoomBooking'
+import { formatDate } from '../lib/dateUtils'
+import useIsAuthenticated from 'react-auth-kit/hooks/useIsAuthenticated'
 
 export default function RoomDetail() {
     const { id } = useParams<{ id: string }>()
     const room = rooms.find((r) => r.id === Number(id))
     const [currentImage, setCurrentImage] = useState(0)
 
-    const booking = useRoomBooking(room?.capacity ?? 1)
+    const { checkIn, checkOut, guests, isInCart, addToCart } = useBooking()
+    const isAuthenticated = useIsAuthenticated()
 
     if (!room) {
         return (
@@ -24,6 +27,16 @@ export default function RoomDetail() {
         )
     }
 
+    const hasSearch = Boolean(checkIn && checkOut)
+    const nights = nightsBetween(checkIn, checkOut)
+    const total = nights * room.pricePerNight
+    const alreadyInCart = isInCart(room.id)
+
+    function handleAddToCart() {
+        if (!room || !hasSearch || !room.available || !isAuthenticated) return
+        addToCart(room)
+    }
+
     return (
         <div className="min-h-screen bg-[#FAF0E6]">
             <div className="max-w-6xl mx-auto px-4 pt-6">
@@ -31,7 +44,22 @@ export default function RoomDetail() {
                     ← Torna alle camere
                 </Link>
             </div>
+
             <div className="max-w-6xl mx-auto px-4 py-8">
+                {/* Banner soggiorno selezionato */}
+                {hasSearch && (
+                    <div className="bg-[#FAF5EE] border border-[#E8C9A0] rounded-xl px-4 py-3 mb-6 flex items-center justify-between flex-wrap gap-2">
+                        <p className="text-sm text-[#6B4828]">
+                            <span className="font-semibold">Soggiorno selezionato:</span>{' '}
+                            {formatDate(checkIn)} → {formatDate(checkOut)} · {guests}{' '}
+                            {guests === 1 ? 'ospite' : 'ospiti'} · {nights} {nights === 1 ? 'notte' : 'notti'}
+                        </p>
+                        <Link to="/camere" className="text-xs text-[#9A6840] hover:text-[#6B4828] hover:underline">
+                            Modifica date
+                        </Link>
+                    </div>
+                )}
+
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
                     {/* Galleria */}
                     <div>
@@ -61,6 +89,7 @@ export default function RoomDetail() {
                             </div>
                         )}
                     </div>
+
                     {/* Info */}
                     <div>
                         <div className="flex items-center gap-3 mb-3">
@@ -87,73 +116,29 @@ export default function RoomDetail() {
 
                         <div className="grid grid-cols-2 gap-4 mb-6">
                             <div className="bg-white rounded-xl p-4 text-center shadow-sm">
-                                <svg
-                                    aria-hidden="true"
-                                    className="w-6 h-6 mx-auto text-[#6B4828] mb-1"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                                    />
+                                <svg aria-hidden="true" className="w-6 h-6 mx-auto text-[#6B4828] mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                 </svg>
                                 <p className="text-sm text-gray-500">Ospiti</p>
                                 <p className="font-bold text-[#6B4828]">{room.capacity}</p>
                             </div>
                             <div className="bg-white rounded-xl p-4 text-center shadow-sm">
-                                <svg
-                                    aria-hidden="true"
-                                    className="w-6 h-6 mx-auto text-[#6B4828] mb-1"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"
-                                    />
+                                <svg aria-hidden="true" className="w-6 h-6 mx-auto text-[#6B4828] mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
                                 </svg>
                                 <p className="text-sm text-gray-500">Dimensione</p>
                                 <p className="font-bold text-[#6B4828]">{room.size} m²</p>
                             </div>
                             <div className="bg-white rounded-xl p-4 text-center shadow-sm">
-                                <svg
-                                    aria-hidden="true"
-                                    className="w-6 h-6 mx-auto text-[#6B4828] mb-1"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
-                                    />
+                                <svg aria-hidden="true" className="w-6 h-6 mx-auto text-[#6B4828] mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                                 </svg>
                                 <p className="text-sm text-gray-500">Piano</p>
                                 <p className="font-bold text-[#6B4828]">{room.floor}°</p>
                             </div>
                             <div className="bg-white rounded-xl p-4 text-center shadow-sm">
-                                <svg
-                                    aria-hidden="true"
-                                    className="w-6 h-6 mx-auto text-[#6B4828] mb-1"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"
-                                    />
+                                <svg aria-hidden="true" className="w-6 h-6 mx-auto text-[#6B4828] mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14" />
                                 </svg>
                                 <p className="text-sm text-gray-500">Camera</p>
                                 <p className="font-bold text-[#6B4828]">{room.roomNumber}</p>
@@ -168,19 +153,8 @@ export default function RoomDetail() {
                                         key={amenity}
                                         className="flex items-center gap-1.5 text-sm bg-white text-gray-700 px-3 py-1.5 rounded-full shadow-sm"
                                     >
-                                        <svg
-                                            aria-hidden="true"
-                                            className="w-4 h-4 text-green-500 shrink-0"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            viewBox="0 0 24 24"
-                                        >
-                                            <path
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                strokeWidth={2}
-                                                d="M5 13l4 4L19 7"
-                                            />
+                                        <svg aria-hidden="true" className="w-4 h-4 text-green-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                                         </svg>
                                         {amenity}
                                     </span>
@@ -188,24 +162,87 @@ export default function RoomDetail() {
                             </div>
                         </div>
 
-                        <button
-                            onClick={() => room.available && booking.setShowModal(true)}
-                            disabled={!room.available}
-                            className={`w-full py-3 rounded-lg font-semibold text-white transition ${
-                                room.available
-                                    ? 'bg-[#6B4828] hover:bg-[#3B2010] cursor-pointer'
-                                    : 'bg-gray-400 cursor-not-allowed'
-                            }`}
-                        >
-                            {room.available ? 'Prenota ora' : 'Non disponibile'}
-                        </button>
+                        {/* Bottone "Prenota ora" — 5 stati */}
+
+                        {/* Stato 1: camera non disponibile */}
+                        {!room.available && (
+                            <button disabled className="w-full py-3 rounded-lg font-semibold text-white bg-gray-400 cursor-not-allowed">
+                                Non disponibile
+                            </button>
+                        )}
+
+                        {/* Stato 2: utente non autenticato */}
+                        {room.available && !isAuthenticated && (
+                            <>
+                                <button
+                                    disabled
+                                    className="w-full py-3 rounded-lg font-semibold border border-[#C4A070] text-[#6B4828] bg-[#FAF5EE] cursor-not-allowed"
+                                >
+                                    Prenota ora
+                                </button>
+                                <p className="text-sm text-[#9A6840] mt-2 text-center">
+                                    <Link to="/accedi" className="underline hover:text-[#6B4828]">
+                                        Accedi o registrati
+                                    </Link>{' '}
+                                    per prenotare questa camera
+                                </p>
+                            </>
+                        )}
+
+                        {/* Stato 3: autenticato, date non selezionate */}
+                        {room.available && isAuthenticated && !hasSearch && (
+                            <>
+                                <button
+                                    disabled
+                                    className="w-full py-3 rounded-lg font-semibold text-white bg-[#6B4828]/50 cursor-not-allowed"
+                                >
+                                    Prenota ora
+                                </button>
+                                <p className="text-sm text-[#9A6840] mt-2 text-center">
+                                    <Link to="/camere" className="underline hover:text-[#6B4828]">
+                                        ← Seleziona le date del soggiorno
+                                    </Link>{' '}
+                                    per prenotare
+                                </p>
+                            </>
+                        )}
+
+                        {/* Stato 4: già in carrello */}
+                        {room.available && isAuthenticated && hasSearch && alreadyInCart && (
+                            <button
+                                disabled
+                                className="w-full py-3 rounded-lg font-semibold text-white bg-green-600 cursor-default flex items-center justify-center gap-2"
+                            >
+                                <svg aria-hidden="true" className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                </svg>
+                                Aggiunta al carrello
+                            </button>
+                        )}
+
+                        {/* Stato 5: pronto per prenotare */}
+                        {room.available && isAuthenticated && hasSearch && !alreadyInCart && (
+                            <button
+                                onClick={handleAddToCart}
+                                className="w-full py-3 rounded-lg font-semibold text-white bg-[#6B4828] hover:bg-[#3B2010] cursor-pointer transition"
+                            >
+                                Prenota ora
+                            </button>
+                        )}
+
+                        {/* Riepilogo carrello */}
+                        {room.available && isAuthenticated && alreadyInCart && hasSearch && (
+                            <div className="bg-[#FAF5EE] border border-[#C4A070] rounded-xl p-4 mt-4">
+                                <p className="font-semibold text-[#3B2010] mb-1">Camera aggiunta al carrello</p>
+                                <p className="text-sm text-[#6B4828]">
+                                    {nights} {nights === 1 ? 'notte' : 'notti'} · €{room.pricePerNight} / notte
+                                </p>
+                                <p className="text-[#3B2010] font-bold text-lg mt-1">Totale: €{total}</p>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
-            {booking.showModal && (
-                <BookingModal room={room} booking={booking} />
-            )}
-
         </div>
     )
 }
