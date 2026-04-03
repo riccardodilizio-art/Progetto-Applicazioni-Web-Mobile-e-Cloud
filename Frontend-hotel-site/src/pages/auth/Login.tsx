@@ -3,7 +3,6 @@ import { useNavigate, Navigate, Link } from 'react-router-dom'
 import useSignIn from 'react-auth-kit/hooks/useSignIn'
 import useIsAuthenticated from 'react-auth-kit/hooks/useIsAuthenticated'
 import type { UserState } from '../../types/User'
-import { apiFetch } from '../../lib/apiClient.ts'
 
 export default function Login() {
     const [email, setEmail] = useState('')
@@ -23,25 +22,30 @@ export default function Login() {
         e.preventDefault()
         setError('')
         setIsLoading(true)
-        try {
-            const res = await apiFetch<{ token: string; user: UserState }>('/auth/login', {
-                method: 'POST',
-                body: JSON.stringify({ email, password }),
-            })
+
+        // --- MOCK: sostituire con chiamata API al backend ---
+        const mockUsers = [
+            { email: 'cliente@hotelexcelsior.it', password: 'cliente123', name: 'Mario', surname: 'Rossi', phone: '3331234567', role: 'client' as const },
+            { email: 'mario.rossi@email.it', password: 'password123', name: 'Mario', surname: 'Rossi', phone: '3339876543', role: 'client' as const },
+        ]
+
+        const user = mockUsers.find(u => u.email === email && u.password === password)
+
+        if (user) {
             const success = signIn({
-                auth: { token: res.token, type: 'Bearer' },
-                userState: res.user,
+                auth: { token: 'mock-token-client', type: 'Bearer' },
+                userState: { email: user.email, role: user.role, name: user.name, surname: user.surname, phone: user.phone },
             })
             if (success) {
                 navigate('/profilo')
             } else {
                 setError('Errore durante il login')
             }
-        } catch {
+        } else {
             setError('Email o password non validi')
-        } finally {
-            setIsLoading(false)
         }
+
+        setIsLoading(false)
     }
 
     return (

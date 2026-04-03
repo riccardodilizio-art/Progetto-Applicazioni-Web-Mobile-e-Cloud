@@ -4,7 +4,6 @@ import useSignIn from 'react-auth-kit/hooks/useSignIn'
 import useIsAuthenticated from 'react-auth-kit/hooks/useIsAuthenticated'
 import type { UserState } from '../../types/User'
 import useAuthUser from 'react-auth-kit/hooks/useAuthUser'
-import { apiFetch } from '../../lib/apiClient.ts'
 
 export default function Login() {
     const isAuthenticated = useIsAuthenticated()
@@ -24,21 +23,23 @@ export default function Login() {
         setError('')
 
         // --- MOCK: sostituire con chiamata API al backend ---
-        try {
-            const res = await apiFetch<{ token: string; user: UserState }>('/auth/admin/login', {
-                method: 'POST',
-                body: JSON.stringify({ email, password }),
-            })
+        const mockAdmins = [
+            { email: 'admin@hotelexcelsior.it', password: 'admin123', name: 'Admin', surname: 'Hotel' },
+        ]
+
+        const admin = mockAdmins.find(u => u.email === email && u.password === password)
+
+        if (admin) {
             const success = signIn({
-                auth: { token: res.token, type: 'Bearer' },
-                userState: res.user,
+                auth: { token: 'mock-token-admin', type: 'Bearer' },
+                userState: { email: admin.email, role: 'admin' as const, name: admin.name, surname: admin.surname },
             })
             if (success) {
                 navigate('/admin/dashboard')
             } else {
                 setError('Errore durante il login')
             }
-        } catch {
+        } else {
             setError('Credenziali non valide')
         }
     }
