@@ -10,7 +10,7 @@ export function useApiSetup() {
     useEffect(() => {
         registerUnauthorizedHandler(() => {
             signOut()
-            navigate('/login', { replace: true })
+            navigate('/accedi', { replace: true })
         })
         return () => registerUnauthorizedHandler(null)
     }, [signOut, navigate])

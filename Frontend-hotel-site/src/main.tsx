@@ -8,10 +8,9 @@ import './index.css'
 
 const store = createStore({
     authName: '_auth',
-    authType: 'cookie',
-    cookieDomain: window.location.hostname,
-    cookieSecure: import.meta.env.PROD,
+    authType: 'localstorage',
 })
+
 
 const rootEl = document.getElementById('root')
 if (!rootEl) throw new Error('Root element #root not found')
