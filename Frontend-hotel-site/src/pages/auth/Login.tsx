@@ -3,7 +3,8 @@ import { useNavigate, Navigate, Link } from 'react-router-dom'
 import useSignIn from 'react-auth-kit/hooks/useSignIn'
 import useIsAuthenticated from 'react-auth-kit/hooks/useIsAuthenticated'
 import type { UserState } from '../../types/User'
-import { useBooking } from '../hooks/useBooking'
+import { useBooking } from '../../hooks/useBooking'
+
 
 const mockClients = [
     {

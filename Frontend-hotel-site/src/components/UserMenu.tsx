@@ -10,7 +10,8 @@ type Props = {
 
 const clientItems = [
     { to: '/prenotazioni', label: 'Le mie prenotazioni' },
-    { to: '/profile/edit', label: 'Modifica dati' },
+    { to: '/profilo/modifica', label: 'Modifica dati' }
+
 ]
 
 const adminItems = [{ to: '/admin/dashboard', label: 'Dashboard' }]
