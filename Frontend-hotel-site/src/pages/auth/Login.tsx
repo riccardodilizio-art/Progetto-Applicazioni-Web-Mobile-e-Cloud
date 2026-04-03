@@ -3,6 +3,24 @@ import { useNavigate, Navigate, Link } from 'react-router-dom'
 import useSignIn from 'react-auth-kit/hooks/useSignIn'
 import useIsAuthenticated from 'react-auth-kit/hooks/useIsAuthenticated'
 import type { UserState } from '../../types/User'
+import { useBooking } from '../hooks/useBooking'
+
+const mockClients = [
+    {
+        email: 'cliente@hotelexcelsior.it',
+        password: 'cliente123',
+        name: 'Mario',
+        surname: 'Rossi',
+        phone: '333 1234567',
+    },
+    {
+        email: 'guest@hotelexcelsior.it',
+        password: 'guest123',
+        name: 'Laura',
+        surname: 'Bianchi',
+        phone: '340 9876543',
+    },
+]
 
 export default function Login() {
     const [email, setEmail] = useState('')
@@ -13,31 +31,40 @@ export default function Login() {
     const signIn = useSignIn<UserState>()
     const isAuthenticated = useIsAuthenticated()
     const navigate = useNavigate()
+    const { pendingRoom, addToCart, clearPendingRoom } = useBooking()
 
     if (isAuthenticated) {
         return <Navigate to="/" replace />
     }
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
         setError('')
         setIsLoading(true)
 
-        // --- MOCK: sostituire con chiamata API al backend ---
-        const mockUsers = [
-            { email: 'cliente@hotelexcelsior.it', password: 'cliente123', name: 'Mario', surname: 'Rossi', phone: '3331234567', role: 'client' as const },
-            { email: 'mario.rossi@email.it', password: 'password123', name: 'Mario', surname: 'Rossi', phone: '3339876543', role: 'client' as const },
-        ]
-
-        const user = mockUsers.find(u => u.email === email && u.password === password)
-
-        if (user) {
+        const client = mockClients.find((c) => c.email === email && c.password === password)
+        if (client) {
             const success = signIn({
-                auth: { token: 'mock-token-client', type: 'Bearer' },
-                userState: { email: user.email, role: user.role, name: user.name, surname: user.surname, phone: user.phone },
+                auth: {
+                    token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjbGllbnRAaG90ZWxleGNlbHNpb3IuaXQiLCJyb2xlIjoiY2xpZW50IiwiZXhwIjo5OTk5OTk5OTk5fQ.dGVzdC1zaWduYXR1cmU',
+                    type: 'Bearer',
+                },
+                userState: {
+                    email: client.email,
+                    role: 'client',
+                    name: client.name,
+                    surname: client.surname,
+                    phone: client.phone,
+                },
             })
             if (success) {
-                navigate('/profilo')
+                if (pendingRoom) {
+                    addToCart(pendingRoom)
+                    clearPendingRoom()
+                    navigate('/carrello')
+                } else {
+                    navigate('/profilo')
+                }
             } else {
                 setError('Errore durante il login')
             }

@@ -18,22 +18,23 @@ export default function Login() {
         return <Navigate to="/admin/dashboard" replace />
     }
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
         setError('')
 
         // --- MOCK: sostituire con chiamata API al backend ---
-        const mockAdmins = [
-            { email: 'admin@hotelexcelsior.it', password: 'admin123', name: 'Admin', surname: 'Hotel' },
-        ]
-
-        const admin = mockAdmins.find(u => u.email === email && u.password === password)
-
-        if (admin) {
+        if (email === 'admin@hotelexcelsior.it' && password === 'admin123') {
             const success = signIn({
-                auth: { token: 'mock-token-admin', type: 'Bearer' },
-                userState: { email: admin.email, role: 'admin' as const, name: admin.name, surname: admin.surname },
+                auth: {
+                    token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkBob3RlbGV4Y2Vsc2lvci5pdCIsInJvbGUiOiJhZG1pbiIsImV4cCI6OTk5OTk5OTk5OX0.dGVzdC1zaWduYXR1cmU',
+                    type: 'Bearer',
+                },
+                userState: {
+                    email: email,
+                    role: 'admin' as const,
+                },
             })
+
             if (success) {
                 navigate('/admin/dashboard')
             } else {

@@ -1,8 +1,8 @@
 import { useState } from 'react'
-import { useParams, Link } from 'react-router-dom'
+import { useParams, Link, useNavigate } from 'react-router-dom'
 import { rooms } from '../data/Rooms'
 import { typeLabels } from '../data/roomUtils'
-import { useBooking } from '../context/BookingContext'
+import { useBooking } from '../hooks/useBooking'
 import { nightsBetween } from '../hooks/useRoomBooking'
 import { formatDate } from '../lib/dateUtils'
 import useIsAuthenticated from 'react-auth-kit/hooks/useIsAuthenticated'
@@ -12,8 +12,9 @@ export default function RoomDetail() {
     const room = rooms.find((r) => r.id === Number(id))
     const [currentImage, setCurrentImage] = useState(0)
 
-    const { checkIn, checkOut, guests, isInCart, addToCart } = useBooking()
+    const { checkIn, checkOut, guests, isInCart, addToCart, setPendingRoom } = useBooking()
     const isAuthenticated = useIsAuthenticated()
+    const navigate = useNavigate()
 
     if (!room) {
         return (
@@ -33,8 +34,16 @@ export default function RoomDetail() {
     const alreadyInCart = isInCart(room.id)
 
     function handleAddToCart() {
-        if (!room || !hasSearch || !room.available || !isAuthenticated) return
+        if (!room || !hasSearch || !room.available) return
+
+        if (!isAuthenticated) {
+            setPendingRoom(room)
+            navigate('/accedi')
+            return
+        }
+
         addToCart(room)
+        navigate('/carrello')
     }
 
     return (
@@ -162,8 +171,6 @@ export default function RoomDetail() {
                             </div>
                         </div>
 
-                        {/* Bottone "Prenota ora" — 5 stati */}
-
                         {/* Stato 1: camera non disponibile */}
                         {!room.available && (
                             <button disabled className="w-full py-3 rounded-lg font-semibold text-white bg-gray-400 cursor-not-allowed">
@@ -171,26 +178,8 @@ export default function RoomDetail() {
                             </button>
                         )}
 
-                        {/* Stato 2: utente non autenticato */}
-                        {room.available && !isAuthenticated && (
-                            <>
-                                <button
-                                    disabled
-                                    className="w-full py-3 rounded-lg font-semibold border border-[#C4A070] text-[#6B4828] bg-[#FAF5EE] cursor-not-allowed"
-                                >
-                                    Prenota ora
-                                </button>
-                                <p className="text-sm text-[#9A6840] mt-2 text-center">
-                                    <Link to="/accedi" className="underline hover:text-[#6B4828]">
-                                        Accedi o registrati
-                                    </Link>{' '}
-                                    per prenotare questa camera
-                                </p>
-                            </>
-                        )}
-
-                        {/* Stato 3: autenticato, date non selezionate */}
-                        {room.available && isAuthenticated && !hasSearch && (
+                        {/* Stato 2: date non selezionate */}
+                        {room.available && !hasSearch && (
                             <>
                                 <button
                                     disabled
@@ -207,21 +196,21 @@ export default function RoomDetail() {
                             </>
                         )}
 
-                        {/* Stato 4: già in carrello */}
-                        {room.available && isAuthenticated && hasSearch && alreadyInCart && (
-                            <button
-                                disabled
-                                className="w-full py-3 rounded-lg font-semibold text-white bg-green-600 cursor-default flex items-center justify-center gap-2"
+                        {/* Stato 3: già in carrello */}
+                        {room.available && hasSearch && alreadyInCart && (
+                            <Link
+                                to="/carrello"
+                                className="w-full py-3 rounded-lg font-semibold text-white bg-green-600 flex items-center justify-center gap-2"
                             >
                                 <svg aria-hidden="true" className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                                 </svg>
-                                Aggiunta al carrello
-                            </button>
+                                Vai al carrello
+                            </Link>
                         )}
 
-                        {/* Stato 5: pronto per prenotare */}
-                        {room.available && isAuthenticated && hasSearch && !alreadyInCart && (
+                        {/* Stato 4: pronto per prenotare (loggato o no) */}
+                        {room.available && hasSearch && !alreadyInCart && (
                             <button
                                 onClick={handleAddToCart}
                                 className="w-full py-3 rounded-lg font-semibold text-white bg-[#6B4828] hover:bg-[#3B2010] cursor-pointer transition"
@@ -231,7 +220,7 @@ export default function RoomDetail() {
                         )}
 
                         {/* Riepilogo carrello */}
-                        {room.available && isAuthenticated && alreadyInCart && hasSearch && (
+                        {room.available && alreadyInCart && hasSearch && (
                             <div className="bg-[#FAF5EE] border border-[#C4A070] rounded-xl p-4 mt-4">
                                 <p className="font-semibold text-[#3B2010] mb-1">Camera aggiunta al carrello</p>
                                 <p className="text-sm text-[#6B4828]">

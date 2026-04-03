@@ -8,7 +8,9 @@ import './index.css'
 
 const store = createStore({
     authName: '_auth',
-    authType: 'localstorage',
+    authType: 'cookie',
+    cookieDomain: window.location.hostname,
+    cookieSecure: false,
 })
 
 
