@@ -4,6 +4,8 @@ using System.Text;
 using Hotel.Site.Application.Abstractions.Services;
 using Hotel.Site.Application.Abstractions.UnitOfWork;
 using Hotel.Site.Core.Entities;
+using Hotel.Site.Core.Entities.Enums;
+using DayOfWeek = Hotel.Site.Core.Entities.Enums.DayOfWeek;
 
 namespace Hotel.Site.Application.Services
 {

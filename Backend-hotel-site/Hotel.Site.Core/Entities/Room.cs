@@ -17,7 +17,7 @@ namespace Hotel.Site.Core.Entities
         public int Dimensione { get; set; }
         public int Piano { get; set; }
         public int NumeroCamera { get; set; }
-        public bool Disponibilie { get; set; } = true;
+        public bool Disponibile { get; set; } = true;
         public virtual ICollection<RoomImage> ImmaginiCamera { get; set; } = new HashSet<RoomImage>();
         public virtual ICollection<RoomAmenity> ServiziCamera { get; set; } = new HashSet<RoomAmenity>();
     }

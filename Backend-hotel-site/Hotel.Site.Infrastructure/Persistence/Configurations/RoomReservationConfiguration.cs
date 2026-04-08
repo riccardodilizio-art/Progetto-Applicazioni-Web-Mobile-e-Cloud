@@ -11,11 +11,14 @@ namespace Hotel.Site.Infrastructure.Persistence.Configurations
             builder.ToTable("RoomReservations");
             builder.HasKey(x => x.IdRoomReservation);
             builder.HasOne(x => x.User)
-                .WithMany(x => x.StanzePrenotate)
-                .HasForeignKey(x => x.IdUser);
+                 .WithMany(x => x.StanzePrenotate)
+                 .HasForeignKey(x => x.IdUser)
+                 .OnDelete(DeleteBehavior.Restrict);   
+
             builder.HasOne(x => x.Room)
                 .WithMany()
-                .HasForeignKey(x => x.IdRoom);
+                .HasForeignKey(x => x.IdRoom)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }
