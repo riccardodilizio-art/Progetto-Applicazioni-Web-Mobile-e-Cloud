@@ -52,7 +52,7 @@ public class RoomController : ControllerBase
             Dimensione = request.Dimensione,
             Piano = request.Piano,
             NumeroCamera = request.NumeroCamera,
-            Disponibilie = request.Disponibile,
+            Disponibile = request.Disponibile,
         };
 
         var immagini = request.Immagini ?? new List<string>();
@@ -101,7 +101,7 @@ public class RoomController : ControllerBase
         r.Dimensione,
         r.Piano,
         r.NumeroCamera,
-        r.Disponibilie,
+        r.Disponibile,
         r.ImmaginiCamera.OrderBy(i => i.Position).Select(i => i.Url).ToList(),
         r.ServiziCamera.Select(s => s.NomeServizio).ToList()
     );
