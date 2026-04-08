@@ -1,5 +1,4 @@
-﻿using Hotel.Site.Api.DTOs.Dinner;
-using Hotel.Site.Api.DTOs.Dinner.Request;
+﻿using Hotel.Site.Api.DTOs.Dinner.Request;
 using Hotel.Site.Api.DTOs.Dinner.Response;
 using Hotel.Site.Application.Abstractions.Services;
 using Hotel.Site.Core.Entities;

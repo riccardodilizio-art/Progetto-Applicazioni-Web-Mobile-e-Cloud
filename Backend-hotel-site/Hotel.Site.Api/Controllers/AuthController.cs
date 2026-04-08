@@ -1,5 +1,4 @@
 ﻿using Hotel.Site.Api.DTOs.auth.Response;
-using Hotel.Site.Api.DTOs.auth;
 using Hotel.Site.Application.Abstractions.Services;
 using Hotel.Site.Core.Entities;
 using Hotel.Site.Core.Entities.Enums;

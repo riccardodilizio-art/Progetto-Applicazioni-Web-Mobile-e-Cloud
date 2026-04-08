@@ -1,5 +1,4 @@
-﻿using Hotel.Site.Api.DTOs.Menu;
-using Hotel.Site.Api.DTOs.Menu.Response;
+﻿using Hotel.Site.Api.DTOs.Menu.Response;
 using Hotel.Site.Application.Abstractions.Services;
 using Hotel.Site.Core.Entities.Enums;
 using Microsoft.AspNetCore.Mvc;

@@ -1,5 +1,4 @@
-﻿using Hotel.Site.Api.DTOs.Room;
-using Hotel.Site.Api.DTOs.Room.Request;
+﻿using Hotel.Site.Api.DTOs.Room.Request;
 using Hotel.Site.Api.DTOs.Room.Response;
 using Hotel.Site.Application.Abstractions.Services;
 using Hotel.Site.Core.Entities;
@@ -39,11 +38,14 @@ public class RoomController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] RoomRequest request)
     {
+        if (!Enum.TryParse<RoomType>(request.TipoStanza, true, out var tipoStanza))
+            return BadRequest(new { message = "Tipo stanza non valido" });
+
         var room = new Room
         {
             IdRoom = Guid.NewGuid(),
             Nome = request.Nome,
-            TipoStanza = Enum.Parse<RoomType>(request.TipoStanza, true),
+            TipoStanza = tipoStanza,
             Descrizione = request.Descrizione,
             PrezzoPerNotte = request.PrezzoPerNotte,
             CapacitaMassima = request.CapacitaMassima,
@@ -53,18 +55,21 @@ public class RoomController : ControllerBase
             Disponibilie = request.Disponibile,
         };
 
-        foreach (var (url, i) in request.Immagini.Select((url, i) => (url, i)))
+        var immagini = request.Immagini ?? new List<string>();
+        for (int i = 0; i < immagini.Count; i++)
         {
             room.ImmaginiCamera.Add(new RoomImage
             {
                 IdRoomImage = Guid.NewGuid(),
-                Url = url,
+                Url = immagini[i],
                 Position = i,
                 RoomId = room.IdRoom
             });
         }
 
-        foreach (var servizio in request.Servizi)
+
+        var servizi = request.Servizi ?? new List<string>();
+        foreach (var servizio in servizi)
         {
             room.ServiziCamera.Add(new RoomAmenity
             {
@@ -77,6 +82,7 @@ public class RoomController : ControllerBase
         await _roomService.AddRoomAsync(room);
         return Created($"/api/rooms/{room.IdRoom}", MapToResponse(room));
     }
+
 
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> Delete(Guid id)
