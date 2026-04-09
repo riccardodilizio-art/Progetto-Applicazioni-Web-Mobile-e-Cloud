@@ -38,13 +38,35 @@ export default function Register() {
 
         setIsLoading(true)
         try {
-            const res = await apiFetch<{ token: string; user: UserState }>('/auth/register', {
+            type AuthResponse = {
+                idUser: string
+                nome: string
+                cognome: string
+                email: string
+                ruolo: string
+                token: string
+            }
+
+            const res = await apiFetch<AuthResponse>('/auth/register', {
                 method: 'POST',
-                body: JSON.stringify({ email, password, name, surname, phone }),
+                body: JSON.stringify({
+                    nome: name,
+                    cognome: surname,
+                    email,
+                    password,
+                    numeroTelefono: phone,
+                }),
+                skipAuthRedirect: true,
             })
             const success = signIn({
                 auth: { token: res.token, type: 'Bearer' },
-                userState: res.user,
+                userState: {
+                    email: res.email,
+                    role: res.ruolo.toLowerCase() as 'client' | 'admin',
+                    name: res.nome,
+                    surname: res.cognome,
+                    phone,
+                },
             })
             if (success) {
                 navigate('/')

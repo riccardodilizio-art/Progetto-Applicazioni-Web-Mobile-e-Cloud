@@ -1,11 +1,13 @@
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import useSignOut from 'react-auth-kit/hooks/useSignOut'
-import { registerUnauthorizedHandler } from '../lib/apiClient'
+import useAuthHeader from 'react-auth-kit/hooks/useAuthHeader'
+import { registerUnauthorizedHandler, registerAuthHeaderGetter } from '../lib/apiClient'
 
 export function useApiSetup() {
     const signOut = useSignOut()
     const navigate = useNavigate()
+    const authHeader = useAuthHeader()
 
     useEffect(() => {
         registerUnauthorizedHandler(() => {
@@ -14,4 +16,9 @@ export function useApiSetup() {
         })
         return () => registerUnauthorizedHandler(null)
     }, [signOut, navigate])
+
+    useEffect(() => {
+        registerAuthHeaderGetter(() => authHeader)
+        return () => registerAuthHeaderGetter(null)
+    }, [authHeader])
 }
