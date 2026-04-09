@@ -6,6 +6,7 @@ using Hotel.Site.Core.Entities;
 using Hotel.Site.Core.Entities.Enums;
 using Hotel.Site.Core.Entities.Utils;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Hotel.Site.Api.Controllers;
 
@@ -37,6 +38,7 @@ public class RoomController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = "ADMIN")]
     public async Task<IActionResult> Create([FromBody] RoomRequest request)
     {
         var room = new Room
@@ -79,6 +81,7 @@ public class RoomController : ControllerBase
     }
 
     [HttpDelete("{id:guid}")]
+    [Authorize(Roles = "ADMIN")]
     public async Task<IActionResult> Delete(Guid id)
     {
         await _roomService.DeleteRoomAsync(id);

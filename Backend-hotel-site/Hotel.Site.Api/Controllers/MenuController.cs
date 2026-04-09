@@ -1,8 +1,10 @@
 ﻿using Hotel.Site.Api.DTOs.Menu;
 using Hotel.Site.Api.DTOs.Menu.Response;
 using Hotel.Site.Application.Abstractions.Services;
-using Hotel.Site.Core.Entities.Enums;
 using Microsoft.AspNetCore.Mvc;
+using Hotel.Site.Core.Entities.Enums;
+using DayOfWeek = Hotel.Site.Core.Entities.Enums.DayOfWeek;
+
 
 namespace Hotel.Site.Api.Controllers;
 
@@ -28,7 +30,7 @@ public class MenuController : ControllerBase
     [HttpGet("{giorno}")]
     public async Task<IActionResult> GetByDay(string giorno)
     {
-        if (!Enum.TryParse<DayOfWeeks>(giorno, true, out var day))
+        if (!Enum.TryParse<DayOfWeek>(giorno, true, out var day))
             return BadRequest(new { message = "Giorno non valido" });
 
         var menu = await _menuService.GetMenuByDayAsync(day);

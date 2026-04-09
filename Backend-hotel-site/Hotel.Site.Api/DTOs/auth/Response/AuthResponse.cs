@@ -5,5 +5,6 @@ public record AuthResponse(
     string Nome,
     string Cognome,
     string Email,
-    string Ruolo
+    string Ruolo,
+    string Token
 );

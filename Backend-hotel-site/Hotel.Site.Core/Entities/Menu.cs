@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Hotel.Site.Core.Entities.Enums;
+using DayOfWeek = Hotel.Site.Core.Entities.Enums.DayOfWeek;
 
 namespace Hotel.Site.Core.Entities
 {

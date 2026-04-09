@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using Hotel.Site.Application.Abstractions.Repositories;
 using Hotel.Site.Core.Entities;
+using Hotel.Site.Core.Entities.Enums;
 
 namespace Hotel.Site.Infrastructure.Persistence.Repositories
 {

@@ -5,6 +5,7 @@ using Hotel.Site.Application.Abstractions.Services;
 using Hotel.Site.Core.Entities;
 using Hotel.Site.Core.Entities.Enums;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Hotel.Site.Api.Controllers;
 
@@ -36,6 +37,7 @@ public class RoomReservationController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize]
     public async Task<IActionResult> Create([FromBody] RoomReservationRequest request)
     {
         var nights = request.CheckOut.DayNumber - request.CheckIn.DayNumber;
@@ -59,6 +61,7 @@ public class RoomReservationController : ControllerBase
     }
 
     [HttpDelete("{id:guid}")]
+    [Authorize]
     public async Task<IActionResult> Delete(Guid id)
     {
         await _reservationService.DeleteRoomReservationAsync(id);
