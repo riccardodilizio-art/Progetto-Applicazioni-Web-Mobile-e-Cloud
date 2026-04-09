@@ -22,6 +22,7 @@ import ResetPassword from './pages/auth/ResetPassword'
 import { useApiSetup } from './hooks/useApiSetup'
 import Restaurant from './pages/Restaurant'
 import { BookingProvider } from './context/BookingContext'
+import Cart from './pages/Cart'
 
 function ProtectedRoute({ children, redirectTo = '/accedi' }: { children: React.ReactNode; redirectTo?: string }) {
     const isAuthenticated = useIsAuthenticated()
@@ -80,6 +81,14 @@ export default function App() {
                                 </ProtectedRoute>
                             }
                         />
+                        <Route path="/carrello"
+                               element={
+                            <ProtectedRoute>
+                                <Cart />
+                            </ProtectedRoute>}
+                        />
+
+
 
                         {/* Login admin (pubblica) */}
                         <Route path="/admin/accedi" element={<Login />} />

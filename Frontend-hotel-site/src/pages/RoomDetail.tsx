@@ -1,8 +1,8 @@
 import { useState } from 'react'
-import { useParams, Link } from 'react-router-dom'
+import { useParams, Link, useNavigate } from 'react-router-dom'
 import { rooms } from '../data/Rooms'
 import { typeLabels } from '../data/roomUtils'
-import { useBooking } from '../context/BookingContext'
+import { useBooking } from '../hooks/useBooking'
 import { nightsBetween } from '../hooks/useRoomBooking'
 import { formatDate } from '../lib/dateUtils'
 import useIsAuthenticated from 'react-auth-kit/hooks/useIsAuthenticated'
@@ -12,8 +12,10 @@ export default function RoomDetail() {
     const room = rooms.find((r) => r.id === Number(id))
     const [currentImage, setCurrentImage] = useState(0)
 
-    const { checkIn, checkOut, guests, isInCart, addToCart } = useBooking()
+    const { checkIn, checkOut, guests, isInCart, addToCart, setPendingRoom } = useBooking()
     const isAuthenticated = useIsAuthenticated()
+    const navigate = useNavigate()
+
 
     if (!room) {
         return (
@@ -36,6 +38,12 @@ export default function RoomDetail() {
         if (!room || !hasSearch || !room.available || !isAuthenticated) return
         addToCart(room)
     }
+    function handleBookAsGuest() {
+        if (!room || !hasSearch || !room.available) return
+        setPendingRoom(room)
+        navigate('/accedi')
+    }
+
 
     return (
         <div className="min-h-screen bg-[#FAF0E6]">
@@ -171,8 +179,8 @@ export default function RoomDetail() {
                             </button>
                         )}
 
-                        {/* Stato 2: utente non autenticato */}
-                        {room.available && !isAuthenticated && (
+                        {/* Stato 2a: non autenticato, date non selezionate */}
+                        {room.available && !isAuthenticated && !hasSearch && (
                             <>
                                 <button
                                     disabled
@@ -181,10 +189,47 @@ export default function RoomDetail() {
                                     Prenota ora
                                 </button>
                                 <p className="text-sm text-[#9A6840] mt-2 text-center">
-                                    <Link to="/accedi" className="underline hover:text-[#6B4828]">
-                                        Accedi o registrati
+                                    <Link to="/camere" className="underline hover:text-[#6B4828]">
+                                        ← Seleziona le date del soggiorno
                                     </Link>{' '}
-                                    per prenotare questa camera
+                                    per prenotare
+                                </p>
+                            </>
+                        )}
+
+                        {/* Stato 2b: non autenticato, date selezionate → setta pendingRoom e vai al login */}
+                        {room.available && !isAuthenticated && hasSearch && (
+                            <>
+                                <button
+                                    onClick={handleBookAsGuest}
+                                    className="w-full py-3 rounded-lg font-semibold text-white bg-[#6B4828] hover:bg-[#3B2010] cursor-pointer transition"
+                                >
+                                    Prenota ora
+                                </button>
+                                <p className="text-sm text-[#9A6840] mt-2 text-center">
+                                    Dovrai{' '}
+                                    <Link to="/accedi" className="underline hover:text-[#6B4828]">
+                                        accedere
+                                    </Link>{' '}
+                                    per completare la prenotazione
+                                </p>
+                            </>
+                        )}
+                        {/* Stato 2b: non autenticato, date selezionate → setta pendingRoom e vai al login */}
+                        {room.available && !isAuthenticated && hasSearch && (
+                            <>
+                                <button
+                                    onClick={handleBookAsGuest}
+                                    className="w-full py-3 rounded-lg font-semibold text-white bg-[#6B4828] hover:bg-[#3B2010] cursor-pointer transition"
+                                >
+                                    Prenota ora
+                                </button>
+                                <p className="text-sm text-[#9A6840] mt-2 text-center">
+                                    Dovrai{' '}
+                                    <Link to="/accedi" className="underline hover:text-[#6B4828]">
+                                        accedere
+                                    </Link>{' '}
+                                    per completare la prenotazione
                                 </p>
                             </>
                         )}

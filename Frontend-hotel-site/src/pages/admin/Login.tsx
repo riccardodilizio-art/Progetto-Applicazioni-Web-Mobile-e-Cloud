@@ -2,9 +2,18 @@ import { useState } from 'react'
 import { useNavigate, Navigate } from 'react-router-dom'
 import useSignIn from 'react-auth-kit/hooks/useSignIn'
 import useIsAuthenticated from 'react-auth-kit/hooks/useIsAuthenticated'
-import type { UserState } from '../../types/User'
 import useAuthUser from 'react-auth-kit/hooks/useAuthUser'
-import { apiFetch } from '../../lib/apiClient.ts'
+import type { UserState } from '../../types/User'
+import { apiFetch } from '../../lib/apiClient'
+
+type AuthResponse = {
+    idUser: string
+    nome: string
+    cognome: string
+    email: string
+    ruolo: string
+    token: string
+}
 
 export default function Login() {
     const isAuthenticated = useIsAuthenticated()
@@ -13,6 +22,7 @@ export default function Login() {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [error, setError] = useState('')
+    const [isLoading, setIsLoading] = useState(false)
     const user = useAuthUser<UserState>()
 
     if (isAuthenticated && user?.role === 'admin') {
@@ -22,24 +32,37 @@ export default function Login() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         setError('')
+        setIsLoading(true)
 
-        // --- MOCK: sostituire con chiamata API al backend ---
         try {
-            const res = await apiFetch<{ token: string; user: UserState }>('/auth/admin/login', {
+            const res = await apiFetch<AuthResponse>('/auth/admin/login', {
                 method: 'POST',
                 body: JSON.stringify({ email, password }),
+                skipAuthRedirect: true,
             })
+
             const success = signIn({
-                auth: { token: res.token, type: 'Bearer' },
-                userState: res.user,
+                auth: {
+                    token: res.token,
+                    type: 'Bearer',
+                },
+                userState: {
+                    email: res.email,
+                    role: res.ruolo.toLowerCase() as 'client' | 'admin',
+                    name: res.nome,
+                    surname: res.cognome,
+                },
             })
-            if (success) {
-                navigate('/admin/dashboard')
-            } else {
+
+            if (!success) {
                 setError('Errore durante il login')
+                return
             }
+            navigate('/admin/dashboard')
         } catch {
             setError('Credenziali non valide')
+        } finally {
+            setIsLoading(false)
         }
     }
 
@@ -79,9 +102,11 @@ export default function Login() {
 
                     <button
                         type="submit"
-                        className="w-full bg-[#3B2010] text-white font-medium py-3 rounded-lg hover:bg-[#2a1709] transition text-sm tracking-wide uppercase"
+                        disabled={isLoading}
+                        className={`w-full bg-[#3B2010] text-white font-medium py-3 rounded-lg transition text-sm tracking-wide uppercase
+                            ${isLoading ? 'opacity-70 cursor-not-allowed' : 'hover:bg-[#2a1709] cursor-pointer'}`}
                     >
-                        Accedi
+                        {isLoading ? 'Accesso in corso...' : 'Accedi'}
                     </button>
                 </form>
             </div>

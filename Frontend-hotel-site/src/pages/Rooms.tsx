@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { rooms } from '../data/Rooms'
 import RoomCard from '../components/RoomCard'
 import type { RoomType } from '../types/Room'
-import { useBooking } from '../context/BookingContext'
+import { useBooking } from '../hooks/useBooking'
 import { formatDate } from '../lib/dateUtils'
 
 const filters: { label: string; value: RoomType | 'all' }[] = [

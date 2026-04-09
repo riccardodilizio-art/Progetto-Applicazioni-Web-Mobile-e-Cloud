@@ -3,7 +3,17 @@ import { useNavigate, Navigate, Link } from 'react-router-dom'
 import useSignIn from 'react-auth-kit/hooks/useSignIn'
 import useIsAuthenticated from 'react-auth-kit/hooks/useIsAuthenticated'
 import type { UserState } from '../../types/User'
-import { apiFetch } from '../../lib/apiClient.ts'
+import { apiFetch } from '../../lib/apiClient'
+import { useBooking } from '../../hooks/useBooking'
+
+type AuthResponse = {
+    idUser: string
+    nome: string
+    cognome: string
+    email: string
+    ruolo: string // "ADMIN" | "CLIENT"
+    token: string
+}
 
 export default function Login() {
     const [email, setEmail] = useState('')
@@ -14,6 +24,7 @@ export default function Login() {
     const signIn = useSignIn<UserState>()
     const isAuthenticated = useIsAuthenticated()
     const navigate = useNavigate()
+    const { pendingRoom, addToCart, clearPendingRoom } = useBooking()
 
     if (isAuthenticated) {
         return <Navigate to="/" replace />
@@ -23,19 +34,38 @@ export default function Login() {
         e.preventDefault()
         setError('')
         setIsLoading(true)
+
         try {
-            const res = await apiFetch<{ token: string; user: UserState }>('/auth/login', {
+            const res = await apiFetch<AuthResponse>('/auth/login', {
                 method: 'POST',
                 body: JSON.stringify({ email, password }),
+                skipAuthRedirect: true,
             })
+
             const success = signIn({
-                auth: { token: res.token, type: 'Bearer' },
-                userState: res.user,
+                auth: {
+                    token: res.token,
+                    type: 'Bearer',
+                },
+                userState: {
+                    email: res.email,
+                    role: res.ruolo.toLowerCase() as 'client' | 'admin',
+                    name: res.nome,
+                    surname: res.cognome,
+                },
             })
-            if (success) {
-                navigate('/profilo')
-            } else {
+
+            if (!success) {
                 setError('Errore durante il login')
+                return
+            }
+
+            if (pendingRoom) {
+                addToCart(pendingRoom)
+                clearPendingRoom()
+                navigate('/carrello')
+            } else {
+                navigate('/profilo')
             }
         } catch {
             setError('Email o password non validi')

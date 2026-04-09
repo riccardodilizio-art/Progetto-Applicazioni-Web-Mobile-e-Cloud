@@ -1,39 +1,15 @@
-import { createContext, useContext, useState, useMemo } from 'react'
+import { useState, useMemo } from 'react'
 import type { Room } from '../types/Room'
 import { nightsBetween, toISODate } from '../hooks/useRoomBooking'
-
-export interface CartItem {
-    room: Room
-    checkIn: string
-    checkOut: string
-    guests: number
-    nights: number
-    totalPrice: number
-}
-
-interface BookingContextType {
-    checkIn: string
-    checkOut: string
-    guests: number
-    today: string
-    minCheckOut: string
-    handleCheckInChange: (v: string) => void
-    setCheckOut: (v: string) => void
-    setGuests: (v: number) => void
-    resetSearch: () => void
-    cart: CartItem[]
-    addToCart: (room: Room) => void
-    removeFromCart: (roomId: number) => void
-    isInCart: (roomId: number) => boolean
-}
-
-const BookingContext = createContext<BookingContextType | null>(null)
+import { BookingContext } from './BookingContextDef'
+import type { CartItem } from './BookingContextDef'
 
 export function BookingProvider({ children }: { children: React.ReactNode }) {
     const [checkIn, setCheckIn] = useState('')
     const [checkOut, setCheckOut] = useState('')
     const [guests, setGuests] = useState(1)
     const [cart, setCart] = useState<CartItem[]>([])
+    const [pendingRoom, setPendingRoom] = useState<Room | null>(null)
 
     const today = toISODate(new Date())
 
@@ -81,6 +57,10 @@ export function BookingProvider({ children }: { children: React.ReactNode }) {
         return cart.some((i) => i.room.id === roomId)
     }
 
+    function clearPendingRoom() {
+        setPendingRoom(null)
+    }
+
     return (
         <BookingContext.Provider
             value={{
@@ -97,15 +77,12 @@ export function BookingProvider({ children }: { children: React.ReactNode }) {
                 addToCart,
                 removeFromCart,
                 isInCart,
+                pendingRoom,
+                setPendingRoom,
+                clearPendingRoom,
             }}
         >
             {children}
         </BookingContext.Provider>
     )
-}
-
-export function useBooking() {
-    const ctx = useContext(BookingContext)
-    if (!ctx) throw new Error('useBooking must be used inside BookingProvider')
-    return ctx
 }
