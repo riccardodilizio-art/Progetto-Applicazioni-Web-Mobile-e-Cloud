@@ -1,9 +1,5 @@
-<<<<<<< HEAD
-﻿using Hotel.Site.Api.DTOs.auth.Response;
-=======
-﻿using Hotel.Site.Api.DTOs.auth.Request;
+using Hotel.Site.Api.DTOs.auth.Request;
 using Hotel.Site.Api.DTOs.auth.Response;
->>>>>>> backend
 using Hotel.Site.Application.Abstractions.Services;
 using Hotel.Site.Core.Entities;
 using Hotel.Site.Core.Entities.Enums;
