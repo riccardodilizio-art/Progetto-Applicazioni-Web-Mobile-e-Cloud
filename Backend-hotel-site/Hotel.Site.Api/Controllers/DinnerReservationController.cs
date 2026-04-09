@@ -4,6 +4,7 @@ using Hotel.Site.Application.Abstractions.Services;
 using Hotel.Site.Core.Entities;
 using Hotel.Site.Core.Entities.Enums;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Hotel.Site.Api.Controllers;
 
@@ -31,6 +32,7 @@ public class DinnerReservationController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize]
     public async Task<IActionResult> Create([FromBody] DinnerReservationRequest request)
     {
         var reservation = new DinnerReservation
