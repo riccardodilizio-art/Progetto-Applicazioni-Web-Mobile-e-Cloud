@@ -39,10 +39,12 @@ namespace Hotel.Site.Application.Services
             await _unitOfWork.SaveChangesAsync();
         }
 
-        public async Task EditMenuAsync(Menu menu)
+        public async Task<Menu?> UpdateMenuAsync(Guid id, DayOfWeek giorno, IEnumerable<Dish> piatti)
         {
-            await _unitOfWork.MenuRepository.EditMenuAsync(menu);
-            await _unitOfWork.SaveChangesAsync();
+            var menu = await _unitOfWork.MenuRepository.UpdateMenuAsync(id, giorno, piatti);
+            if (menu != null)
+                await _unitOfWork.SaveChangesAsync();
+            return menu;
         }
 
         public async Task DeleteMenuAsync(Guid id)

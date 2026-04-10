@@ -1,9 +1,10 @@
-﻿using Hotel.Site.Api.DTOs.Menu.Response;
+﻿using Hotel.Site.Api.DTOs.Menu.Request;
+using Hotel.Site.Api.DTOs.Menu.Response;
 using Hotel.Site.Application.Abstractions.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Hotel.Site.Core.Entities.Enums;
 using DayOfWeek = Hotel.Site.Core.Entities.Enums.DayOfWeek;
-
 
 namespace Hotel.Site.Api.Controllers;
 
@@ -29,12 +30,102 @@ public class MenuController : ControllerBase
     [HttpGet("{giorno}")]
     public async Task<IActionResult> GetByDay(string giorno)
     {
-        if (!Enum.TryParse<DayOfWeek>(giorno, true, out var day))   
+        if (!Enum.TryParse<DayOfWeek>(giorno, true, out var day))
             return BadRequest(new { message = "Giorno non valido" });
 
         var menu = await _menuService.GetMenuByDayAsync(day);
         if (menu == null) return NotFound();
         return Ok(MapToResponse(menu));
+    }
+
+    [HttpPost]
+    [Authorize(Roles = "ADMIN")]
+    public async Task<IActionResult> Create([FromBody] MenuRequest request)
+    {
+        if (!Enum.TryParse<DayOfWeek>(request.Giorno, true, out var giorno))
+            return BadRequest(new { message = "Giorno non valido" });
+
+        // Un solo menu per giorno
+        var existing = await _menuService.GetMenuByDayAsync(giorno);
+        if (existing != null)
+            return Conflict(new { message = $"Esiste già un menu per {giorno}" });
+
+        var piatti = new List<Core.Entities.Dish>();
+        foreach (var dto in request.Piatti ?? new List<DishRequest>())
+        {
+            if (!Enum.TryParse<DishCategory>(dto.Categoria, true, out var categoria))
+                return BadRequest(new { message = $"Categoria piatto non valida: {dto.Categoria}" });
+            if (!Enum.TryParse<DishType>(dto.TipoPiatto, true, out var tipo))
+                return BadRequest(new { message = $"Tipo piatto non valido: {dto.TipoPiatto}" });
+
+            piatti.Add(new Core.Entities.Dish
+            {
+                IdDish = Guid.NewGuid(),
+                Nome = dto.Nome,
+                Descrizione = dto.Descrizione,
+                Categoria = categoria,
+                TipoPiatto = tipo,
+            });
+        }
+
+        var menu = new Core.Entities.Menu
+        {
+            IdMenu = Guid.NewGuid(),
+            GiornoSettimana = giorno,
+        };
+        foreach (var p in piatti)
+        {
+            p.MenuId = menu.IdMenu;
+            menu.Piatti.Add(p);
+        }
+
+        await _menuService.AddMenuAsync(menu);
+        return Created($"/api/menus/{menu.IdMenu}", MapToResponse(menu));
+    }
+
+    [HttpPut("{id:guid}")]
+    [Authorize(Roles = "ADMIN")]
+    public async Task<IActionResult> Update(Guid id, [FromBody] MenuRequest request)
+    {
+        if (!Enum.TryParse<DayOfWeek>(request.Giorno, true, out var giorno))
+            return BadRequest(new { message = "Giorno non valido" });
+
+        // Se il giorno cambia, verifico che non sia già occupato da un altro menu
+        var sameDay = await _menuService.GetMenuByDayAsync(giorno);
+        if (sameDay != null && sameDay.IdMenu != id)
+            return Conflict(new { message = $"Esiste già un altro menu per {giorno}" });
+
+        var piatti = new List<Core.Entities.Dish>();
+        foreach (var dto in request.Piatti ?? new List<DishRequest>())
+        {
+            if (!Enum.TryParse<DishCategory>(dto.Categoria, true, out var categoria))
+                return BadRequest(new { message = $"Categoria piatto non valida: {dto.Categoria}" });
+            if (!Enum.TryParse<DishType>(dto.TipoPiatto, true, out var tipo))
+                return BadRequest(new { message = $"Tipo piatto non valido: {dto.TipoPiatto}" });
+
+            piatti.Add(new Core.Entities.Dish
+            {
+                Nome = dto.Nome,
+                Descrizione = dto.Descrizione,
+                Categoria = categoria,
+                TipoPiatto = tipo,
+            });
+        }
+
+        var updated = await _menuService.UpdateMenuAsync(id, giorno, piatti);
+        if (updated == null) return NotFound();
+        return Ok(MapToResponse(updated));
+    }
+
+    [HttpDelete("{id:guid}")]
+    [Authorize(Roles = "ADMIN")]
+    public async Task<IActionResult> Delete(Guid id)
+    {
+        var existing = await _menuService.GetMenuByIdAsync(id);
+        if (existing == null) return NotFound();
+
+        await _menuService.DeleteMenuAsync(id);
+        return NoContent();
     }
 
     private static MenuResponse MapToResponse(Core.Entities.Menu m) => new(

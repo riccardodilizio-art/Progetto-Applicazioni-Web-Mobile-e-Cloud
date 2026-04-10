@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 using Hotel.Site.Application.Abstractions.Repositories;
 using Hotel.Site.Core.Entities;
 using Hotel.Site.Core.Entities.Enums;
@@ -45,9 +45,27 @@ namespace Hotel.Site.Infrastructure.Persistence.Repositories
             await Context.Menus.AddAsync(menu);
         }
 
-        public async Task EditMenuAsync(Menu menu)
+        public async Task<Menu?> UpdateMenuAsync(Guid id, DayOfWeek giorno, IEnumerable<Dish> piatti)
         {
-            Context.Entry(menu).State = EntityState.Modified;
+            var existing = await Context.Menus
+                .Include(m => m.Piatti)
+                .FirstOrDefaultAsync(m => m.IdMenu == id);
+
+            if (existing == null) return null;
+
+            existing.GiornoSettimana = giorno;
+
+            // Replace piatti: drop vecchi, aggiungi nuovi
+            Context.RemoveRange(existing.Piatti);
+            existing.Piatti.Clear();
+            foreach (var p in piatti)
+            {
+                p.IdDish = Guid.NewGuid();
+                p.MenuId = existing.IdMenu;
+                existing.Piatti.Add(p);
+            }
+
+            return existing;
         }
 
         public async Task DeleteMenuAsync(Guid id)

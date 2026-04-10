@@ -13,7 +13,7 @@ namespace Hotel.Site.Application.Abstractions.Repositories
         Task<Menu?> GetMenuByDayAsync(DayOfWeek giorno);
         Task<IEnumerable<Menu>> GetAllMenusAsync();
         Task AddMenuAsync(Menu menu);
-        Task EditMenuAsync(Menu menu);
+        Task<Menu?> UpdateMenuAsync(Guid id, DayOfWeek giorno, IEnumerable<Dish> piatti);
         Task DeleteMenuAsync(Guid id);
     }
 }
