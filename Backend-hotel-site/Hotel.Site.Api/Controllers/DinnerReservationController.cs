@@ -1,20 +1,14 @@
-﻿using System.Security.Claims;
-using Hotel.Site.Api.DTOs.Dinner.Request;
+﻿using Hotel.Site.Api.DTOs.Dinner.Request;
 using Hotel.Site.Api.DTOs.Dinner.Response;
 using Hotel.Site.Application.Abstractions.Services;
 using Hotel.Site.Core.Entities;
 using Hotel.Site.Core.Entities.Enums;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Hotel.Site.Api.Controllers;
 
 [ApiController]
 [Route("api/dinner-reservations")]
-// Verificare che esista una RoomReservation con questo CodiceCena
-// Se non esiste → return BadRequest("Codice cena non valido")
-// Se la prenotazione e' ANNULLATA → return BadRequest("Prenotazione annullata")
-
 public class DinnerReservationController : ControllerBase
 {
     private readonly IDinnerReservationService _dinnerReservationService;
@@ -31,25 +25,39 @@ public class DinnerReservationController : ControllerBase
         _roomReservationService = roomReservationService;
     }
 
-    [HttpGet("{id:guid}")]
-    [Authorize]
-    public async Task<IActionResult> GetById(Guid id)
+    [HttpGet("by-code/{codiceCena}")]
+    public async Task<IActionResult> GetByCode(string codiceCena, [FromQuery] int numeroCamera)
     {
-        var reservation = await _dinnerReservationService.GetDinnerReservationByIdAsync(id);
-        if (reservation == null) return NotFound();
+        var roomReservation = await _roomReservationService.GetRoomReservationByCodiceCenaAsync(codiceCena);
 
-        if (!await IsDinnerCodeOwnedByCurrentUserOrAdmin(reservation.CodiceCena))
-            return Forbid();
+        if (roomReservation == null || roomReservation.Room == null)
+            return NotFound(new { message = "Codice cena non valido" });
 
-        return Ok(MapToResponse(reservation));
+        if (roomReservation.Room.NumeroCamera != numeroCamera)
+            return BadRequest(new { message = "Numero camera non corrispondente" });
+
+        if (roomReservation.Stato == State.ANNULLATO)
+            return BadRequest(new { message = "Prenotazione camera annullata" });
+
+        var dinnerReservation = await _dinnerReservationService.GetDinnerReservationByCodiceCenaAsync(codiceCena);
+        if (dinnerReservation == null) return NotFound(new { message = "Nessuna prenotazione cena trovata" });
+
+        return Ok(MapToResponse(dinnerReservation));
     }
 
     [HttpPost]
-    [Authorize]
     public async Task<IActionResult> Create([FromBody] DinnerReservationRequest request)
     {
-        if (!await IsDinnerCodeOwnedByCurrentUserOrAdmin(request.CodiceCena))
-            return Forbid();
+        var roomReservation = await _roomReservationService.GetRoomReservationByCodiceCenaAsync(request.CodiceCena);
+
+        if (roomReservation == null || roomReservation.Room == null)
+            return BadRequest(new { message = "Codice cena non valido" });
+
+        if (roomReservation.Room.NumeroCamera != request.NumeroCamera)
+            return BadRequest(new { message = "Numero camera non corrispondente" });
+
+        if (roomReservation.Stato == State.ANNULLATO)
+            return BadRequest(new { message = "Prenotazione camera annullata" });
 
         var reservation = new DinnerReservation
         {
@@ -74,23 +82,7 @@ public class DinnerReservationController : ControllerBase
         }
 
         await _dinnerReservationService.AddDinnerReservationAsync(reservation);
-        return Created($"/api/dinner-reservations/{reservation.Id}", MapToResponse(reservation));
-    }
-
-    private Guid GetCurrentUserId()
-    {
-        var claim = User.FindFirst(ClaimTypes.NameIdentifier)
-            ?? throw new UnauthorizedAccessException("User id claim mancante");
-        return Guid.Parse(claim.Value);
-    }
-
-    private async Task<bool> IsDinnerCodeOwnedByCurrentUserOrAdmin(string codiceCena)
-    {
-        if (User.IsInRole(Role.ADMIN.ToString())) return true;
-
-        var userId = GetCurrentUserId();
-        var userRoomReservations = await _roomReservationService.GetRoomReservationsByUserIdAsync(userId);
-        return userRoomReservations.Any(r => r.CodiceCena == codiceCena);
+        return Created($"/api/dinner-reservations/by-code/{reservation.CodiceCena}", MapToResponse(reservation));
     }
 
     private static DinnerReservationResponse MapToResponse(DinnerReservation r) => new(

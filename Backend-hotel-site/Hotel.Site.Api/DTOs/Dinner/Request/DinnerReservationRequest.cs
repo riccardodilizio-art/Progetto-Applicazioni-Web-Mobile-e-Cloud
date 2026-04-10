@@ -7,6 +7,7 @@ public record DinnerOrderRequest(
 
 public record DinnerReservationRequest(
     string CodiceCena,
+    int NumeroCamera,
     DateOnly Data,
     int NumeroCoperti,
     List<DinnerOrderRequest> Ordini
