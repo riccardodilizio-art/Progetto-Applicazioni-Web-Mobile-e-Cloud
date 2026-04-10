@@ -28,6 +28,36 @@ public class RoomController : ControllerBase
         return Ok(response);
     }
 
+    [HttpPut("{id:guid}")]
+    [Authorize(Roles = "ADMIN")]
+    public async Task<IActionResult> Update(Guid id, [FromBody] RoomUpdateRequest request)
+    {
+        if (!Enum.TryParse<RoomType>(request.TipoStanza, true, out var tipoStanza))
+            return BadRequest(new { message = "Tipo stanza non valido" });
+
+        var updated = new Room
+        {
+            Nome = request.Nome,
+            TipoStanza = tipoStanza,
+            Descrizione = request.Descrizione,
+            PrezzoPerNotte = request.PrezzoPerNotte,
+            CapacitaMassima = request.CapacitaMassima,
+            Dimensione = request.Dimensione,
+            Piano = request.Piano,
+            NumeroCamera = request.NumeroCamera,
+            Disponibile = request.Disponibile,
+        };
+
+        var immagini = request.Immagini ?? new List<string>();
+        var servizi = request.Servizi ?? new List<string>();
+
+        var result = await _roomService.UpdateRoomAsync(id, updated, immagini, servizi);
+        if (result == null) return NotFound();
+
+        return Ok(MapToResponse(result));
+    }
+
+
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetById(Guid id)
     {

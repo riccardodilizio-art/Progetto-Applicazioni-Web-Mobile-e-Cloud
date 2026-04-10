@@ -51,6 +51,11 @@ public class RoomReservationController : ControllerBase
         var nights = request.CheckOut.DayNumber - request.CheckIn.DayNumber;
         if (nights <= 0) return BadRequest(new { message = "CheckOut deve essere successivo a CheckIn" });
 
+        var overlap = await _reservationService.HasOverlappingReservationAsync(
+            request.IdRoom, request.CheckIn, request.CheckOut);
+        if (overlap)
+            return Conflict(new { message = "La camera è già prenotata per le date selezionate" });
+
         var reservation = new RoomReservation
         {
             IdRoomReservation = Guid.NewGuid(),
@@ -68,6 +73,7 @@ public class RoomReservationController : ControllerBase
         await _reservationService.AddRoomReservationAsync(reservation);
         return Created($"/api/reservations/{reservation.IdRoomReservation}", MapToResponse(reservation));
     }
+
 
     [HttpDelete("{id:guid}")]
     [Authorize]
