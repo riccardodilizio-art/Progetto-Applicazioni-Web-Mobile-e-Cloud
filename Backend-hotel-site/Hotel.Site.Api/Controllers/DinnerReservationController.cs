@@ -11,6 +11,10 @@ namespace Hotel.Site.Api.Controllers;
 
 [ApiController]
 [Route("api/dinner-reservations")]
+// Verificare che esista una RoomReservation con questo CodiceCena
+// Se non esiste → return BadRequest("Codice cena non valido")
+// Se la prenotazione e' ANNULLATA → return BadRequest("Prenotazione annullata")
+
 public class DinnerReservationController : ControllerBase
 {
     private readonly IDinnerReservationService _dinnerReservationService;
