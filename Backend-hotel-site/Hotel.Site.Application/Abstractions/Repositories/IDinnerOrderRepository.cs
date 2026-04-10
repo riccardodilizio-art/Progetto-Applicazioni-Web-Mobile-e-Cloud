@@ -7,7 +7,7 @@ namespace Hotel.Site.Application.Abstractions.Repositories
 {
     public interface IDinnerOrderRepository
     {
-        Task<DinnerOrder> GetDinnerOrderByIdAsync(Guid id);
+        Task<DinnerOrder?> GetDinnerOrderByIdAsync(Guid id);
         Task<IEnumerable<DinnerOrder>> GetDinnerOrdersByReservationIdAsync(Guid idDinnerReservation);
         Task AddDinnerOrderAsync(DinnerOrder dinnerOrder);
         Task EditDinnerOrderAsync(DinnerOrder dinnerOrder);

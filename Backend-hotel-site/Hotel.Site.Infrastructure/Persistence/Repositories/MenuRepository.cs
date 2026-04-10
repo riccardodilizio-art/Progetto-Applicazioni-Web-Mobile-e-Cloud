@@ -17,20 +17,20 @@ namespace Hotel.Site.Infrastructure.Persistence.Repositories
         }
         public HotelSiteContext Context { get; set; }
 
-        public async Task<Menu> GetMenuByIdAsync(Guid id)
+        public async Task<Menu?> GetMenuByIdAsync(Guid id)
         {
             return await Context.Menus
                 .Include(m => m.Piatti)
                 .Where(w => w.IdMenu == id)
-                .FirstAsync();
+                .FirstOrDefaultAsync();
         }
 
-        public async Task<Menu> GetMenuByDayAsync(DayOfWeek giorno)
+        public async Task<Menu?> GetMenuByDayAsync(DayOfWeek giorno)
         {
             return await Context.Menus
                 .Include(m => m.Piatti)
                 .Where(w => w.GiornoSettimana == giorno)
-                .FirstAsync();
+                .FirstOrDefaultAsync();
         }
 
         public async Task<IEnumerable<Menu>> GetAllMenusAsync()

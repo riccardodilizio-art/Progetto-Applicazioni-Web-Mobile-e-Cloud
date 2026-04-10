@@ -16,12 +16,12 @@ namespace Hotel.Site.Application.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<User> GetUserByIdAsync(Guid id)
+        public async Task<User?> GetUserByIdAsync(Guid id)
         {
             return await _unitOfWork.UserRepository.GetUserByIdAsync(id);
         }
 
-        public async Task<User> GetUserByEmailAsync(string email)
+        public async Task<User?> GetUserByEmailAsync(string email)
         {
             return await _unitOfWork.UserRepository.GetUserByEmailAsync(email);
         }

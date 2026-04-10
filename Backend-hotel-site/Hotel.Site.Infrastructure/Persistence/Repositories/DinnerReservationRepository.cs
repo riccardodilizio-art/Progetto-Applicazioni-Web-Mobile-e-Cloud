@@ -15,12 +15,12 @@ namespace Hotel.Site.Infrastructure.Persistence.Repositories
         }
         public HotelSiteContext Context { get; set; }
 
-        public async Task<DinnerReservation> GetDinnerReservationByIdAsync(Guid id)
+        public async Task<DinnerReservation?> GetDinnerReservationByIdAsync(Guid id)
         {
             return await Context.DinnerReservations
                 .Include(d => d.Ordini)
                 .Where(w => w.Id == id)
-                .FirstAsync();
+                .FirstOrDefaultAsync();
         }
 
         public async Task<IEnumerable<DinnerReservation>> GetDinnerReservationsByDateAsync(DateOnly data)
@@ -30,6 +30,14 @@ namespace Hotel.Site.Infrastructure.Persistence.Repositories
                 .Where(w => w.Data == data)
                 .ToListAsync();
         }
+        public async Task<DinnerReservation?> GetDinnerReservationByCodiceCenaAsync(string codiceCena)
+        {
+            return await Context.DinnerReservations
+                .Include(d => d.Ordini)
+                .Where(w => w.CodiceCena == codiceCena)
+                .FirstOrDefaultAsync();
+        }
+
 
         public async Task AddDinnerReservationAsync(DinnerReservation dinnerReservation)
         {

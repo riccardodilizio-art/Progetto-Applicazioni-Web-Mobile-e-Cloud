@@ -15,18 +15,18 @@ namespace Hotel.Site.Infrastructure.Persistence.Repositories
         }
         public HotelSiteContext Context { get; set; }
 
-        public async Task<User> GetUserByIdAsync(Guid id)
+        public async Task<User?> GetUserByIdAsync(Guid id)
         {
             return await Context.Users
                 .Where(w => w.IdUser == id)
-                .FirstAsync();
+                .FirstOrDefaultAsync();
         }
 
-        public async Task<User> GetUserByEmailAsync(string email)
+        public async Task<User?> GetUserByEmailAsync(string email)
         {
             return await Context.Users
                 .Where(w => w.Email == email)
-                .FirstAsync();
+                .FirstOrDefaultAsync();
         }
 
         public async Task AddUserAsync(User user)

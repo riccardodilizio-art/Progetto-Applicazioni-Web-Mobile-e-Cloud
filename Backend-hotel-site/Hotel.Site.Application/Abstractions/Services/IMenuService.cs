@@ -9,8 +9,8 @@ namespace Hotel.Site.Application.Abstractions.Services
 {
     public interface IMenuService
     {
-        Task<Menu> GetMenuByIdAsync(Guid id);
-        Task<Menu> GetMenuByDayAsync(DayOfWeek giorno);
+        Task<Menu?> GetMenuByIdAsync(Guid id);
+        Task<Menu?> GetMenuByDayAsync(DayOfWeek giorno);
         Task<IEnumerable<Menu>> GetAllMenusAsync();
         Task AddMenuAsync(Menu menu);
         Task EditMenuAsync(Menu menu);

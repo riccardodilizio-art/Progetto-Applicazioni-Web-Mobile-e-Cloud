@@ -16,7 +16,7 @@ namespace Hotel.Site.Application.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<Room> GetRoomByIdAsync(Guid id)
+        public async Task<Room?> GetRoomByIdAsync(Guid id)
         {
             return await _unitOfWork.RoomRepository.GetRoomByIdAsync(id);
         }
@@ -32,10 +32,12 @@ namespace Hotel.Site.Application.Services
             await _unitOfWork.SaveChangesAsync();
         }
 
-        public async Task EditRoomAsync(Room room)
+        public async Task<Room?> UpdateRoomAsync(Guid id, Room updated, List<string> immagini, List<string> servizi)
         {
-            await _unitOfWork.RoomRepository.EditRoomAsync(room);
-            await _unitOfWork.SaveChangesAsync();
+            var room = await _unitOfWork.RoomRepository.UpdateRoomAsync(id, updated, immagini, servizi);
+            if (room != null)
+                await _unitOfWork.SaveChangesAsync();
+            return room;
         }
 
         public async Task DeleteRoomAsync(Guid id)

@@ -18,12 +18,12 @@ namespace Hotel.Site.Application.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<Menu> GetMenuByIdAsync(Guid id)
+        public async Task<Menu?> GetMenuByIdAsync(Guid id)
         {
             return await _unitOfWork.MenuRepository.GetMenuByIdAsync(id);
         }
 
-        public async Task<Menu> GetMenuByDayAsync(DayOfWeek giorno)
+        public async Task<Menu?> GetMenuByDayAsync(DayOfWeek giorno)
         {
             return await _unitOfWork.MenuRepository.GetMenuByDayAsync(giorno);
         }

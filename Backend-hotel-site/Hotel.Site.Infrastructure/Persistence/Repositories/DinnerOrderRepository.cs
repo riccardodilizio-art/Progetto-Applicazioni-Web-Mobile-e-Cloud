@@ -15,7 +15,7 @@ namespace Hotel.Site.Infrastructure.Persistence.Repositories
         }
         public HotelSiteContext Context { get; set; }
 
-        public async Task<DinnerOrder> GetDinnerOrderByIdAsync(Guid id)
+        public async Task<DinnerOrder?> GetDinnerOrderByIdAsync(Guid id)
         {
             return await Context.DinnerOrders
                 .Where(w => w.Id == id)

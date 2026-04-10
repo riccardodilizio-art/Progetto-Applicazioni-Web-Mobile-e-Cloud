@@ -16,7 +16,7 @@ namespace Hotel.Site.Application.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<DinnerOrder> GetDinnerOrderByIdAsync(Guid id)
+        public async Task<DinnerOrder?> GetDinnerOrderByIdAsync(Guid id)
         {
             return await _unitOfWork.DinnerOrderRepository.GetDinnerOrderByIdAsync(id);
         }

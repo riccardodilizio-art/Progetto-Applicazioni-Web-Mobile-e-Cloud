@@ -16,10 +16,15 @@ namespace Hotel.Site.Application.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<DinnerReservation> GetDinnerReservationByIdAsync(Guid id)
+        public async Task<DinnerReservation?> GetDinnerReservationByIdAsync(Guid id)
         {
             return await _unitOfWork.DinnerReservationRepository.GetDinnerReservationByIdAsync(id);
         }
+        public async Task<DinnerReservation?> GetDinnerReservationByCodiceCenaAsync(string codiceCena)
+        {
+            return await _unitOfWork.DinnerReservationRepository.GetDinnerReservationByCodiceCenaAsync(codiceCena);
+        }
+
 
         public async Task<IEnumerable<DinnerReservation>> GetDinnerReservationsByDateAsync(DateOnly data)
         {

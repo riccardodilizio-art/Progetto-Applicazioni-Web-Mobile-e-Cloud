@@ -1,9 +1,10 @@
+using Hotel.Site.Application.Abstractions.Repositories;
+using Hotel.Site.Core.Entities;
+using Hotel.Site.Core.Entities.Enums;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Hotel.Site.Application.Abstractions.Repositories;
-using Hotel.Site.Core.Entities;
 
 namespace Hotel.Site.Infrastructure.Persistence.Repositories
 {
@@ -15,14 +16,33 @@ namespace Hotel.Site.Infrastructure.Persistence.Repositories
         }
         public HotelSiteContext Context { get; set; }
 
-        public async Task<RoomReservation> GetRoomReservationByIdAsync(Guid id)
+        public async Task<RoomReservation?> GetRoomReservationByIdAsync(Guid id)
         {
             return await Context.RoomReservations
                 .Include(r => r.User)
                 .Include(r => r.Room)
                 .Where(w => w.IdRoomReservation == id)
-                .FirstAsync();
+                .FirstOrDefaultAsync();
         }
+        public async Task<bool> HasOverlappingReservationAsync(Guid idRoom, DateOnly checkIn, DateOnly checkOut)
+        {
+            // Due intervalli [a1, a2) e [b1, b2) si sovrappongono se a1 < b2 E b1 < a2.
+            // Le prenotazioni annullate non contano.
+            return await Context.RoomReservations
+                .Where(r => r.IdRoom == idRoom)
+                .Where(r => r.Stato != State.ANNULLATO)
+                .Where(r => r.CheckIn < checkOut && checkIn < r.CheckOut)
+                .AnyAsync();
+        }
+
+        public async Task<RoomReservation?> GetRoomReservationByCodiceCenaAsync(string codiceCena)
+        {
+            return await Context.RoomReservations
+                .Include(r => r.Room)
+                .Where(w => w.CodiceCena == codiceCena)
+                .FirstOrDefaultAsync();
+        }
+
 
         public async Task<IEnumerable<RoomReservation>> GetRoomReservationsByUserIdAsync(Guid idUser)
         {

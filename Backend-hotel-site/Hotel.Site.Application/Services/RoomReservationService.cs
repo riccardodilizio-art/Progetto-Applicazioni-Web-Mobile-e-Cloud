@@ -15,8 +15,17 @@ namespace Hotel.Site.Application.Services
         {
             _unitOfWork = unitOfWork;
         }
+        public async Task<RoomReservation?> GetRoomReservationByCodiceCenaAsync(string codiceCena)
+        {
+            return await _unitOfWork.RoomReservationRepository.GetRoomReservationByCodiceCenaAsync(codiceCena);
+        }
+        public async Task<bool> HasOverlappingReservationAsync(Guid idRoom, DateOnly checkIn, DateOnly checkOut)
+        {
+            return await _unitOfWork.RoomReservationRepository
+                .HasOverlappingReservationAsync(idRoom, checkIn, checkOut);
+        }
 
-        public async Task<RoomReservation> GetRoomReservationByIdAsync(Guid id)
+        public async Task<RoomReservation?> GetRoomReservationByIdAsync(Guid id)
         {
             return await _unitOfWork.RoomReservationRepository.GetRoomReservationByIdAsync(id);
         }
