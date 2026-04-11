@@ -41,8 +41,6 @@ namespace Hotel.Site.Infrastructure.Persistence.Repositories
         public async Task<Room?> UpdateRoomAsync(Guid id, Room updated, List<string> immagini, List<string> servizi)
         {
             var existing = await Context.Rooms
-                .Include(r => r.ImmaginiCamera)
-                .Include(r => r.ServiziCamera)
                 .FirstOrDefaultAsync(r => r.IdRoom == id);
 
             if (existing == null) return null;
@@ -57,30 +55,29 @@ namespace Hotel.Site.Infrastructure.Persistence.Repositories
             existing.NumeroCamera = updated.NumeroCamera;
             existing.Disponibile = updated.Disponibile;
 
-            // Replace immagini: rimuovo tutte le vecchie, aggiungo le nuove
-            Context.RemoveRange(existing.ImmaginiCamera);
-            existing.ImmaginiCamera.Clear();
+            // Cancella i figli vecchi con SQL diretto (bypassa il change tracker)
+            await Context.Set<RoomImage>().Where(x => x.RoomId == id).ExecuteDeleteAsync();
+            await Context.Set<RoomAmenity>().Where(x => x.RoomId == id).ExecuteDeleteAsync();
+
+            // Aggiungi i nuovi figli direttamente via DbSet.
+            // EF fa relationship fixup automatico e popola existing.ImmaginiCamera / ServiziCamera.
             for (int i = 0; i < immagini.Count; i++)
             {
-                existing.ImmaginiCamera.Add(new RoomImage
+                await Context.Set<RoomImage>().AddAsync(new RoomImage
                 {
                     IdRoomImage = Guid.NewGuid(),
                     Url = immagini[i],
                     Position = i,
-                    RoomId = existing.IdRoom
+                    RoomId = id
                 });
             }
-
-            // Replace servizi
-            Context.RemoveRange(existing.ServiziCamera);
-            existing.ServiziCamera.Clear();
             foreach (var servizio in servizi)
             {
-                existing.ServiziCamera.Add(new RoomAmenity
+                await Context.Set<RoomAmenity>().AddAsync(new RoomAmenity
                 {
                     IdRoomAmenity = Guid.NewGuid(),
                     NomeServizio = servizio,
-                    RoomId = existing.IdRoom
+                    RoomId = id
                 });
             }
 
@@ -89,8 +86,10 @@ namespace Hotel.Site.Infrastructure.Persistence.Repositories
 
         public async Task DeleteRoomAsync(Guid id)
         {
-            var room = new Room() { IdRoom = id };
-            Context.Entry(room).State = EntityState.Deleted;
+            var room = await Context.Rooms.FindAsync(id);
+            if (room != null)
+                Context.Rooms.Remove(room);
         }
+
     }
 }

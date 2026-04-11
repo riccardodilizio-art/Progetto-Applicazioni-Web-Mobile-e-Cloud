@@ -48,21 +48,21 @@ namespace Hotel.Site.Infrastructure.Persistence.Repositories
         public async Task<Menu?> UpdateMenuAsync(Guid id, DayOfWeek giorno, IEnumerable<Dish> piatti)
         {
             var existing = await Context.Menus
-                .Include(m => m.Piatti)
                 .FirstOrDefaultAsync(m => m.IdMenu == id);
 
             if (existing == null) return null;
 
             existing.GiornoSettimana = giorno;
 
-            // Replace piatti: drop vecchi, aggiungi nuovi
-            Context.RemoveRange(existing.Piatti);
-            existing.Piatti.Clear();
+            // Cancella i piatti vecchi con SQL diretto
+            await Context.Set<Dish>().Where(d => d.MenuId == id).ExecuteDeleteAsync();
+
+            // Aggiungi i nuovi piatti via DbSet (relationship fixup popola existing.Piatti)
             foreach (var p in piatti)
             {
                 p.IdDish = Guid.NewGuid();
-                p.MenuId = existing.IdMenu;
-                existing.Piatti.Add(p);
+                p.MenuId = id;
+                await Context.Set<Dish>().AddAsync(p);
             }
 
             return existing;
@@ -70,8 +70,10 @@ namespace Hotel.Site.Infrastructure.Persistence.Repositories
 
         public async Task DeleteMenuAsync(Guid id)
         {
-            var menu = new Menu() { IdMenu = id };
-            Context.Entry(menu).State = EntityState.Deleted;
+            var menu = await Context.Menus.FindAsync(id);
+            if (menu != null)
+                Context.Menus.Remove(menu);
         }
+
     }
 }

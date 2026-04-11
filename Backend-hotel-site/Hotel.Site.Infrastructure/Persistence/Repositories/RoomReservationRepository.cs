@@ -24,6 +24,7 @@ namespace Hotel.Site.Infrastructure.Persistence.Repositories
                 .Where(w => w.IdRoomReservation == id)
                 .FirstOrDefaultAsync();
         }
+
         public async Task<bool> HasOverlappingReservationAsync(Guid idRoom, DateOnly checkIn, DateOnly checkOut)
         {
             // Due intervalli [a1, a2) e [b1, b2) si sovrappongono se a1 < b2 E b1 < a2.
@@ -72,8 +73,10 @@ namespace Hotel.Site.Infrastructure.Persistence.Repositories
 
         public async Task DeleteRoomReservationAsync(Guid id)
         {
-            var reservation = new RoomReservation() { IdRoomReservation = id };
-            Context.Entry(reservation).State = EntityState.Deleted;
+            var reservation = await Context.RoomReservations.FindAsync(id);
+            if (reservation != null)
+                Context.RoomReservations.Remove(reservation);
         }
+
     }
 }

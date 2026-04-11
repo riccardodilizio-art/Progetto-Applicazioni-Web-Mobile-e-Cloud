@@ -29,6 +29,7 @@ namespace Hotel.Site.Infrastructure.Persistence.Repositories
                 .FirstOrDefaultAsync();
         }
 
+
         public async Task AddUserAsync(User user)
         {
             await Context.Users.AddAsync(user);
