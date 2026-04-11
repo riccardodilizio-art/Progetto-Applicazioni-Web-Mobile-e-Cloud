@@ -23,6 +23,7 @@ namespace Hotel.Site.Infrastructure.Extensions
             services.AddScoped<IDishRepository, DishRepository>();
             services.AddScoped<IDinnerReservationRepository, DinnerReservationRepository>();
             services.AddScoped<IDinnerOrderRepository, DinnerOrderRepository>();
+            services.AddScoped<IContactRepository, ContactRepository>();
             services.AddDbContext<HotelSiteContext>(opt =>
             {
                 opt.UseNpgsql(connectionString);  

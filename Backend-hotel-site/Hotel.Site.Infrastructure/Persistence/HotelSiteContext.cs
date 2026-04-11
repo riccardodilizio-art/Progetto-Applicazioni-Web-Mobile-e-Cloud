@@ -15,6 +15,8 @@ namespace Hotel.Site.Infrastructure.Persistence
 
         public DbSet<Room> Rooms { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<Contact> Contacts { get; set; }
+
         public DbSet<RoomReservation> RoomReservations { get; set; }
         public DbSet<Menu> Menus { get; set; }
         public DbSet<Dish> Dishes { get; set; }

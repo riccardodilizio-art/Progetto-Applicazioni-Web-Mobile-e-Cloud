@@ -17,6 +17,7 @@ namespace Hotel.Site.Application.Abstractions.UnitOfWork
         public IRoomReservationRepository RoomReservationRepository { get; set; }
         public IMenuRepository MenuRepository { get; set; }
         public IDishRepository DishRepository { get; set; }
+        public IContactRepository ContactRepository { get; set; }
         public IDinnerReservationRepository DinnerReservationRepository { get; set; }
         public IDinnerOrderRepository DinnerOrderRepository { get; set; }
 

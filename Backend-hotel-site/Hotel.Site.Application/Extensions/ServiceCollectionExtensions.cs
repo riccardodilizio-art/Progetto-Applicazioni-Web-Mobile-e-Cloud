@@ -19,6 +19,7 @@ namespace Hotel.Site.Application.Extensions
             services.AddScoped<IDishService, DishService>();
             services.AddScoped<IDinnerReservationService, DinnerReservationService>();
             services.AddScoped<IDinnerOrderService, DinnerOrderService>();
+            services.AddScoped<IContactService, ContactService>();
             return services;
         }
     }
