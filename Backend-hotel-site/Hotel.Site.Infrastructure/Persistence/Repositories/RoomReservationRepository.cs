@@ -66,10 +66,19 @@ namespace Hotel.Site.Infrastructure.Persistence.Repositories
             await Context.RoomReservations.AddAsync(roomReservation);
         }
 
-        public async Task EditRoomReservationAsync(RoomReservation roomReservation)
+        public async Task<RoomReservation?> UpdateRoomReservationStatusAsync(Guid id, State nuovoStato)
         {
-            Context.Entry(roomReservation).State = EntityState.Modified;
+            var existing = await Context.RoomReservations
+                .Include(r => r.User)
+                .Include(r => r.Room)
+                .FirstOrDefaultAsync(r => r.IdRoomReservation == id);
+
+            if (existing == null) return null;
+
+            existing.Stato = nuovoStato;
+            return existing;
         }
+
 
         public async Task DeleteRoomReservationAsync(Guid id)
         {

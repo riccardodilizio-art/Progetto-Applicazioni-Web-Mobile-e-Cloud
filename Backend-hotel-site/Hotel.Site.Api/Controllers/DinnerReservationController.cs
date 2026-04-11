@@ -3,6 +3,7 @@ using Hotel.Site.Api.DTOs.Dinner.Response;
 using Hotel.Site.Application.Abstractions.Services;
 using Hotel.Site.Core.Entities;
 using Hotel.Site.Core.Entities.Enums;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Hotel.Site.Api.Controllers;
@@ -44,6 +45,20 @@ public class DinnerReservationController : ControllerBase
 
         return Ok(MapToResponse(dinnerReservation));
     }
+
+    [HttpPatch("{id:guid}/status")]
+    [Authorize(Roles = "ADMIN")]
+    public async Task<IActionResult> UpdateStatus(Guid id, [FromBody] DinnerReservationStatusRequest request)
+    {
+        if (!Enum.TryParse<DinnerState>(request.Stato, true, out var nuovoStato))
+            return BadRequest(new { message = "Stato non valido" });
+
+        var updated = await _dinnerReservationService.UpdateDinnerReservationStatusAsync(id, nuovoStato);
+        if (updated == null) return NotFound();
+
+        return Ok(MapToResponse(updated));
+    }
+
 
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] DinnerReservationRequest request)

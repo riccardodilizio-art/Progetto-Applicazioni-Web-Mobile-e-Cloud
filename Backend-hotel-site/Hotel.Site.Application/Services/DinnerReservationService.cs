@@ -1,9 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Hotel.Site.Application.Abstractions.Services;
 using Hotel.Site.Application.Abstractions.UnitOfWork;
 using Hotel.Site.Core.Entities;
+using Hotel.Site.Core.Entities.Enums;
+using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace Hotel.Site.Application.Services
 {
@@ -37,11 +38,14 @@ namespace Hotel.Site.Application.Services
             await _unitOfWork.SaveChangesAsync();
         }
 
-        public async Task EditDinnerReservationAsync(DinnerReservation dinnerReservation)
+        public async Task<DinnerReservation?> UpdateDinnerReservationStatusAsync(Guid id, DinnerState nuovoStato)
         {
-            await _unitOfWork.DinnerReservationRepository.EditDinnerReservationAsync(dinnerReservation);
-            await _unitOfWork.SaveChangesAsync();
+            var result = await _unitOfWork.DinnerReservationRepository.UpdateDinnerReservationStatusAsync(id, nuovoStato);
+            if (result != null)
+                await _unitOfWork.SaveChangesAsync();
+            return result;
         }
+
 
         public async Task DeleteDinnerReservationAsync(Guid id)
         {

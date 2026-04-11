@@ -74,6 +74,20 @@ public class RoomReservationController : ControllerBase
         return Created($"/api/reservations/{reservation.IdRoomReservation}", MapToResponse(reservation));
     }
 
+    [HttpPatch("{id:guid}/status")]
+    [Authorize(Roles = "ADMIN")]
+    public async Task<IActionResult> UpdateStatus(Guid id, [FromBody] RoomReservationStatusRequest request)
+    {
+        if (!Enum.TryParse<State>(request.Stato, true, out var nuovoStato))
+            return BadRequest(new { message = "Stato non valido" });
+
+        var updated = await _reservationService.UpdateRoomReservationStatusAsync(id, nuovoStato);
+        if (updated == null) return NotFound();
+
+        return Ok(MapToResponse(updated));
+    }
+
+
 
     [HttpDelete("{id:guid}")]
     [Authorize]

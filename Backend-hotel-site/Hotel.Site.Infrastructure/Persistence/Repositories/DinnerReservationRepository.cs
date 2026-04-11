@@ -1,9 +1,10 @@
+using Hotel.Site.Application.Abstractions.Repositories;
+using Hotel.Site.Core.Entities;
+using Hotel.Site.Core.Entities.Enums;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Hotel.Site.Application.Abstractions.Repositories;
-using Hotel.Site.Core.Entities;
 
 namespace Hotel.Site.Infrastructure.Persistence.Repositories
 {
@@ -44,10 +45,18 @@ namespace Hotel.Site.Infrastructure.Persistence.Repositories
             await Context.DinnerReservations.AddAsync(dinnerReservation);
         }
 
-        public async Task EditDinnerReservationAsync(DinnerReservation dinnerReservation)
+        public async Task<DinnerReservation?> UpdateDinnerReservationStatusAsync(Guid id, DinnerState nuovoStato)
         {
-            Context.Entry(dinnerReservation).State = EntityState.Modified;
+            var existing = await Context.DinnerReservations
+                .Include(d => d.Ordini)
+                .FirstOrDefaultAsync(d => d.Id == id);
+
+            if (existing == null) return null;
+
+            existing.StatoPrenotazione = nuovoStato;
+            return existing;
         }
+
 
         public async Task DeleteDinnerReservationAsync(Guid id)
         {
