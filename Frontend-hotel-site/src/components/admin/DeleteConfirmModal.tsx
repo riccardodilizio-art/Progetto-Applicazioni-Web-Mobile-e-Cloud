@@ -20,7 +20,10 @@ export default function DeleteConfirmModal({ roomName, onConfirm, onCancel }: Pr
     }, [onCancel])
 
     return (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={onCancel}>
+        <div
+            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            onClick={onCancel}
+        >
             <div
                 role="dialog"
                 aria-modal="true"

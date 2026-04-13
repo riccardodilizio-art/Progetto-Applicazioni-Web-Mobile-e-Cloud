@@ -12,7 +12,12 @@ export default function Cart() {
         return (
             <div className="min-h-screen bg-[#FAF0E6] flex flex-col items-center justify-center px-4 text-center">
                 <svg className="w-16 h-16 text-[#C4A070] mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z" />
+                    <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={1.5}
+                        d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z"
+                    />
                 </svg>
                 <h1 className="text-2xl font-bold text-[#6B4828] mb-2">Il tuo carrello è vuoto</h1>
                 <p className="text-gray-500 mb-6">Non hai ancora aggiunto nessuna camera.</p>
@@ -58,7 +63,8 @@ export default function Cart() {
                                         {item.guests === 1 ? 'ospite' : 'ospiti'}
                                     </p>
                                     <p className="text-sm text-[#6B4828] mt-1">
-                                        {item.nights} {item.nights === 1 ? 'notte' : 'notti'} × €{item.room.pricePerNight}
+                                        {item.nights} {item.nights === 1 ? 'notte' : 'notti'} × €
+                                        {item.room.pricePerNight}
                                     </p>
                                 </div>
 
@@ -79,7 +85,9 @@ export default function Cart() {
                 {/* Riepilogo e conferma */}
                 <div className="bg-white rounded-xl shadow-sm border border-[#E8C9A0]/50 p-6">
                     <div className="flex items-center justify-between mb-4">
-                        <span className="text-lg text-[#6B4828]">Totale ({cart.length} {cart.length === 1 ? 'camera' : 'camere'})</span>
+                        <span className="text-lg text-[#6B4828]">
+                            Totale ({cart.length} {cart.length === 1 ? 'camera' : 'camere'})
+                        </span>
                         <span className="text-2xl font-bold text-[#3B2010]">€{grandTotal}</span>
                     </div>
                     <button
@@ -88,10 +96,7 @@ export default function Cart() {
                     >
                         Conferma prenotazione
                     </button>
-                    <Link
-                        to="/camere"
-                        className="block text-center text-sm text-[#9A6840] hover:underline mt-3"
-                    >
+                    <Link to="/camere" className="block text-center text-sm text-[#9A6840] hover:underline mt-3">
                         ← Continua a cercare camere
                     </Link>
                 </div>

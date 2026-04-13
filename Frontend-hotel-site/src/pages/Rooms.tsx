@@ -43,7 +43,7 @@ export default function Rooms() {
             {/* Card "Seleziona il tuo soggiorno" — sovrapposta al bordo inferiore dell'hero */}
             <div className="px-4">
                 <div className="bg-[#FAF5EE] border border-[#C4A070] rounded-2xl shadow-md p-6 max-w-4xl mx-auto -mt-8 relative z-10">
-                <h2 className="font-[var(--font-heading)] text-xl font-semibold text-[#3B2010] mb-5">
+                    <h2 className="font-[var(--font-heading)] text-xl font-semibold text-[#3B2010] mb-5">
                         Seleziona il tuo soggiorno
                     </h2>
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -112,9 +112,8 @@ export default function Rooms() {
                         <div className="mt-4 flex items-center justify-between flex-wrap gap-2">
                             {hasSearch && (
                                 <p className="text-sm text-[#6B4828]">
-                                    <span className="font-semibold">Disponibilità per:</span>{' '}
-                                    {formatDate(checkIn)} → {formatDate(checkOut)} · {guests}{' '}
-                                    {guests === 1 ? 'ospite' : 'ospiti'}
+                                    <span className="font-semibold">Disponibilità per:</span> {formatDate(checkIn)} →{' '}
+                                    {formatDate(checkOut)} · {guests} {guests === 1 ? 'ospite' : 'ospiti'}
                                 </p>
                             )}
                             <button

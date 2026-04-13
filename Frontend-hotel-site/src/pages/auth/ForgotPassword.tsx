@@ -19,8 +19,7 @@ export default function ForgotPassword() {
             })
             setSent(true)
         } catch (err) {
-            const message =
-                err instanceof Error ? err.message : 'Errore durante la richiesta'
+            const message = err instanceof Error ? err.message : 'Errore durante la richiesta'
             setError(message)
         } finally {
             setLoading(false)

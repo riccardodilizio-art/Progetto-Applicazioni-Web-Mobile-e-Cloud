@@ -59,9 +59,9 @@ export default function RoomDetail() {
                 {hasSearch && (
                     <div className="bg-[#FAF5EE] border border-[#E8C9A0] rounded-xl px-4 py-3 mb-6 flex items-center justify-between flex-wrap gap-2">
                         <p className="text-sm text-[#6B4828]">
-                            <span className="font-semibold">Soggiorno selezionato:</span>{' '}
-                            {formatDate(checkIn)} → {formatDate(checkOut)} · {guests}{' '}
-                            {guests === 1 ? 'ospite' : 'ospiti'} · {nights} {nights === 1 ? 'notte' : 'notti'}
+                            <span className="font-semibold">Soggiorno selezionato:</span> {formatDate(checkIn)} →{' '}
+                            {formatDate(checkOut)} · {guests} {guests === 1 ? 'ospite' : 'ospiti'} · {nights}{' '}
+                            {nights === 1 ? 'notte' : 'notti'}
                         </p>
                         <Link to="/camere" className="text-xs text-[#9A6840] hover:text-[#6B4828] hover:underline">
                             Modifica date
@@ -125,29 +125,73 @@ export default function RoomDetail() {
 
                         <div className="grid grid-cols-2 gap-4 mb-6">
                             <div className="bg-white rounded-xl p-4 text-center shadow-sm">
-                                <svg aria-hidden="true" className="w-6 h-6 mx-auto text-[#6B4828] mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                <svg
+                                    aria-hidden="true"
+                                    className="w-6 h-6 mx-auto text-[#6B4828] mb-1"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                                    />
                                 </svg>
                                 <p className="text-sm text-gray-500">Ospiti</p>
                                 <p className="font-bold text-[#6B4828]">{room.capacity}</p>
                             </div>
                             <div className="bg-white rounded-xl p-4 text-center shadow-sm">
-                                <svg aria-hidden="true" className="w-6 h-6 mx-auto text-[#6B4828] mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                                <svg
+                                    aria-hidden="true"
+                                    className="w-6 h-6 mx-auto text-[#6B4828] mb-1"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"
+                                    />
                                 </svg>
                                 <p className="text-sm text-gray-500">Dimensione</p>
                                 <p className="font-bold text-[#6B4828]">{room.size} m²</p>
                             </div>
                             <div className="bg-white rounded-xl p-4 text-center shadow-sm">
-                                <svg aria-hidden="true" className="w-6 h-6 mx-auto text-[#6B4828] mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                <svg
+                                    aria-hidden="true"
+                                    className="w-6 h-6 mx-auto text-[#6B4828] mb-1"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                                    />
                                 </svg>
                                 <p className="text-sm text-gray-500">Piano</p>
                                 <p className="font-bold text-[#6B4828]">{room.floor}°</p>
                             </div>
                             <div className="bg-white rounded-xl p-4 text-center shadow-sm">
-                                <svg aria-hidden="true" className="w-6 h-6 mx-auto text-[#6B4828] mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14" />
+                                <svg
+                                    aria-hidden="true"
+                                    className="w-6 h-6 mx-auto text-[#6B4828] mb-1"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"
+                                    />
                                 </svg>
                                 <p className="text-sm text-gray-500">Camera</p>
                                 <p className="font-bold text-[#6B4828]">{room.roomNumber}</p>
@@ -162,8 +206,19 @@ export default function RoomDetail() {
                                         key={amenity}
                                         className="flex items-center gap-1.5 text-sm bg-white text-gray-700 px-3 py-1.5 rounded-full shadow-sm"
                                     >
-                                        <svg aria-hidden="true" className="w-4 h-4 text-green-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                        <svg
+                                            aria-hidden="true"
+                                            className="w-4 h-4 text-green-500 shrink-0"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                strokeWidth={2}
+                                                d="M5 13l4 4L19 7"
+                                            />
                                         </svg>
                                         {amenity}
                                     </span>
@@ -173,7 +228,10 @@ export default function RoomDetail() {
 
                         {/* Stato 1: camera non disponibile */}
                         {!room.available && (
-                            <button disabled className="w-full py-3 rounded-lg font-semibold text-white bg-gray-400 cursor-not-allowed">
+                            <button
+                                disabled
+                                className="w-full py-3 rounded-lg font-semibold text-white bg-gray-400 cursor-not-allowed"
+                            >
                                 Non disponibile
                             </button>
                         )}
@@ -202,8 +260,19 @@ export default function RoomDetail() {
                                 to="/carrello"
                                 className="w-full py-3 rounded-lg font-semibold text-white bg-green-600 flex items-center justify-center gap-2"
                             >
-                                <svg aria-hidden="true" className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                <svg
+                                    aria-hidden="true"
+                                    className="w-5 h-5"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M5 13l4 4L19 7"
+                                    />
                                 </svg>
                                 Vai al carrello
                             </Link>

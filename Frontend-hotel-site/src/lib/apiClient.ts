@@ -48,5 +48,5 @@ export async function apiFetch<T = unknown>(path: string, options: ApiFetchOptio
     // 204 No Content (es. DELETE)
     if (res.status === 204) return null as T
 
-    return await res.json() as Promise<T>
+    return (await res.json()) as Promise<T>
 }

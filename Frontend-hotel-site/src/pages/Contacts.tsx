@@ -24,8 +24,9 @@ export default function Contacts() {
                 body: JSON.stringify(formData),
             })
             setSubmitted(true)
-        } catch {
-            // TODO: gestire errore
+        } catch (err) {
+            console.error(err)
+            alert("Errore nell'invio del messaggio. Riprova più tardi.")
         } finally {
             setIsLoading(false)
         }

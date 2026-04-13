@@ -90,9 +90,7 @@ export default function RoomImagesSection({ images, error, onAdd, onRemove, onMo
                             <p className="text-[#6B4828] font-medium text-sm">
                                 Trascina le immagini qui o clicca per selezionare
                             </p>
-                            <p className="text-xs text-[#C4A070] mt-1">
-                                JPEG, PNG, WebP – max 5 MB per file
-                            </p>
+                            <p className="text-xs text-[#C4A070] mt-1">JPEG, PNG, WebP – max 5 MB per file</p>
                         </>
                     )}
                 </div>

@@ -5,7 +5,6 @@ import useIsAuthenticated from 'react-auth-kit/hooks/useIsAuthenticated'
 import type { UserState } from '../../types/User'
 import { useBooking } from '../../hooks/useBooking'
 
-
 const mockClients = [
     {
         email: 'cliente@hotelexcelsior.it',

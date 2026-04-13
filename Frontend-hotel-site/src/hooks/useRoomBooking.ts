@@ -13,7 +13,7 @@ export function nightsBetween(from: string, to: string): number {
         Math.round(
             (Date.UTC(b.getFullYear(), b.getMonth(), b.getDate()) -
                 Date.UTC(a.getFullYear(), a.getMonth(), a.getDate())) /
-            86_400_000,
+                86_400_000,
         ),
     )
 }
