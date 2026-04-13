@@ -1,7 +1,12 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
+import { apiFetch } from '../../../lib/apiClient'
 
 const IMG_FALLBACK =
     'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="%23C4A070"%3E%3Cpath d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/%3E%3C/svg%3E'
+
+const API_BASE = import.meta.env.VITE_API_URL ?? '/api'
+// L'URL base per le immagini statiche (senza /api)
+const STATIC_BASE = API_BASE.replace(/\/api$/, '')
 
 type Props = {
     images: string[]
@@ -12,13 +17,44 @@ type Props = {
 }
 
 export default function RoomImagesSection({ images, error, onAdd, onRemove, onMove }: Props) {
-    const [input, setInput] = useState('')
+    const [uploading, setUploading] = useState(false)
+    const [uploadError, setUploadError] = useState<string | null>(null)
+    const inputRef = useRef<HTMLInputElement>(null)
 
-    function handleAdd() {
-        const trimmed = input.trim()
-        if (!trimmed || images.includes(trimmed)) return
-        onAdd(trimmed)
-        setInput('')
+    async function handleFiles(files: FileList | null) {
+        if (!files || files.length === 0) return
+        setUploadError(null)
+        setUploading(true)
+
+        try {
+            for (const file of Array.from(files)) {
+                const formData = new FormData()
+                formData.append('file', file)
+
+                const res = await apiFetch<{ url: string }>('/uploads', {
+                    method: 'POST',
+                    body: formData,
+                })
+                onAdd(res.url)
+            }
+        } catch (err) {
+            console.error(err)
+            setUploadError(err instanceof Error ? err.message : 'Errore durante il caricamento.')
+        } finally {
+            setUploading(false)
+            if (inputRef.current) inputRef.current.value = ''
+        }
+    }
+
+    function onDrop(e: React.DragEvent<HTMLDivElement>) {
+        e.preventDefault()
+        handleFiles(e.dataTransfer.files)
+    }
+
+    function resolveUrl(url: string) {
+        // URL relative come /uploads/rooms/xxx.jpg → URL assoluto per il tag img
+        if (url.startsWith('http')) return url
+        return `${STATIC_BASE}${url}`
     }
 
     return (
@@ -26,38 +62,44 @@ export default function RoomImagesSection({ images, error, onAdd, onRemove, onMo
             <div className="bg-[#FAF5EE] border-b border-[#E8C9A0]/50 px-6 py-4">
                 <h2 className="font-heading text-lg text-[#3B2010] font-medium">Immagini</h2>
                 <p className="text-xs text-[#9A6840] mt-0.5">
-                    Incolla URL di immagini. La prima sarà usata come copertina.
+                    Carica immagini (JPEG, PNG, WebP – max 5 MB). La prima sarà usata come copertina.
                 </p>
             </div>
             <div className="p-6 space-y-4">
-                {/* Input URL */}
-                <div className="flex gap-2">
+                {/* Drop zone + click per selezionare */}
+                <div
+                    onClick={() => inputRef.current?.click()}
+                    onDragOver={(e) => e.preventDefault()}
+                    onDrop={onDrop}
+                    className={`border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-colors ${
+                        error ? 'border-red-400' : 'border-[#E8C9A0] hover:border-[#C4A070]'
+                    }`}
+                >
                     <input
-                        type="url"
-                        value={input}
-                        onChange={(e) => setInput(e.target.value)}
-                        onKeyDown={(e) => {
-                            if (e.key === 'Enter') {
-                                e.preventDefault()
-                                handleAdd()
-                            }
-                        }}
-                        placeholder="https://images.unsplash.com/..."
-                        className={`flex-1 border rounded-lg px-3 py-2 text-sm text-[#3B2010] placeholder:text-[#C4A070] focus:outline-none focus:ring-2 focus:ring-[#C4A070] transition ${
-                            error ? 'border-red-400' : 'border-[#E8C9A0]'
-                        }`}
+                        ref={inputRef}
+                        type="file"
+                        accept="image/jpeg,image/png,image/webp"
+                        multiple
+                        className="hidden"
+                        onChange={(e) => handleFiles(e.target.files)}
                     />
-                    <button
-                        type="button"
-                        onClick={handleAdd}
-                        className="bg-[#FAF5EE] text-[#6B4828] border border-[#C4A070] px-4 py-2 rounded-lg text-sm hover:bg-[#E8C9A0] transition-colors whitespace-nowrap"
-                    >
-                        Aggiungi
-                    </button>
+                    {uploading ? (
+                        <p className="text-[#9A6840] text-sm">Caricamento in corso…</p>
+                    ) : (
+                        <>
+                            <p className="text-[#6B4828] font-medium text-sm">
+                                Trascina le immagini qui o clicca per selezionare
+                            </p>
+                            <p className="text-xs text-[#C4A070] mt-1">
+                                JPEG, PNG, WebP – max 5 MB per file
+                            </p>
+                        </>
+                    )}
                 </div>
                 {error && <p className="text-red-500 text-xs">{error}</p>}
+                {uploadError && <p className="text-red-500 text-xs">{uploadError}</p>}
 
-                {/* Lista immagini */}
+                {/* Lista immagini caricate */}
                 {images.length > 0 ? (
                     <div className="space-y-3">
                         {images.map((url, index) => (
@@ -66,7 +108,7 @@ export default function RoomImagesSection({ images, error, onAdd, onRemove, onMo
                                 className="flex items-center gap-3 p-3 border border-[#E8C9A0] rounded-xl bg-[#FAF5EE]"
                             >
                                 <img
-                                    src={url}
+                                    src={resolveUrl(url)}
                                     alt={`Immagine ${index + 1}`}
                                     className="w-16 h-16 rounded-lg object-cover flex-shrink-0 bg-[#E8C9A0]"
                                     onError={(e) => {
@@ -118,8 +160,8 @@ export default function RoomImagesSection({ images, error, onAdd, onRemove, onMo
                     </div>
                 ) : (
                     <div className="border-2 border-dashed border-[#E8C9A0] rounded-xl p-8 text-center">
-                        <p className="text-[#C4A070] text-sm">Nessuna immagine aggiunta</p>
-                        <p className="text-[#C4A070] text-xs mt-1">Incolla un URL sopra e clicca "Aggiungi"</p>
+                        <p className="text-[#C4A070] text-sm">Nessuna immagine caricata</p>
+                        <p className="text-[#C4A070] text-xs mt-1">Trascina o clicca sopra per aggiungere</p>
                     </div>
                 )}
             </div>
