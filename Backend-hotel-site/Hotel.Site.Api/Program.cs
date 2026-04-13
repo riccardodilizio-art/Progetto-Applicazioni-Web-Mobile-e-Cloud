@@ -62,6 +62,14 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
+// Assicura che la directory uploads esista anche al primo avvio
+var uploadsPath = Path.Combine(app.Environment.ContentRootPath, "wwwroot", "uploads", "rooms");
+Directory.CreateDirectory(uploadsPath);
+
+// Serve i file statici da wwwroot (abilita /uploads/rooms/<file>)
+app.UseStaticFiles();
+
+
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
