@@ -16,7 +16,8 @@ namespace Hotel.Site.Infrastructure.Persistence.Configurations
                 .HasPrincipalKey(x => x.CodiceCena);
             builder.HasMany(x => x.Ordini)
                 .WithOne(x => x.DinnerReservation)
-                .HasForeignKey(x => x.DinnerReservationId);
+                .HasForeignKey(x => x.DinnerReservationId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

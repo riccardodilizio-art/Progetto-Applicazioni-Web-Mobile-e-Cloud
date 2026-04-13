@@ -2,9 +2,6 @@ using Hotel.Site.Application.Abstractions.Services;
 using Hotel.Site.Application.Abstractions.UnitOfWork;
 using Hotel.Site.Core.Entities;
 using Hotel.Site.Core.Entities.Enums;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Hotel.Site.Application.Services
 {
@@ -21,11 +18,11 @@ namespace Hotel.Site.Application.Services
         {
             return await _unitOfWork.DinnerReservationRepository.GetDinnerReservationByIdAsync(id);
         }
+
         public async Task<DinnerReservation?> GetDinnerReservationByCodiceCenaAsync(string codiceCena)
         {
             return await _unitOfWork.DinnerReservationRepository.GetDinnerReservationByCodiceCenaAsync(codiceCena);
         }
-
 
         public async Task<IEnumerable<DinnerReservation>> GetDinnerReservationsByDateAsync(DateOnly data)
         {
@@ -45,7 +42,6 @@ namespace Hotel.Site.Application.Services
                 await _unitOfWork.SaveChangesAsync();
             return result;
         }
-
 
         public async Task DeleteDinnerReservationAsync(Guid id)
         {

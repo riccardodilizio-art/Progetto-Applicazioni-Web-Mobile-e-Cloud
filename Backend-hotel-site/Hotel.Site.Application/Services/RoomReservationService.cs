@@ -2,9 +2,6 @@ using Hotel.Site.Application.Abstractions.Services;
 using Hotel.Site.Application.Abstractions.UnitOfWork;
 using Hotel.Site.Core.Entities;
 using Hotel.Site.Core.Entities.Enums;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Hotel.Site.Application.Services
 {
@@ -16,10 +13,12 @@ namespace Hotel.Site.Application.Services
         {
             _unitOfWork = unitOfWork;
         }
+
         public async Task<RoomReservation?> GetRoomReservationByCodiceCenaAsync(string codiceCena)
         {
             return await _unitOfWork.RoomReservationRepository.GetRoomReservationByCodiceCenaAsync(codiceCena);
         }
+
         public async Task<bool> HasOverlappingReservationAsync(Guid idRoom, DateOnly checkIn, DateOnly checkOut)
         {
             return await _unitOfWork.RoomReservationRepository
@@ -54,7 +53,6 @@ namespace Hotel.Site.Application.Services
                 await _unitOfWork.SaveChangesAsync();
             return result;
         }
-
 
         public async Task DeleteRoomReservationAsync(Guid id)
         {

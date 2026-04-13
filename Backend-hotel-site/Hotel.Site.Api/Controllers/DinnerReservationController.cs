@@ -13,16 +13,13 @@ namespace Hotel.Site.Api.Controllers;
 public class DinnerReservationController : ControllerBase
 {
     private readonly IDinnerReservationService _dinnerReservationService;
-    private readonly IDinnerOrderService _dinnerOrderService;
     private readonly IRoomReservationService _roomReservationService;
 
     public DinnerReservationController(
         IDinnerReservationService dinnerReservationService,
-        IDinnerOrderService dinnerOrderService,
         IRoomReservationService roomReservationService)
     {
         _dinnerReservationService = dinnerReservationService;
-        _dinnerOrderService = dinnerOrderService;
         _roomReservationService = roomReservationService;
     }
 
@@ -58,7 +55,6 @@ public class DinnerReservationController : ControllerBase
 
         return Ok(MapToResponse(updated));
     }
-
 
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] DinnerReservationRequest request)

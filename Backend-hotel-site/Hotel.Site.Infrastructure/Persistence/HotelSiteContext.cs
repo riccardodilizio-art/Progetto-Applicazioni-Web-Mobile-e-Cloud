@@ -1,7 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Hotel.Site.Core.Entities;
 using Hotel.Site.Core.Entities.Utils;
 
@@ -16,7 +13,6 @@ namespace Hotel.Site.Infrastructure.Persistence
         public DbSet<Room> Rooms { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<Contact> Contacts { get; set; }
-
         public DbSet<RoomReservation> RoomReservations { get; set; }
         public DbSet<Menu> Menus { get; set; }
         public DbSet<Dish> Dishes { get; set; }
@@ -27,7 +23,6 @@ namespace Hotel.Site.Infrastructure.Persistence
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // Applica tutte le configurazioni presenti nell'assembly
             modelBuilder.ApplyConfigurationsFromAssembly(this.GetType().Assembly);
             base.OnModelCreating(modelBuilder);
         }

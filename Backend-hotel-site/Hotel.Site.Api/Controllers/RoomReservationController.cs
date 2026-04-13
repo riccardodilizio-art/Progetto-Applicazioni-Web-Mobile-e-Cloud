@@ -117,8 +117,9 @@ public class RoomReservationController : ControllerBase
 
     private static string GenerateDinnerCode()
     {
-        return new Random().Next(10000, 99999).ToString();
+        return Random.Shared.Next(10000, 99999).ToString();
     }
+
 
     private static RoomReservationResponse MapToResponse(RoomReservation r) => new(
         r.IdRoomReservation,

@@ -12,7 +12,8 @@ namespace Hotel.Site.Infrastructure.Persistence.Configurations
             builder.HasKey(x => x.IdMenu);
             builder.HasMany(x => x.Piatti)
                 .WithOne(x => x.Menu)
-                .HasForeignKey(x => x.MenuId);
+                .HasForeignKey(x => x.MenuId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

@@ -2,9 +2,6 @@ using Hotel.Site.Application.Abstractions.Repositories;
 using Hotel.Site.Core.Entities;
 using Hotel.Site.Core.Entities.Enums;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Hotel.Site.Infrastructure.Persistence.Repositories
 {
@@ -14,6 +11,7 @@ namespace Hotel.Site.Infrastructure.Persistence.Repositories
         {
             Context = context;
         }
+
         public HotelSiteContext Context { get; set; }
 
         public async Task<DinnerReservation?> GetDinnerReservationByIdAsync(Guid id)
@@ -31,6 +29,7 @@ namespace Hotel.Site.Infrastructure.Persistence.Repositories
                 .Where(w => w.Data == data)
                 .ToListAsync();
         }
+
         public async Task<DinnerReservation?> GetDinnerReservationByCodiceCenaAsync(string codiceCena)
         {
             return await Context.DinnerReservations
@@ -38,7 +37,6 @@ namespace Hotel.Site.Infrastructure.Persistence.Repositories
                 .Where(w => w.CodiceCena == codiceCena)
                 .FirstOrDefaultAsync();
         }
-
 
         public async Task AddDinnerReservationAsync(DinnerReservation dinnerReservation)
         {
@@ -57,11 +55,11 @@ namespace Hotel.Site.Infrastructure.Persistence.Repositories
             return existing;
         }
 
-
         public async Task DeleteDinnerReservationAsync(Guid id)
         {
-            var reservation = new DinnerReservation() { Id = id };
-            Context.Entry(reservation).State = EntityState.Deleted;
+            var reservation = await Context.DinnerReservations.FindAsync(id);
+            if (reservation != null)
+                Context.DinnerReservations.Remove(reservation);
         }
     }
 }

@@ -1,7 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Hotel.Site.Application.Abstractions.Repositories;
 using Hotel.Site.Core.Entities;
 
@@ -13,6 +10,7 @@ namespace Hotel.Site.Infrastructure.Persistence.Repositories
         {
             Context = context;
         }
+
         public HotelSiteContext Context { get; set; }
 
         public async Task<User?> GetUserByIdAsync(Guid id)
@@ -29,7 +27,6 @@ namespace Hotel.Site.Infrastructure.Persistence.Repositories
                 .FirstOrDefaultAsync();
         }
 
-
         public async Task AddUserAsync(User user)
         {
             await Context.Users.AddAsync(user);
@@ -42,8 +39,9 @@ namespace Hotel.Site.Infrastructure.Persistence.Repositories
 
         public async Task DeleteUserAsync(Guid id)
         {
-            var user = new User() { IdUser = id };
-            Context.Entry(user).State = EntityState.Deleted;
+            var user = await Context.Users.FindAsync(id);
+            if (user != null)
+                Context.Users.Remove(user);
         }
     }
 }

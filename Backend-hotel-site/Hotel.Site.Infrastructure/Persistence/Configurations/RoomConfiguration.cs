@@ -12,10 +12,12 @@ namespace Hotel.Site.Infrastructure.Persistence.Configurations
             builder.HasKey(x => x.IdRoom);
             builder.HasMany(x => x.ImmaginiCamera)
                 .WithOne(x => x.Room)
-                .HasForeignKey(x => x.RoomId);
+                .HasForeignKey(x => x.RoomId)
+                .OnDelete(DeleteBehavior.Cascade);
             builder.HasMany(x => x.ServiziCamera)
                 .WithOne(x => x.Room)
-                .HasForeignKey(x => x.RoomId);
+                .HasForeignKey(x => x.RoomId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }
