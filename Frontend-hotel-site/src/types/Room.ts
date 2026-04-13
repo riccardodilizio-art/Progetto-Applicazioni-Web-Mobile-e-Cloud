@@ -1,7 +1,7 @@
 export type RoomType = 'singola' | 'doppia' | 'deluxe' | 'suite'
 
 export interface Room {
-    id: number
+    id: string
     name: string
     type: RoomType
     description: string
@@ -13,6 +13,22 @@ export interface Room {
     amenities: string[]
     images: string[]
     available: boolean
+}
+
+// Tipo che arriva dal backend (camelCase dal JSON serializer di .NET)
+export interface ApiRoom {
+    idRoom: string
+    nome: string
+    tipoStanza: string
+    descrizione: string
+    prezzoPerNotte: number
+    capacitaMassima: number
+    dimensione: number
+    piano: number
+    numeroCamera: number
+    disponibile: boolean
+    immagini: string[]
+    servizi: string[]
 }
 
 // ── Tipi per RoomForm ──

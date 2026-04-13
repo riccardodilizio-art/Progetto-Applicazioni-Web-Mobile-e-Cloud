@@ -4,23 +4,16 @@ import useSignIn from 'react-auth-kit/hooks/useSignIn'
 import useIsAuthenticated from 'react-auth-kit/hooks/useIsAuthenticated'
 import type { UserState } from '../../types/User'
 import { useBooking } from '../../hooks/useBooking'
+import { apiFetch } from '../../lib/apiClient'
 
-const mockClients = [
-    {
-        email: 'cliente@hotelexcelsior.it',
-        password: 'cliente123',
-        name: 'Mario',
-        surname: 'Rossi',
-        phone: '333 1234567',
-    },
-    {
-        email: 'guest@hotelexcelsior.it',
-        password: 'guest123',
-        name: 'Laura',
-        surname: 'Bianchi',
-        phone: '340 9876543',
-    },
-]
+type AuthResponse = {
+    idUser: string
+    nome: string
+    cognome: string
+    email: string
+    ruolo: string
+    token: string
+}
 
 export default function Login() {
     const [email, setEmail] = useState('')
@@ -37,26 +30,32 @@ export default function Login() {
         return <Navigate to="/" replace />
     }
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         setError('')
         setIsLoading(true)
 
-        const client = mockClients.find((c) => c.email === email && c.password === password)
-        if (client) {
+        try {
+            const res = await apiFetch<AuthResponse>('/auth/login', {
+                method: 'POST',
+                body: JSON.stringify({ email, password }),
+                skipAuthRedirect: true,
+            })
+
             const success = signIn({
                 auth: {
-                    token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjbGllbnRAaG90ZWxleGNlbHNpb3IuaXQiLCJyb2xlIjoiY2xpZW50IiwiZXhwIjo5OTk5OTk5OTk5fQ.dGVzdC1zaWduYXR1cmU',
+                    token: res.token,
                     type: 'Bearer',
                 },
                 userState: {
-                    email: client.email,
-                    role: 'client',
-                    name: client.name,
-                    surname: client.surname,
-                    phone: client.phone,
+                    id: res.idUser,
+                    email: res.email,
+                    role: res.ruolo.toLowerCase() as 'client' | 'admin',
+                    name: res.nome,
+                    surname: res.cognome,
                 },
             })
+
             if (success) {
                 if (pendingRoom) {
                     addToCart(pendingRoom)
@@ -68,11 +67,11 @@ export default function Login() {
             } else {
                 setError('Errore durante il login')
             }
-        } else {
+        } catch {
             setError('Email o password non validi')
+        } finally {
+            setIsLoading(false)
         }
-
-        setIsLoading(false)
     }
 
     return (
@@ -118,7 +117,7 @@ export default function Login() {
                         type="submit"
                         disabled={isLoading}
                         className={`w-full bg-[#3B2010] text-white font-medium py-2.5 rounded-lg transition-colors
-        ${isLoading ? 'opacity-70 cursor-not-allowed' : 'hover:bg-[#6B4828] cursor-pointer'}`}
+    ${isLoading ? 'opacity-70 cursor-not-allowed' : 'hover:bg-[#6B4828] cursor-pointer'}`}
                     >
                         {isLoading ? 'Accesso in corso...' : 'Accedi'}
                     </button>

@@ -61,6 +61,7 @@ export default function Register() {
             const success = signIn({
                 auth: { token: res.token, type: 'Bearer' },
                 userState: {
+                    id: res.idUser,
                     email: res.email,
                     role: res.ruolo.toLowerCase() as 'client' | 'admin',
                     name: res.nome,

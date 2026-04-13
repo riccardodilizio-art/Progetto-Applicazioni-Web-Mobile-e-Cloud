@@ -22,8 +22,8 @@ export interface BookingContextType {
     resetSearch: () => void
     cart: CartItem[]
     addToCart: (room: Room) => void
-    removeFromCart: (roomId: number) => void
-    isInCart: (roomId: number) => boolean
+    removeFromCart: (roomId: string) => void
+    isInCart: (roomId: string) => boolean
     pendingRoom: Room | null
     setPendingRoom: (room: Room | null) => void
     clearPendingRoom: () => void

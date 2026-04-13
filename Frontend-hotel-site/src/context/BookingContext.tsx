@@ -49,13 +49,14 @@ export function BookingProvider({ children }: { children: React.ReactNode }) {
         })
     }
 
-    function removeFromCart(roomId: number) {
+    function removeFromCart(roomId: string) {
         setCart((prev) => prev.filter((i) => i.room.id !== roomId))
     }
 
-    function isInCart(roomId: number) {
+    function isInCart(roomId: string) {
         return cart.some((i) => i.room.id === roomId)
     }
+
 
     function clearPendingRoom() {
         setPendingRoom(null)

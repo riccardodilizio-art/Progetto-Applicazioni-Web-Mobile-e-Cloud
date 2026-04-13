@@ -2,8 +2,18 @@ import { useState } from 'react'
 import { useNavigate, Navigate } from 'react-router-dom'
 import useSignIn from 'react-auth-kit/hooks/useSignIn'
 import useIsAuthenticated from 'react-auth-kit/hooks/useIsAuthenticated'
-import type { UserState } from '../../types/User'
 import useAuthUser from 'react-auth-kit/hooks/useAuthUser'
+import type { UserState } from '../../types/User'
+import { apiFetch } from '../../lib/apiClient'
+
+type AuthResponse = {
+    idUser: string
+    nome: string
+    cognome: string
+    email: string
+    ruolo: string
+    token: string
+}
 
 export default function Login() {
     const isAuthenticated = useIsAuthenticated()
@@ -12,26 +22,36 @@ export default function Login() {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [error, setError] = useState('')
+    const [isLoading, setIsLoading] = useState(false)
     const user = useAuthUser<UserState>()
 
     if (isAuthenticated && user?.role === 'admin') {
         return <Navigate to="/admin/dashboard" replace />
     }
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         setError('')
+        setIsLoading(true)
 
-        // --- MOCK: sostituire con chiamata API al backend ---
-        if (email === 'admin@hotelexcelsior.it' && password === 'admin123') {
+        try {
+            const res = await apiFetch<AuthResponse>('/auth/admin/login', {
+                method: 'POST',
+                body: JSON.stringify({ email, password }),
+                skipAuthRedirect: true,
+            })
+
             const success = signIn({
                 auth: {
-                    token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkBob3RlbGV4Y2Vsc2lvci5pdCIsInJvbGUiOiJhZG1pbiIsImV4cCI6OTk5OTk5OTk5OX0.dGVzdC1zaWduYXR1cmU',
+                    token: res.token,
                     type: 'Bearer',
                 },
                 userState: {
-                    email: email,
-                    role: 'admin' as const,
+                    id: res.idUser,
+                    email: res.email,
+                    role: 'admin',
+                    name: res.nome,
+                    surname: res.cognome,
                 },
             })
 
@@ -40,8 +60,10 @@ export default function Login() {
             } else {
                 setError('Errore durante il login')
             }
-        } else {
+        } catch {
             setError('Credenziali non valide')
+        } finally {
+            setIsLoading(false)
         }
     }
 
@@ -81,9 +103,11 @@ export default function Login() {
 
                     <button
                         type="submit"
-                        className="w-full bg-[#3B2010] text-white font-medium py-3 rounded-lg hover:bg-[#2a1709] transition text-sm tracking-wide uppercase"
+                        disabled={isLoading}
+                        className={`w-full bg-[#3B2010] text-white font-medium py-3 rounded-lg transition text-sm tracking-wide uppercase
+    ${isLoading ? 'opacity-70 cursor-not-allowed' : 'hover:bg-[#2a1709]'}`}
                     >
-                        Accedi
+                        {isLoading ? 'Accesso in corso...' : 'Accedi'}
                     </button>
                 </form>
             </div>
