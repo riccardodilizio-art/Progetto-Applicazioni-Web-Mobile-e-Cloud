@@ -36,7 +36,7 @@ export default function Login() {
         setIsLoading(true)
 
         try {
-            const res = await apiFetch<AuthResponse>('/api/auth/login', {
+            const res = await apiFetch<AuthResponse>('/auth/login', {
                 method: 'POST',
                 body: JSON.stringify({ email, password }),
                 skipAuthRedirect: true,
@@ -136,7 +136,7 @@ export default function Login() {
                     <div className="flex-1 h-px bg-[#C4A070]" />
                 </div>
 
-                <Link to="/api/auth/admin/login" className="block text-center text-sm text-[#9A6840] hover:underline">
+                <Link to="/admin/accedi" className="block text-center text-sm text-[#9A6840] hover:underline">
                     Accedi come amministratore
                 </Link>
             </div>
