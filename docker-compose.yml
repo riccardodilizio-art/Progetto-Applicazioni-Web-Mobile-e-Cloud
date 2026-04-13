@@ -20,6 +20,9 @@ services:
       - postgres
     environment:
       - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=HotelSiteDb;Username=admin;Password=admin
+     volumes:
+      - ./uploads:/app/wwwroot/uploads
+
 
   frontend:
     build:
