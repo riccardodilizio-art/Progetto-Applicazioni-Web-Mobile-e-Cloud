@@ -4,7 +4,7 @@ import { useRoomFilter } from './useRoomFilter'
 
 export function useRooms() {
     const [rooms, setRooms] = useState(initialRooms)
-    const [deleteId, setDeleteId] = useState<number | null>(null)
+    const [deleteId, setDeleteId] = useState<string | null>(null)
 
     const { searchQuery, setSearchQuery, filterType, setFilterType, filteredRooms, reset } = useRoomFilter(rooms)
 
@@ -14,7 +14,7 @@ export function useRooms() {
         setDeleteId(null)
     }
 
-    function handleToggleAvailability(id: number) {
+    function handleToggleAvailability(id: string) {
         setRooms((prev) => prev.map((r) => (r.id === id ? { ...r, available: !r.available } : r)))
     }
 

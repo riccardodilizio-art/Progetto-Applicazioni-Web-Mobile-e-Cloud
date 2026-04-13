@@ -14,7 +14,7 @@ export default function RoomForm() {
     const { id } = useParams<{ id: string }>()
     const navigate = useNavigate()
     const isEdit = id !== undefined
-    const existingRoom = isEdit ? rooms.find((r) => r.id === Number(id)) : undefined
+    const existingRoom = isEdit ? rooms.find((r) => r.id === id) : undefined
     const [isLoading, setIsLoading] = useState(false)
 
     const [form, setForm] = useState<RoomFormData>(existingRoom ? roomToForm(existingRoom) : EMPTY_ROOM_FORM)
