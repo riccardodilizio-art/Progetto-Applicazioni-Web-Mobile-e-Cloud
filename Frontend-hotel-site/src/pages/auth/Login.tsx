@@ -36,7 +36,7 @@ export default function Login() {
         setIsLoading(true)
 
         try {
-            const res = await apiFetch<AuthResponse>('/auth/login', {
+            const res = await apiFetch<AuthResponse>('/auth/accedi', {
                 method: 'POST',
                 body: JSON.stringify({ email, password }),
                 skipAuthRedirect: true,
