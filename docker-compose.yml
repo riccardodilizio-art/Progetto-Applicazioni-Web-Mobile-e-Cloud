@@ -10,7 +10,7 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql/data
 
-  api:
+   api:
     build:
       context: ./Backend-hotel-site
       dockerfile: Hotel.Site.Api/Dockerfile
@@ -20,8 +20,9 @@ services:
       - postgres
     environment:
       - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=HotelSiteDb;Username=admin;Password=admin
-     volumes:
+    volumes:
       - ./uploads:/app/wwwroot/uploads
+
 
 
   frontend:
