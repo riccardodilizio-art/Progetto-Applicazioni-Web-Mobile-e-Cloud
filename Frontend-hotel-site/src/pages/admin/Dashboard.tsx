@@ -28,8 +28,9 @@ export default function Dashboard() {
 
     const handleLogout = () => {
         signOut()
-        navigate('/admin/login')
+        navigate('/admin/accedi')
     }
+
 
     return (
         <div className="min-h-screen bg-[#FAF5EE]">
@@ -81,11 +82,12 @@ export default function Dashboard() {
                 <div className="flex justify-between items-center mb-4">
                     <h2 className="text-xl font-semibold text-[#3B2010]">Gestione Camere</h2>
                     <Link
-                        to="/admin/rooms/new"
+                        to="/admin/camere/nuova"
                         className="bg-[#3B2010] text-white text-sm font-medium px-5 py-2.5 rounded-lg hover:bg-[#6B4828] transition-colors"
                     >
                         + Aggiungi camera
                     </Link>
+
                 </div>
 
                 {/* Filtri */}
@@ -186,7 +188,7 @@ export default function Dashboard() {
                                     <td className="px-6 py-4 text-right">
                                         <div className="flex justify-end gap-2">
                                             <Link
-                                                to={`/admin/rooms/edit/${room.id}`}
+                                                to={`/admin/camere/modifica/${room.id}`}
                                                 className="text-sm text-[#6B4828] border border-[#C4A070] px-3 py-1.5 rounded-lg hover:bg-[#FAF5EE] transition-colors"
                                             >
                                                 Modifica
@@ -236,7 +238,7 @@ export default function Dashboard() {
                             </div>
                             <div className="flex gap-2 mt-3 pt-3 border-t border-[#E8C9A0]/30">
                                 <Link
-                                    to={`/admin/rooms/edit/${room.id}`}
+                                    to={`/admin/camere/modifica/${room.id}`}
                                     className="flex-1 text-center text-sm text-[#6B4828] border border-[#C4A070] py-2 rounded-lg hover:bg-[#FAF5EE] transition-colors"
                                 >
                                     Modifica
@@ -259,7 +261,7 @@ export default function Dashboard() {
                         </p>
                         {rooms.length === 0 ? (
                             <Link
-                                to="/admin/rooms/new"
+                                to="/admin/camere/nuova"
                                 className="text-[#6B4828] underline hover:opacity-70 transition"
                             >
                                 Aggiungi la prima camera
