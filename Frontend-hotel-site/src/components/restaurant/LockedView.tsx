@@ -1,14 +1,14 @@
 import PageHeader from './PageHeader'
-import type { DinnerReservation, RoomReservation } from '../../types/Reservation'
+import type { DinnerReservation } from '../../types/Reservation'
 
 interface Props {
     existingDinner: DinnerReservation
-    reservation: RoomReservation
+    dayName: string
     today: string
     onReset: () => void
 }
 
-export default function LockedView({ existingDinner, reservation, today, onReset }: Props) {
+export default function LockedView({ existingDinner, dayName, today, onReset }: Props) {
     return (
         <div className="min-h-screen bg-[#FAF0E6] px-4 py-16">
             <div className="max-w-2xl mx-auto">
@@ -18,7 +18,7 @@ export default function LockedView({ existingDinner, reservation, today, onReset
                         <div>
                             <p className="text-xs uppercase tracking-widest text-[#9A6840]">Cena di stasera</p>
                             <h2 className="text-xl font-bold text-[#3B2010] capitalize">
-                                {existingDinner.day} ·{' '}
+                                {dayName} ·{' '}
                                 {new Date(today).toLocaleDateString('it-IT', { day: 'numeric', month: 'long' })}
                             </h2>
                         </div>
@@ -28,7 +28,7 @@ export default function LockedView({ existingDinner, reservation, today, onReset
                     </div>
                     <p className="text-sm text-[#6B4828] mb-5">
                         {existingDinner.totalCovers} {existingDinner.totalCovers === 1 ? 'coperto' : 'coperti'} · ore
-                        19:30 · {reservation.roomName}
+                        19:30
                     </p>
                     <div className="space-y-3">
                         {existingDinner.orders.map((o) => (

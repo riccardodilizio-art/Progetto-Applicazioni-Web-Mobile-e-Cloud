@@ -7,6 +7,8 @@ import PageHeader from '../components/restaurant/PageHeader'
 import CoverCard from '../components/restaurant/CoverCard'
 import LoadingSpinner from '../components/LoadingSpinner'
 
+const MAX_COVERS = 4
+
 export default function Restaurant() {
     const {
         code,
@@ -16,7 +18,6 @@ export default function Restaurant() {
         pageState,
         errorMsg,
         rlStatus,
-        reservation,
         todayMenu,
         existingDinner,
         covers,
@@ -42,17 +43,19 @@ export default function Restaurant() {
             />
         )
 
+    if (pageState === 'loading') return <LoadingSpinner message="Verifica in corso..." />
+
     if (pageState === 'error') return <ErrorView errorMsg={errorMsg} rlStatus={rlStatus} onRetry={handleReset} />
 
-    if (pageState === 'locked' && existingDinner && reservation)
+    if (pageState === 'locked' && existingDinner && todayMenu)
         return (
-            <LockedView existingDinner={existingDinner} reservation={reservation} today={today} onReset={handleReset} />
+            <LockedView existingDinner={existingDinner} dayName={todayMenu.day} today={today} onReset={handleReset} />
         )
 
-    if (pageState === 'success' && reservation)
-        return <SuccessView roomName={reservation.roomName} covers={covers} orders={orders} onReset={handleReset} />
+    if (pageState === 'success')
+        return <SuccessView covers={covers} orders={orders} onReset={handleReset} />
 
-    if (pageState === 'booking' && reservation && todayMenu) {
+    if (pageState === 'booking' && todayMenu) {
         const isEditing = existingDinner?.status === 'bozza'
         return (
             <div className="min-h-screen bg-[#FAF0E6] px-4 py-16">
@@ -60,7 +63,7 @@ export default function Restaurant() {
                     <PageHeader />
                     <div className="bg-white/70 border border-[#C4A070]/40 rounded-xl p-4 mb-6 flex items-center justify-between">
                         <div>
-                            <p className="text-xs uppercase tracking-widest text-[#9A6840]">{reservation.roomName}</p>
+                            <p className="text-xs uppercase tracking-widest text-[#9A6840]">Camera {roomNumber}</p>
                             <p className="text-sm font-medium text-[#3B2010] capitalize">
                                 {todayMenu.day} ·{' '}
                                 {new Date(today).toLocaleDateString('it-IT', { day: 'numeric', month: 'long' })} · ore
@@ -76,7 +79,7 @@ export default function Restaurant() {
                     <div className="mb-6">
                         <p className="text-xs uppercase tracking-widest text-[#9A6840] mb-3">Quanti coperti stasera?</p>
                         <div className="flex gap-2">
-                            {Array.from({ length: reservation.roomCapacity }, (_, i) => i + 1).map((n) => (
+                            {Array.from({ length: MAX_COVERS }, (_, i) => i + 1).map((n) => (
                                 <button
                                     key={n}
                                     type="button"

@@ -1,12 +1,46 @@
-import { Link } from 'react-router-dom'
+import { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import useAuthUser from 'react-auth-kit/hooks/useAuthUser'
 import { useBooking } from '../hooks/useBooking'
 import { typeLabels } from '../data/roomUtils'
 import { formatDate } from '../lib/dateUtils'
+import { apiFetch } from '../lib/apiClient'
+import type { UserState } from '../types/User'
 
 export default function Cart() {
-    const { cart, removeFromCart } = useBooking()
+    const { cart, removeFromCart, clearCart } = useBooking()
+    const user = useAuthUser<UserState>()
+    const navigate = useNavigate()
+    const [isSubmitting, setIsSubmitting] = useState(false)
+    const [error, setError] = useState('')
 
     const grandTotal = cart.reduce((sum, item) => sum + item.totalPrice, 0)
+
+    async function handleCheckout() {
+        if (!user) return
+        setIsSubmitting(true)
+        setError('')
+
+        try {
+            for (const item of cart) {
+                await apiFetch('/reservations', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        idRoom: item.room.id,
+                        checkIn: item.checkIn,
+                        checkOut: item.checkOut,
+                        prezzoPerNotte: item.room.pricePerNight,
+                    }),
+                })
+            }
+            clearCart()
+            navigate('/prenotazioni')
+        } catch {
+            setError('Errore durante la prenotazione. Riprova.')
+        } finally {
+            setIsSubmitting(false)
+        }
+    }
 
     if (cart.length === 0) {
         return (
@@ -42,14 +76,11 @@ export default function Cart() {
                             key={item.room.id}
                             className="bg-white rounded-xl shadow-sm border border-[#E8C9A0]/50 flex flex-col sm:flex-row overflow-hidden"
                         >
-                            {/* Immagine */}
                             <img
                                 src={item.room.images[0]}
                                 alt={item.room.name}
                                 className="w-full sm:w-48 h-40 sm:h-auto object-cover"
                             />
-
-                            {/* Dettagli */}
                             <div className="flex-1 p-5 flex flex-col justify-between">
                                 <div>
                                     <div className="flex items-center gap-2 mb-1">
@@ -67,7 +98,6 @@ export default function Cart() {
                                         {item.room.pricePerNight}
                                     </p>
                                 </div>
-
                                 <div className="flex items-center justify-between mt-4">
                                     <p className="text-xl font-bold text-[#3B2010]">€{item.totalPrice}</p>
                                     <button
@@ -82,8 +112,12 @@ export default function Cart() {
                     ))}
                 </div>
 
-                {/* Riepilogo e conferma */}
                 <div className="bg-white rounded-xl shadow-sm border border-[#E8C9A0]/50 p-6">
+                    {error && (
+                        <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg px-4 py-3 mb-4">
+                            {error}
+                        </div>
+                    )}
                     <div className="flex items-center justify-between mb-4">
                         <span className="text-lg text-[#6B4828]">
                             Totale ({cart.length} {cart.length === 1 ? 'camera' : 'camere'})
@@ -91,10 +125,12 @@ export default function Cart() {
                         <span className="text-2xl font-bold text-[#3B2010]">€{grandTotal}</span>
                     </div>
                     <button
-                        onClick={() => alert('Prenotazione confermata! (mock)')}
-                        className="w-full py-3 rounded-lg font-semibold text-white bg-[#6B4828] hover:bg-[#3B2010] cursor-pointer transition"
+                        onClick={handleCheckout}
+                        disabled={isSubmitting}
+                        className={`w-full py-3 rounded-lg font-semibold text-white transition
+                            ${isSubmitting ? 'bg-[#6B4828]/70 cursor-not-allowed' : 'bg-[#6B4828] hover:bg-[#3B2010] cursor-pointer'}`}
                     >
-                        Conferma prenotazione
+                        {isSubmitting ? 'Prenotazione in corso...' : 'Conferma prenotazione'}
                     </button>
                     <Link to="/camere" className="block text-center text-sm text-[#9A6840] hover:underline mt-3">
                         ← Continua a cercare camere

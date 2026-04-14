@@ -24,6 +24,7 @@ export interface BookingContextType {
     addToCart: (room: Room) => void
     removeFromCart: (roomId: string) => void
     isInCart: (roomId: string) => boolean
+    clearCart: () => void
     pendingRoom: Room | null
     setPendingRoom: (room: Room | null) => void
     clearPendingRoom: () => void

@@ -1,7 +1,6 @@
-import { rooms } from '../../../data/Rooms'
-import type { RoomFormData, RoomFormErrors } from '../../../types/Room'
+import type { Room, RoomFormData, RoomFormErrors } from '../../../types/Room'
 
-export function roomToForm(room: (typeof rooms)[0]): RoomFormData {
+export function roomToForm(room: Room): RoomFormData {
     return {
         name: room.name,
         type: room.type,

@@ -12,7 +12,24 @@ export interface DinnerMenu {
 }
 
 export interface DayMenu {
-    id: number
+    id: string
     day: string
     dinner: DinnerMenu
+}
+
+// ── API types ──
+
+export interface ApiDishResponse {
+    idDish: string
+    nome: string
+    descrizione: string
+    categoria: string
+    tipoPiatto: string
+}
+
+export interface ApiMenuResponse {
+    idMenu: string
+    giornoSettimana: string
+    primi: ApiDishResponse[]
+    secondi: ApiDishResponse[]
 }

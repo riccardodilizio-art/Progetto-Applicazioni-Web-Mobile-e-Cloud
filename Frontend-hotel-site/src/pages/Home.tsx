@@ -1,10 +1,22 @@
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { rooms } from '../data/Rooms'
 import { services } from '../data/Services'
-import { useMemo } from 'react'
+import { apiFetch } from '../lib/apiClient'
+import { mapApiRoom } from '../lib/mappers'
+import type { Room, ApiRoom } from '../types/Room'
 
 export default function Home() {
-    const featuredRooms = useMemo(() => rooms.filter((r) => r.available).slice(0, 3), [rooms])
+    const [featuredRooms, setFeaturedRooms] = useState<Room[]>([])
+
+    useEffect(() => {
+        apiFetch<ApiRoom[]>('/rooms')
+            .then((data) => {
+                const mapped = data.map(mapApiRoom)
+                setFeaturedRooms(mapped.filter((r) => r.available).slice(0, 3))
+            })
+            .catch(() => setFeaturedRooms([]))
+    }, [])
+
     return (
         <div>
             {/* ── Hero Section ── */}
@@ -52,37 +64,41 @@ export default function Home() {
                         <div className="w-12 h-px bg-[#C4A070] mx-auto mt-4" />
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        {featuredRooms.map((room) => (
-                            <Link
-                                key={room.id}
-                                to={`/camere/${room.id}`}
-                                className="group block overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300 bg-white"
-                            >
-                                <div className="relative h-56 overflow-hidden">
-                                    <img
-                                        loading="lazy"
-                                        src={room.images[0]}
-                                        alt={room.name}
-                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                    />
-                                    <div className="absolute top-3 right-3 bg-[#E8C9A0]/90 backdrop-blur-sm text-[#3B2010] text-xs font-medium px-3 py-1">
-                                        {room.pricePerNight}€ / notte
+                    {featuredRooms.length > 0 ? (
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            {featuredRooms.map((room) => (
+                                <Link
+                                    key={room.id}
+                                    to={`/camere/${room.id}`}
+                                    className="group block overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300 bg-white"
+                                >
+                                    <div className="relative h-56 overflow-hidden">
+                                        <img
+                                            loading="lazy"
+                                            src={room.images[0]}
+                                            alt={room.name}
+                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                        />
+                                        <div className="absolute top-3 right-3 bg-[#E8C9A0]/90 backdrop-blur-sm text-[#3B2010] text-xs font-medium px-3 py-1">
+                                            {room.pricePerNight}€ / notte
+                                        </div>
                                     </div>
-                                </div>
-                                <div className="p-5 border-t border-[#E8C9A0]/60">
-                                    <h3 className="text-lg font-medium text-[#3B2010] font-heading">{room.name}</h3>
-                                    <p className="text-xs text-[#9A6840] mt-1 tracking-wide uppercase">
-                                        {room.size}m² &middot; {room.capacity}{' '}
-                                        {room.capacity === 1 ? 'ospite' : 'ospiti'} &middot; {room.floor}° piano
-                                    </p>
-                                    <p className="text-sm text-gray-500 mt-3 line-clamp-2 leading-relaxed">
-                                        {room.description}
-                                    </p>
-                                </div>
-                            </Link>
-                        ))}
-                    </div>
+                                    <div className="p-5 border-t border-[#E8C9A0]/60">
+                                        <h3 className="text-lg font-medium text-[#3B2010] font-heading">{room.name}</h3>
+                                        <p className="text-xs text-[#9A6840] mt-1 tracking-wide uppercase">
+                                            {room.size}m² &middot; {room.capacity}{' '}
+                                            {room.capacity === 1 ? 'ospite' : 'ospiti'} &middot; {room.floor}° piano
+                                        </p>
+                                        <p className="text-sm text-gray-500 mt-3 line-clamp-2 leading-relaxed">
+                                            {room.description}
+                                        </p>
+                                    </div>
+                                </Link>
+                            ))}
+                        </div>
+                    ) : (
+                        <p className="text-center text-[#9A6840] py-8">Caricamento camere...</p>
+                    )}
 
                     <div className="text-center mt-10">
                         <Link
@@ -115,7 +131,6 @@ export default function Home() {
                                 <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-[#E8C9A0]/60 text-[#3B2010] mb-4">
                                     {service.icon}
                                 </div>
-
                                 <h3 className="text-base font-medium text-[#3B2010] mb-2 font-heading">
                                     {service.title}
                                 </h3>

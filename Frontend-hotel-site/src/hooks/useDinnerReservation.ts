@@ -1,19 +1,12 @@
-import { mockRoomReservations, mockDinnerReservations } from '../data/Reservations'
-import type { DinnerOrder, DinnerReservation, RoomReservation } from '../types/Reservation'
+import type { DinnerOrder, DinnerReservation, ApiDinnerReservation } from '../types/Reservation'
 import type { DayMenu } from '../types/Menu'
 import { useState } from 'react'
 import { apiFetch } from '../lib/apiClient'
-
-import {
-    findReservationByCode,
-    findDinnerByDate,
-    getMenuForDate,
-    isBeforeCutoff,
-    isTodayInStay,
-} from '../lib/dinnerUtils'
+import { mapApiDinnerReservation } from '../lib/mappers'
+import { getMenuForDate, isBeforeCutoff } from '../lib/dinnerUtils'
 import { useRateLimit } from './useRateLimit'
 
-export type PageState = 'idle' | 'booking' | 'locked' | 'error' | 'success'
+export type PageState = 'idle' | 'loading' | 'booking' | 'locked' | 'error' | 'success'
 
 export function useDinnerReservation() {
     const [code, setCode] = useState('')
@@ -21,7 +14,6 @@ export function useDinnerReservation() {
     const [pageState, setPageState] = useState<PageState>('idle')
     const [errorMsg, setErrorMsg] = useState('')
     const { status: rlStatus, onFailure, onSuccess } = useRateLimit()
-    const [reservation, setReservation] = useState<RoomReservation | null>(null)
     const [todayMenu, setTodayMenu] = useState<DayMenu | null>(null)
     const [existingDinner, setExistingDinner] = useState<DinnerReservation | null>(null)
     const [covers, setCovers] = useState(1)
@@ -30,7 +22,7 @@ export function useDinnerReservation() {
 
     const today = new Date().toISOString().split('T')[0]
 
-    function handleSubmitCode(e: React.FormEvent) {
+    async function handleSubmitCode(e: React.FormEvent) {
         e.preventDefault()
 
         if (rlStatus.blocked) {
@@ -40,6 +32,7 @@ export function useDinnerReservation() {
             setPageState('error')
             return
         }
+
         const trimmedCode = code.trim()
         const trimmedRoom = roomNumber.trim()
 
@@ -49,8 +42,52 @@ export function useDinnerReservation() {
             return
         }
 
-        const found = findReservationByCode(trimmedCode, trimmedRoom, mockRoomReservations)
-        if (!found) {
+        setPageState('loading')
+
+        try {
+            // Verifica se esiste già una prenotazione cena per oggi con questo codice
+            const existing = await apiFetch<ApiDinnerReservation>(
+                `/dinner-reservations/by-code/${trimmedCode}?numeroCamera=${trimmedRoom}`,
+            ).catch(() => null)
+
+            onSuccess()
+
+            // Carica il menu di oggi
+            const menu = await getMenuForDate(today)
+            if (!menu) {
+                setErrorMsg('Menu non disponibile per oggi.')
+                setPageState('error')
+                return
+            }
+            setTodayMenu(menu)
+
+            if (existing) {
+                const mapped = mapApiDinnerReservation(existing)
+                setExistingDinner(mapped)
+
+                if (mapped.status === 'confermata') {
+                    setPageState('locked')
+                    return
+                }
+
+                // Bozza → permetti modifica
+                setCovers(mapped.totalCovers)
+                setOrders(mapped.orders.map((o) => ({ ...o })))
+            } else {
+                setExistingDinner(null)
+
+                if (!isBeforeCutoff()) {
+                    setErrorMsg('Il termine per la prenotazione della cena è le 18:00. Riprova domani.')
+                    setPageState('error')
+                    return
+                }
+
+                setCovers(1)
+                setOrders([{ coverNumber: 1, primo: '', secondo: '' }])
+            }
+
+            setPageState('booking')
+        } catch {
             const newRL = onFailure()
             setErrorMsg(
                 newRL.blocked
@@ -58,45 +95,7 @@ export function useDinnerReservation() {
                     : `Codice o numero di camera non validi. Tentativi rimasti: ${newRL.remainingAttempts}.`,
             )
             setPageState('error')
-            return
         }
-
-        onSuccess()
-        setReservation(found)
-
-        if (!isTodayInStay(found.checkIn, found.checkOut)) {
-            setErrorMsg(
-                'Il tuo soggiorno non è attivo oggi. La prenotazione cena è disponibile solo durante il soggiorno.',
-            )
-            setPageState('error')
-            return
-        }
-
-        const menu = getMenuForDate(today)
-        setTodayMenu(menu)
-
-        const existing = findDinnerByDate(today, found.dinnerCode, mockDinnerReservations)
-        setExistingDinner(existing ?? null)
-
-        if (existing && existing.status === 'confermata') {
-            setPageState('locked')
-            return
-        }
-
-        if (!existing && !isBeforeCutoff()) {
-            setErrorMsg('Il termine per la prenotazione della cena è le 18:00. Riprova domani.')
-            setPageState('error')
-            return
-        }
-
-        const n = existing?.totalCovers ?? 1
-        setCovers(n)
-        setOrders(
-            existing?.status === 'bozza'
-                ? existing.orders.map((o) => ({ ...o }))
-                : Array.from({ length: n }, (_, i) => ({ coverNumber: i + 1, primo: '', secondo: '' })),
-        )
-        setPageState('booking')
     }
 
     function handleCoversChange(n: number) {
@@ -116,25 +115,28 @@ export function useDinnerReservation() {
     }
 
     async function handleConfirm() {
-        if (!reservation || !todayMenu) return
+        if (!todayMenu) return
         if (orders.some((o) => !o.primo || !o.secondo)) {
             setValidationError('Seleziona primo e secondo per ogni coperto.')
             return
         }
         try {
             await apiFetch('/dinner-reservations', {
-                method: existingDinner?.status === 'bozza' ? 'PUT' : 'POST',
+                method: 'POST',
                 body: JSON.stringify({
-                    dinnerCode: reservation.dinnerCode,
-                    date: today,
-                    day: todayMenu.day,
-                    totalCovers: covers,
-                    orders,
+                    codiceCena: code.trim(),
+                    numeroCamera: Number(roomNumber.trim()),
+                    data: today,
+                    numeroCoperti: covers,
+                    ordini: orders.map((o) => ({
+                        numeroCoperto: o.coverNumber,
+                        primo: o.primo,
+                        secondo: o.secondo,
+                    })),
                 }),
             })
             setPageState('success')
         } catch (err) {
-            // 401 già gestito da apiFetch → onUnauthorized → redirect login
             if (err instanceof Error && err.message === 'Sessione scaduta') return
             setErrorMsg('Errore durante la prenotazione. Riprova.')
             setPageState('error')
@@ -146,7 +148,6 @@ export function useDinnerReservation() {
         setRoomNumber('')
         setPageState('idle')
         setErrorMsg('')
-        setReservation(null)
         setTodayMenu(null)
         setExistingDinner(null)
         setOrders([])
@@ -161,7 +162,6 @@ export function useDinnerReservation() {
         pageState,
         errorMsg,
         rlStatus,
-        reservation,
         todayMenu,
         existingDinner,
         covers,

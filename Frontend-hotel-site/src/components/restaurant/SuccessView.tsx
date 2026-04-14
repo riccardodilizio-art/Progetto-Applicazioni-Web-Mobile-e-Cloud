@@ -1,19 +1,17 @@
 import type { DinnerOrder } from '../../types/Reservation'
 
 interface Props {
-    roomName: string
     covers: number
     orders: DinnerOrder[]
     onReset: () => void
 }
 
-export default function SuccessView({ roomName, covers, orders, onReset }: Props) {
+export default function SuccessView({ covers, orders, onReset }: Props) {
     return (
         <div className="min-h-screen bg-[#FAF0E6] flex flex-col items-center justify-center px-4 py-16">
             <div className="text-center max-w-md w-full">
                 <p className="text-5xl mb-4">🍽️</p>
                 <h2 className="text-2xl font-bold text-[#3B2010] mb-2">Cena prenotata!</h2>
-                <p className="text-[#6B4828] text-sm mb-1">{roomName}</p>
                 <p className="text-[#9A6840] text-sm mb-6">
                     {covers} {covers === 1 ? 'coperto' : 'coperti'} · ore 19:30
                 </p>

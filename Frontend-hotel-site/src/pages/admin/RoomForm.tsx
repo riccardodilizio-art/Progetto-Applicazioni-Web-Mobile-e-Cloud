@@ -1,9 +1,10 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { rooms } from '../../data/Rooms'
 import { EMPTY_ROOM_FORM } from '../../data/roomUtils'
 import { roomToForm, validateRoomForm } from '../../components/admin/roomForm/roomFormUtils'
-import type { RoomFormData, RoomFormErrors } from '../../types/Room'
+import { apiFetch } from '../../lib/apiClient'
+import { mapApiRoom } from '../../lib/mappers'
+import type { RoomFormData, RoomFormErrors, ApiRoom } from '../../types/Room'
 import RoomFormHeader from '../../components/admin/roomForm/RoomFormHeader'
 import RoomInfoSection from '../../components/admin/roomForm/RoomInfoSection'
 import RoomDetailsSection from '../../components/admin/roomForm/RoomDetailsSection'
@@ -14,11 +15,23 @@ export default function RoomForm() {
     const { id } = useParams<{ id: string }>()
     const navigate = useNavigate()
     const isEdit = id !== undefined
-    const existingRoom = isEdit ? rooms.find((r) => r.id === id) : undefined
     const [isLoading, setIsLoading] = useState(false)
+    const [loadingRoom, setLoadingRoom] = useState(isEdit)
+    const [notFound, setNotFound] = useState(false)
 
-    const [form, setForm] = useState<RoomFormData>(existingRoom ? roomToForm(existingRoom) : EMPTY_ROOM_FORM)
+    const [form, setForm] = useState<RoomFormData>(EMPTY_ROOM_FORM)
     const [errors, setErrors] = useState<RoomFormErrors>({})
+
+    useEffect(() => {
+        if (!isEdit || !id) return
+        apiFetch<ApiRoom>(`/rooms/${id}`)
+            .then((data) => {
+                const room = mapApiRoom(data)
+                setForm(roomToForm(room))
+            })
+            .catch(() => setNotFound(true))
+            .finally(() => setLoadingRoom(false))
+    }, [id, isEdit])
 
     function handleChange(field: keyof RoomFormData, value: string | boolean) {
         setForm((prev) => ({ ...prev, [field]: value }))
@@ -46,7 +59,7 @@ export default function RoomForm() {
         const newImages = [...form.images]
         const swap = direction === 'up' ? index - 1 : index + 1
         if (swap < 0 || swap >= newImages.length) return
-        ;[newImages[index], newImages[swap]] = [newImages[swap], newImages[index]]
+            ;[newImages[index], newImages[swap]] = [newImages[swap], newImages[index]]
         setForm((prev) => ({ ...prev, images: newImages }))
     }
 
@@ -59,15 +72,50 @@ export default function RoomForm() {
             return
         }
         setIsLoading(true)
+
+        const body = {
+            nome: form.name,
+            tipoStanza: form.type.charAt(0).toUpperCase() + form.type.slice(1),
+            descrizione: form.description,
+            prezzoPerNotte: Number(form.pricePerNight),
+            capacitaMassima: Number(form.capacity),
+            dimensione: Number(form.size),
+            piano: Number(form.floor),
+            numeroCamera: Number(form.roomNumber),
+            disponibile: form.available,
+            immagini: form.images,
+            servizi: form.amenities,
+        }
+
         try {
-            // TODO: chiamata API
+            if (isEdit) {
+                await apiFetch(`/rooms/${id}`, {
+                    method: 'PUT',
+                    body: JSON.stringify(body),
+                })
+            } else {
+                await apiFetch('/rooms', {
+                    method: 'POST',
+                    body: JSON.stringify(body),
+                })
+            }
             navigate('/admin/dashboard')
+        } catch (err) {
+            console.error('Errore salvataggio camera:', err)
         } finally {
             setIsLoading(false)
         }
     }
 
-    if (isEdit && !existingRoom) {
+    if (loadingRoom) {
+        return (
+            <div className="min-h-screen bg-[#FAF5EE] flex items-center justify-center">
+                <p className="text-[#9A6840]">Caricamento camera...</p>
+            </div>
+        )
+    }
+
+    if (isEdit && notFound) {
         return (
             <div className="min-h-screen bg-[#FAF5EE] flex items-center justify-center">
                 <div className="text-center">
@@ -86,7 +134,7 @@ export default function RoomForm() {
 
     return (
         <div className="min-h-screen bg-[#FAF5EE]">
-            <RoomFormHeader isEdit={isEdit} roomName={existingRoom?.name} />
+            <RoomFormHeader isEdit={isEdit} roomName={isEdit ? form.name : undefined} />
             <form onSubmit={handleSubmit} noValidate>
                 <div className="max-w-4xl mx-auto px-6 py-8 space-y-6">
                     <RoomInfoSection

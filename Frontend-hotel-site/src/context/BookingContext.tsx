@@ -57,6 +57,10 @@ export function BookingProvider({ children }: { children: React.ReactNode }) {
         return cart.some((i) => i.room.id === roomId)
     }
 
+    function clearCart() {
+        setCart([])
+    }
+
 
     function clearPendingRoom() {
         setPendingRoom(null)
@@ -70,6 +74,7 @@ export function BookingProvider({ children }: { children: React.ReactNode }) {
                 guests,
                 today,
                 minCheckOut,
+                clearCart,
                 handleCheckInChange,
                 setCheckOut,
                 setGuests,
