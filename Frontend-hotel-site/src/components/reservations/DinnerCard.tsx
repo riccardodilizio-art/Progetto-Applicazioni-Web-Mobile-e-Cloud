@@ -3,6 +3,13 @@ import type { DinnerReservation } from '../../types/Reservation'
 import StatusBadge from './StatusBadge'
 import { formatDate } from '../../lib/dateUtils'
 
+const dayNames = ['Domenica', 'Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato']
+
+function getDayName(dateStr: string): string {
+    const [y, m, d] = dateStr.split('-').map(Number)
+    return dayNames[new Date(y, m - 1, d).getDay()]
+}
+
 export default function DinnerCard({ d, onCancel }: { d: DinnerReservation; onCancel: () => void }) {
     const [confirming, setConfirming] = useState(false)
     const today = useMemo(() => new Date().toISOString().split('T')[0], [])
@@ -14,7 +21,7 @@ export default function DinnerCard({ d, onCancel }: { d: DinnerReservation; onCa
                 <div>
                     <p className="text-xs text-[#E8C9A0] mb-0.5">{formatDate(d.date)}</p>
                     <h3 className="font-heading text-lg text-white font-medium">
-                        {d.day} · {d.totalCovers} {d.totalCovers === 1 ? 'coperto' : 'coperti'} · ore 19:30
+                        {getDayName(d.date)} · {d.totalCovers} {d.totalCovers === 1 ? 'coperto' : 'coperti'} · ore 19:30
                     </h3>
                 </div>
                 <StatusBadge status={d.status} />
