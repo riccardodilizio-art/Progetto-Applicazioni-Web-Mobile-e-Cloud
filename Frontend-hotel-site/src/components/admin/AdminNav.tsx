@@ -9,7 +9,9 @@ type Tab = {
 const tabs: Tab[] = [
     { to: '/admin/dashboard', label: 'Camere', matches: ['/admin/dashboard', '/admin/camere'] },
     { to: '/admin/menu', label: 'Menu', matches: ['/admin/menu'] },
+    { to: '/admin/prenotazioni', label: 'Prenotazioni', matches: ['/admin/prenotazioni'] },
 ]
+
 
 export default function AdminNav() {
     const { pathname } = useLocation()

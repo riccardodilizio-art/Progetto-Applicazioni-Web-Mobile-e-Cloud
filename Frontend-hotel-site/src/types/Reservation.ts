@@ -1,3 +1,5 @@
+// ── API response (client) ──
+
 export interface ApiRoomReservation {
     idRoomReservation: string
     idUser: string
@@ -29,6 +31,30 @@ export interface ApiDinnerReservation {
     ordini: ApiDinnerOrderResponse[]
 }
 
+// ── API response (admin) ──
+
+export interface ApiRoomReservationAdmin extends ApiRoomReservation {
+    userEmail: string
+    userNome: string
+    userCognome: string
+    numeroCamera: number
+}
+
+export interface ApiDinnerReservationAdmin {
+    id: string
+    codiceCena: string
+    numeroCamera: number | null
+    userEmail: string | null
+    data: string
+    numeroCoperti: number
+    statoPrenotazione: string
+    ordini: ApiDinnerOrderResponse[]
+}
+
+// ── Domain types (client) ──
+
+export type RoomReservationStatus = 'confermata' | 'in_attesa' | 'annullata'
+
 export interface RoomReservation {
     id: string
     roomName: string
@@ -38,9 +64,11 @@ export interface RoomReservation {
     nights: number
     pricePerNight: number
     totalPrice: number
-    status: 'confermata' | 'in_attesa' | 'annullata'
+    status: RoomReservationStatus
     bookedAt: string
 }
+
+export type DinnerReservationStatus = 'bozza' | 'confermata' | 'annullata'
 
 export interface DinnerOrder {
     coverNumber: number
@@ -54,5 +82,19 @@ export interface DinnerReservation {
     date: string
     totalCovers: number
     orders: DinnerOrder[]
-    status: 'bozza' | 'confermata' | 'annullata'
+    status: DinnerReservationStatus
+}
+
+// ── Domain types (admin) ──
+
+export interface RoomReservationAdmin extends RoomReservation {
+    userEmail: string
+    userName: string
+    userSurname: string
+    roomNumber: number
+}
+
+export interface DinnerReservationAdmin extends DinnerReservation {
+    roomNumber: number | null
+    userEmail: string | null
 }

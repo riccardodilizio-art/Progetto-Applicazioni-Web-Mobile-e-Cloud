@@ -25,6 +25,7 @@ import { BookingProvider } from './context/BookingContext'
 import Cart from './pages/Cart'
 import MenuDashboard from './pages/admin/MenuDashboard'
 import MenuForm from './pages/admin/MenuForm'
+import ReservationsDashboard from './pages/admin/ReservationsDashboard'
 
 
 function ProtectedRoute({ children, redirectTo = '/accedi' }: { children: React.ReactNode; redirectTo?: string }) {
@@ -159,6 +160,18 @@ export default function App() {
                                 </ProtectedRoute>
                             }
                         />
+
+                        <Route
+                            path="/admin/prenotazioni"
+                            element={
+                                <ProtectedRoute redirectTo="/admin/accedi">
+                                    <RoleGuard role="admin">
+                                        <ReservationsDashboard />
+                                    </RoleGuard>
+                                </ProtectedRoute>
+                            }
+                        />
+
 
 
                         <Route path="*" element={<NotFound />} />

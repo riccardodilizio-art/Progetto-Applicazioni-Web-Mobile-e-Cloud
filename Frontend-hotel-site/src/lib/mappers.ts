@@ -1,5 +1,17 @@
 import type { ApiRoom, Room, RoomType } from '../types/Room'
-import type { ApiRoomReservation, RoomReservation, ApiDinnerReservation, DinnerReservation } from '../types/Reservation'
+import type {
+    ApiRoomReservation,
+    ApiRoomReservationAdmin,
+    ApiDinnerReservation,
+    ApiDinnerReservationAdmin,
+    RoomReservation,
+    RoomReservationStatus,
+    RoomReservationAdmin,
+    DinnerReservation,
+    DinnerReservationStatus,
+    DinnerReservationAdmin,
+} from '../types/Reservation'
+
 import type {
     ApiMenuResponse,
     ApiDishResponse,
@@ -61,10 +73,10 @@ export function roomToApiRequest(room: Room) {
 
 // ── Room Reservation ──
 
-const statusMap: Record<string, RoomReservation['status']> = {
-    CONFERMATA: 'confermata',
+const statusMap: Record<string, RoomReservationStatus> = {
+    CONFERMATO: 'confermata',
     IN_ATTESA: 'in_attesa',
-    ANNULLATA: 'annullata',
+    ANNULLATO: 'annullata',
 }
 
 export function mapApiRoomReservation(r: ApiRoomReservation): RoomReservation {
@@ -84,11 +96,12 @@ export function mapApiRoomReservation(r: ApiRoomReservation): RoomReservation {
 
 // ── Dinner Reservation ──
 
-const dinnerStatusMap: Record<string, DinnerReservation['status']> = {
+const dinnerStatusMap: Record<string, DinnerReservationStatus> = {
     BOZZA: 'bozza',
     CONFERMATA: 'confermata',
     ANNULLATA: 'annullata',
 }
+
 
 export function mapApiDinnerReservation(r: ApiDinnerReservation): DinnerReservation {
     return {
@@ -170,3 +183,42 @@ export function menuFormToApiRequest(form: MenuFormData): ApiMenuRequest {
         ],
     }
 }
+
+// ── Admin reservations ──
+
+export function mapApiRoomReservationAdmin(r: ApiRoomReservationAdmin): RoomReservationAdmin {
+    return {
+        id: r.idRoomReservation,
+        roomName: r.nomeCamera,
+        dinnerCode: r.codiceCena,
+        checkIn: r.checkIn,
+        checkOut: r.checkOut,
+        nights: r.numeroNotti,
+        pricePerNight: r.prezzoPerNotte,
+        totalPrice: r.prezzoTotale,
+        status: statusMap[r.stato.toUpperCase()] ?? 'in_attesa',
+        bookedAt: r.dataPrenotazione,
+        userEmail: r.userEmail,
+        userName: r.userNome,
+        userSurname: r.userCognome,
+        roomNumber: r.numeroCamera,
+    }
+}
+
+export function mapApiDinnerReservationAdmin(r: ApiDinnerReservationAdmin): DinnerReservationAdmin {
+    return {
+        id: r.id,
+        dinnerCode: r.codiceCena,
+        date: r.data,
+        totalCovers: r.numeroCoperti,
+        orders: r.ordini.map((o) => ({
+            coverNumber: o.numeroCoperto,
+            primo: o.primo,
+            secondo: o.secondo,
+        })),
+        status: dinnerStatusMap[r.statoPrenotazione.toUpperCase()] ?? 'bozza',
+        roomNumber: r.numeroCamera,
+        userEmail: r.userEmail,
+    }
+}
+
