@@ -23,6 +23,9 @@ import { useApiSetup } from './hooks/useApiSetup'
 import Restaurant from './pages/Restaurant'
 import { BookingProvider } from './context/BookingContext'
 import Cart from './pages/Cart'
+import MenuDashboard from './pages/admin/MenuDashboard'
+import MenuForm from './pages/admin/MenuForm'
+
 
 function ProtectedRoute({ children, redirectTo = '/accedi' }: { children: React.ReactNode; redirectTo?: string }) {
     const isAuthenticated = useIsAuthenticated()
@@ -125,6 +128,39 @@ export default function App() {
                                 </ProtectedRoute>
                             }
                         />
+
+                        <Route
+                            path="/admin/menu"
+                            element={
+                                <ProtectedRoute redirectTo="/admin/accedi">
+                                    <RoleGuard role="admin">
+                                        <MenuDashboard />
+                                    </RoleGuard>
+                                </ProtectedRoute>
+                            }
+                        />
+                        <Route
+                            path="/admin/menu/nuovo"
+                            element={
+                                <ProtectedRoute redirectTo="/admin/accedi">
+                                    <RoleGuard role="admin">
+                                        <MenuForm />
+                                    </RoleGuard>
+                                </ProtectedRoute>
+                            }
+                        />
+                        <Route
+                            path="/admin/menu/modifica/:id"
+                            element={
+                                <ProtectedRoute redirectTo="/admin/accedi">
+                                    <RoleGuard role="admin">
+                                        <MenuForm />
+                                    </RoleGuard>
+                                </ProtectedRoute>
+                            }
+                        />
+
+
                         <Route path="*" element={<NotFound />} />
                     </Routes>
                 </main>

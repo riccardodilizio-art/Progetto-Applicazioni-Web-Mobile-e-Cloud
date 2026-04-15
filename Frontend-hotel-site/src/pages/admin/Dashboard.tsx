@@ -6,6 +6,7 @@ import type { RoomType } from '../../types/Room'
 import type { UserState } from '../../types/User'
 import DeleteConfirmModal from '../../components/admin/DeleteConfirmModal'
 import { useRooms } from '../../hooks/useRooms'
+import AdminNav from '../../components/admin/AdminNav'
 
 export default function Dashboard() {
     const signOut = useSignOut()
@@ -36,6 +37,7 @@ export default function Dashboard() {
         <div className="min-h-screen bg-[#FAF5EE]">
             {/* Header */}
             <div className="bg-white border-b border-[#E8C9A0] px-6 py-4">
+                <AdminNav />
                 <div className="max-w-6xl mx-auto flex justify-between items-center">
                     <div>
                         <h1 className="text-2xl text-[#3B2010] font-light font-heading">Dashboard Admin</h1>
@@ -280,11 +282,13 @@ export default function Dashboard() {
 
             {deleteId !== null && (
                 <DeleteConfirmModal
-                    roomName={rooms.find((r) => r.id === deleteId)?.name ?? ''}
+                    title="Elimina camera"
+                    itemName={rooms.find((r) => r.id === deleteId)?.name ?? ''}
                     onConfirm={handleDelete}
                     onCancel={() => setDeleteId(null)}
                 />
             )}
+
         </div>
     )
 }

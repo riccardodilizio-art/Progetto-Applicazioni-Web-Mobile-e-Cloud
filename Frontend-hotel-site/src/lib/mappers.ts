@@ -1,6 +1,19 @@
 import type { ApiRoom, Room, RoomType } from '../types/Room'
 import type { ApiRoomReservation, RoomReservation, ApiDinnerReservation, DinnerReservation } from '../types/Reservation'
-import type { ApiMenuResponse, DayMenu, Dish, DishCategory } from '../types/Menu'
+import type {
+    ApiMenuResponse,
+    ApiDishResponse,
+    ApiMenuRequest,
+    ApiDishRequest,
+    ApiDayOfWeek,
+    ApiDishCategory,
+    DayMenu,
+    Dish,
+    DishCategory,
+    MenuFormData,
+    MenuFormDishEntry,
+} from '../types/Menu'
+
 
 const STATIC_BASE = (import.meta.env.VITE_API_URL ?? '/api').replace(/\/api$/, '')
 
@@ -125,4 +138,35 @@ export function mapApiMenus(menus: ApiMenuResponse[]): DayMenu[] {
                 secondi: m.secondi.map(mapDish),
             },
         }))
+}
+// ── Menu admin (form ↔ API) ──
+
+export function apiMenuToForm(m: ApiMenuResponse): MenuFormData {
+    const toEntry = (d: ApiDishResponse): MenuFormDishEntry => ({
+        id: d.idDish,
+        name: d.nome,
+        description: d.descrizione,
+        category: d.categoria.toLowerCase() as DishCategory,
+    })
+    return {
+        day: m.giornoSettimana as ApiDayOfWeek,
+        primi: m.primi.map(toEntry),
+        secondi: m.secondi.map(toEntry),
+    }
+}
+
+export function menuFormToApiRequest(form: MenuFormData): ApiMenuRequest {
+    const toApi = (d: MenuFormDishEntry, tipoPiatto: 'PRIMO' | 'SECONDO'): ApiDishRequest => ({
+        nome: d.name.trim(),
+        descrizione: d.description.trim(),
+        categoria: d.category.toUpperCase() as ApiDishCategory,
+        tipoPiatto,
+    })
+    return {
+        giorno: form.day,
+        piatti: [
+            ...form.primi.map((d) => toApi(d, 'PRIMO')),
+            ...form.secondi.map((d) => toApi(d, 'SECONDO')),
+        ],
+    }
 }

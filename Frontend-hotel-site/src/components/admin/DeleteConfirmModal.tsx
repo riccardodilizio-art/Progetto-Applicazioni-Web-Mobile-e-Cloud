@@ -1,12 +1,20 @@
 import { useEffect } from 'react'
 
 interface Props {
-    roomName: string
+    itemName: string
+    title?: string
+    message?: string
     onConfirm: () => void
     onCancel: () => void
 }
 
-export default function DeleteConfirmModal({ roomName, onConfirm, onCancel }: Props) {
+export default function DeleteConfirmModal({
+                                               itemName,
+                                               title = 'Conferma eliminazione',
+                                               message = 'Questa azione non può essere annullata.',
+                                               onConfirm,
+                                               onCancel,
+                                           }: Props) {
     useEffect(() => {
         const handler = (e: KeyboardEvent) => {
             if (e.key === 'Escape') onCancel()
@@ -49,12 +57,12 @@ export default function DeleteConfirmModal({ roomName, onConfirm, onCancel }: Pr
                 </div>
 
                 <h3 id="delete-title" className="text-lg font-semibold text-[#3B2010] text-center mb-2">
-                    Elimina camera
+                    {title}
                 </h3>
                 <p className="text-sm text-[#9A6840] text-center mb-6">
-                    Sei sicuro di voler eliminare <strong className="text-[#3B2010]">{roomName}</strong>?
+                    Sei sicuro di voler eliminare <strong className="text-[#3B2010]">{itemName}</strong>?
                     <br />
-                    Questa azione non può essere annullata.
+                    {message}
                 </p>
                 <div className="flex gap-3">
                     <button
