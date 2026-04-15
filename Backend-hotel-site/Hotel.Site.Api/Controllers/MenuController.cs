@@ -68,6 +68,13 @@ public class MenuController : ControllerBase
             });
         }
 
+        if (piatti.Count(p => p.TipoPiatto == DishType.PRIMO) < 1)
+            return BadRequest(new { message = "Il menu deve contenere almeno un primo piatto." });
+
+        if (piatti.Count(p => p.TipoPiatto == DishType.SECONDO) < 1)
+            return BadRequest(new { message = "Il menu deve contenere almeno un secondo piatto." });
+
+
         var menu = new Core.Entities.Menu
         {
             IdMenu = Guid.NewGuid(),
@@ -111,6 +118,13 @@ public class MenuController : ControllerBase
                 TipoPiatto = tipo,
             });
         }
+
+        if (piatti.Count(p => p.TipoPiatto == DishType.PRIMO) < 1)
+            return BadRequest(new { message = "Il menu deve contenere almeno un primo piatto." });
+
+        if (piatti.Count(p => p.TipoPiatto == DishType.SECONDO) < 1)
+            return BadRequest(new { message = "Il menu deve contenere almeno un secondo piatto." });
+
 
         var updated = await _menuService.UpdateMenuAsync(id, giorno, piatti);
         if (updated == null) return NotFound();
