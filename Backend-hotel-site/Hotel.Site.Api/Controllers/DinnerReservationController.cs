@@ -38,20 +38,9 @@ public class DinnerReservationController : ControllerBase
         var response = dinners.Select(d =>
         {
             roomByCodice.TryGetValue(d.CodiceCena, out var room);
-            return new DinnerReservationAdminResponse(
-                d.Id,
-                d.CodiceCena,
-                room?.Room?.NumeroCamera,
-                room?.User?.Email,
-                d.Data,
-                d.NumeroCoperti,
-                d.StatoPrenotazione.ToString(),
-                d.Ordini
-                    .OrderBy(o => o.NumeroCoperto)
-                    .Select(o => new DinnerOrderResponse(o.Id, o.NumeroCoperto, o.Primo, o.Secondo))
-                    .ToList()
-            );
+            return MapToAdminResponse(d, room);
         });
+
 
         return Ok(response);
     }
@@ -87,8 +76,12 @@ public class DinnerReservationController : ControllerBase
         var updated = await _dinnerReservationService.UpdateDinnerReservationStatusAsync(id, nuovoStato);
         if (updated == null) return NotFound();
 
-        return Ok(MapToResponse(updated));
+        var room = await _roomReservationService.GetRoomReservationByCodiceCenaAsync(updated.CodiceCena);
+        return Ok(MapToAdminResponse(updated, room));
     }
+
+
+
 
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] DinnerReservationRequest request)
@@ -151,4 +144,18 @@ public class DinnerReservationController : ControllerBase
             o.Id, o.NumeroCoperto, o.Primo, o.Secondo
         )).ToList()
     );
+    private static DinnerReservationAdminResponse MapToAdminResponse(DinnerReservation d, RoomReservation? room) => new(
+    d.Id,
+    d.CodiceCena,
+    room?.Room?.NumeroCamera,
+    room?.User?.Email,
+    d.Data,
+    d.NumeroCoperti,
+    d.StatoPrenotazione.ToString(),
+    d.Ordini
+        .OrderBy(o => o.NumeroCoperto)
+        .Select(o => new DinnerOrderResponse(o.Id, o.NumeroCoperto, o.Primo, o.Secondo))
+        .ToList()
+);
+
 }

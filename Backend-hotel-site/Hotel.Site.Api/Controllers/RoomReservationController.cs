@@ -94,7 +94,8 @@ public class RoomReservationController : ControllerBase
         var updated = await _reservationService.UpdateRoomReservationStatusAsync(id, nuovoStato);
         if (updated == null) return NotFound();
 
-        return Ok(MapToResponse(updated));
+        return Ok(MapToAdminResponse(updated));
+
     }
 
 
