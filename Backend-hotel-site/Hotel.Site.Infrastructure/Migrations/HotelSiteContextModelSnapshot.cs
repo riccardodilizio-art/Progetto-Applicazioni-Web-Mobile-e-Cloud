@@ -156,6 +156,55 @@ namespace Hotel.Site.Infrastructure.Migrations
                     b.ToTable("Menus", (string)null);
                 });
 
+            modelBuilder.Entity("Hotel.Site.Core.Entities.Payment", b =>
+                {
+                    b.Property<Guid>("IdPayment")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("CartaUltime4")
+                        .HasMaxLength(4)
+                        .HasColumnType("character varying(4)");
+
+                    b.Property<DateTime?>("DataCompletamento")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("DataCreazione")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("IdRoomReservation")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("Importo")
+                        .HasPrecision(10, 2)
+                        .HasColumnType("numeric(10,2)");
+
+                    b.Property<string>("Metodo")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<string>("Stato")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<string>("TitolareCarta")
+                        .HasMaxLength(120)
+                        .HasColumnType("character varying(120)");
+
+                    b.Property<string>("TransactionId")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.HasKey("IdPayment");
+
+                    b.HasIndex("IdRoomReservation")
+                        .IsUnique();
+
+                    b.ToTable("Payments", (string)null);
+                });
+
             modelBuilder.Entity("Hotel.Site.Core.Entities.Room", b =>
                 {
                     b.Property<Guid>("IdRoom")
@@ -380,6 +429,17 @@ namespace Hotel.Site.Infrastructure.Migrations
                     b.Navigation("Menu");
                 });
 
+            modelBuilder.Entity("Hotel.Site.Core.Entities.Payment", b =>
+                {
+                    b.HasOne("Hotel.Site.Core.Entities.RoomReservation", "RoomReservation")
+                        .WithOne("Payment")
+                        .HasForeignKey("Hotel.Site.Core.Entities.Payment", "IdRoomReservation")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("RoomReservation");
+                });
+
             modelBuilder.Entity("Hotel.Site.Core.Entities.RoomReservation", b =>
                 {
                     b.HasOne("Hotel.Site.Core.Entities.Room", "Room")
@@ -436,6 +496,11 @@ namespace Hotel.Site.Infrastructure.Migrations
                     b.Navigation("ImmaginiCamera");
 
                     b.Navigation("ServiziCamera");
+                });
+
+            modelBuilder.Entity("Hotel.Site.Core.Entities.RoomReservation", b =>
+                {
+                    b.Navigation("Payment");
                 });
 
             modelBuilder.Entity("Hotel.Site.Core.Entities.User", b =>

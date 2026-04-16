@@ -32,6 +32,8 @@ namespace Hotel.Site.Application.Services
                 DataCreazione = DateTime.UtcNow
             };
             await _unitOfWork.PaymentRepository.AddAsync(payment);
+            await _unitOfWork.SaveChangesAsync();
+
             // Nota: il SaveChanges lo fa il chiamante (RoomReservationController.Create)
             // per garantire atomicità reservation + payment in una singola transazione EF.
         }
