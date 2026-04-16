@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import type { RoomReservation } from '../../types/Reservation'
 import StatusBadge from './StatusBadge'
 import { formatDate } from '../../lib/dateUtils'
+import { Link } from 'react-router-dom'
 
 export default function RoomCard({ r, onCancel }: { r: RoomReservation; onCancel: () => void }) {
     const [confirming, setConfirming] = useState(false)
@@ -36,6 +37,22 @@ export default function RoomCard({ r, onCancel }: { r: RoomReservation; onCancel
                     </p>
                     <p className="text-base font-semibold text-[#3B2010]">€{r.totalPrice.toLocaleString('it-IT')}</p>
                 </div>
+                {r.paymentStatus === 'in_attesa' && r.paymentId && (
+                    <div className="pt-3 border-t border-[#E8C9A0] flex items-center justify-between gap-3">
+                        <p className="text-xs text-amber-700 font-medium">Pagamento richiesto</p>
+                        <Link
+                            to={`/pagamento/${r.paymentId}`}
+                            className="text-xs px-3 py-1.5 rounded-lg bg-[#6B4828] text-white hover:bg-[#3B2010] transition-colors"
+                        >
+                            Completa pagamento
+                        </Link>
+                    </div>
+                )}
+                {r.paymentStatus === 'completato' && (
+                    <div className="pt-3 border-t border-[#E8C9A0]">
+                        <p className="text-xs text-green-700 font-medium">✓ Pagamento completato</p>
+                    </div>
+                )}
                 {isCancellable && (
                     <div className="pt-3 border-t border-[#E8C9A0]">
                         {confirming ? (
