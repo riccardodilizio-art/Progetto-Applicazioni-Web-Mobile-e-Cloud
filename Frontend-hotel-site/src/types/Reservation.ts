@@ -13,7 +13,10 @@ export interface ApiRoomReservation {
     prezzoTotale: number
     stato: string
     dataPrenotazione: string
+    idPayment: string | null
+    statoPagamento: string | null
 }
+
 
 export interface ApiDinnerOrderResponse {
     id: string
@@ -66,7 +69,10 @@ export interface RoomReservation {
     totalPrice: number
     status: RoomReservationStatus
     bookedAt: string
+    paymentId: string | null
+    paymentStatus: 'in_attesa' | 'completato' | 'fallito' | 'rimborsato' | null
 }
+
 
 export type DinnerReservationStatus = 'bozza' | 'confermata' | 'annullata'
 

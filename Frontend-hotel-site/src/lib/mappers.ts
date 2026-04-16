@@ -11,6 +11,7 @@ import type {
     DinnerReservationStatus,
     DinnerReservationAdmin,
 } from '../types/Reservation'
+import type { ApiPayment, Payment, PaymentMethod, PaymentStatus } from '../types/Payment'
 
 import type {
     ApiMenuResponse,
@@ -29,6 +30,18 @@ import type {
 
 const STATIC_BASE = (import.meta.env.VITE_API_URL ?? '/api').replace(/\/api$/, '')
 
+const paymentStatusMap: Record<string, PaymentStatus> = {
+    IN_ATTESA: 'in_attesa',
+    COMPLETATO: 'completato',
+    FALLITO: 'fallito',
+    RIMBORSATO: 'rimborsato',
+}
+const paymentMethodMap: Record<string, PaymentMethod> = {
+    CARTA_CREDITO: 'carta_credito',
+    CARTA_DEBITO: 'carta_debito',
+    PAYPAL: 'paypal',
+    BONIFICO: 'bonifico',
+}
 function resolveImageUrl(url: string): string {
     if (url.startsWith('http')) return url
     return `${STATIC_BASE}${url}`
@@ -91,8 +104,13 @@ export function mapApiRoomReservation(r: ApiRoomReservation): RoomReservation {
         totalPrice: r.prezzoTotale,
         status: statusMap[r.stato.toUpperCase()] ?? 'in_attesa',
         bookedAt: r.dataPrenotazione,
+        paymentId: r.idPayment,
+        paymentStatus: r.statoPagamento
+            ? (paymentStatusMap[r.statoPagamento] ?? null)
+            : null,
     }
 }
+
 
 // ── Dinner Reservation ──
 
@@ -202,6 +220,10 @@ export function mapApiRoomReservationAdmin(r: ApiRoomReservationAdmin): RoomRese
         userName: r.userNome,
         userSurname: r.userCognome,
         roomNumber: r.numeroCamera,
+        paymentId: r.idPayment,
+        paymentStatus: r.statoPagamento
+            ? (paymentStatusMap[r.statoPagamento] ?? null)
+            : null,
     }
 }
 
@@ -219,6 +241,25 @@ export function mapApiDinnerReservationAdmin(r: ApiDinnerReservationAdmin): Dinn
         status: dinnerStatusMap[r.statoPrenotazione.toUpperCase()] ?? 'bozza',
         roomNumber: r.numeroCamera,
         userEmail: r.userEmail,
+    }
+}
+
+export function mapApiPayment(p: ApiPayment): Payment {
+    return {
+        id: p.idPayment,
+        reservationId: p.idRoomReservation,
+        amount: p.importo,
+        method: p.metodo ? paymentMethodMap[p.metodo] ?? null : null,
+        status: paymentStatusMap[p.stato] ?? 'in_attesa',
+        cardLast4: p.cartaUltime4,
+        cardHolder: p.titolareCarta,
+        transactionId: p.transactionId,
+        createdAt: p.dataCreazione,
+        completedAt: p.dataCompletamento,
+        roomName: p.nomeCamera,
+        checkIn: p.checkIn,
+        checkOut: p.checkOut,
+        nights: p.numeroNotti,
     }
 }
 

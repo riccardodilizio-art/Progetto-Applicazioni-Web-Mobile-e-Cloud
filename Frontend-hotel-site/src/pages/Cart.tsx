@@ -22,8 +22,9 @@ export default function Cart() {
         setError('')
 
         try {
+            const created: { idPayment: string | null }[] = []
             for (const item of cart) {
-                await apiFetch('/reservations', {
+                const res = await apiFetch<{ idPayment: string | null }>('/reservations', {
                     method: 'POST',
                     body: JSON.stringify({
                         idRoom: item.room.id,
@@ -32,9 +33,18 @@ export default function Cart() {
                         prezzoPerNotte: item.room.pricePerNight,
                     }),
                 })
+                created.push(res)
             }
             clearCart()
-            navigate('/prenotazioni')
+
+            // Se c'è una sola prenotazione vado dritto al pagamento;
+            // con più di una, rimando all'elenco dove pagherà una alla volta.
+            const firstPaymentId = created[0]?.idPayment
+            if (created.length === 1 && firstPaymentId) {
+                navigate(`/pagamento/${firstPaymentId}`)
+            } else {
+                navigate('/prenotazioni')
+            }
         } catch {
             setError('Errore durante la prenotazione. Riprova.')
         } finally {

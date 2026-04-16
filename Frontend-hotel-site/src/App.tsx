@@ -26,6 +26,8 @@ import Cart from './pages/Cart'
 import MenuDashboard from './pages/admin/MenuDashboard'
 import MenuForm from './pages/admin/MenuForm'
 import ReservationsDashboard from './pages/admin/ReservationsDashboard'
+import PaymentPage from './pages/auth/Payment'
+import PaymentResult from './pages/auth/PaymentResult'
 
 
 function ProtectedRoute({ children, redirectTo = '/accedi' }: { children: React.ReactNode; redirectTo?: string }) {
@@ -93,6 +95,24 @@ export default function App() {
                                 </ProtectedRoute>
                             }
                         />
+
+                        <Route
+                            path="/pagamento/:id"
+                            element={
+                                <ProtectedRoute>
+                                    <PaymentPage />
+                                </ProtectedRoute>
+                            }
+                        />
+                        <Route
+                            path="/pagamento/:id/esito"
+                            element={
+                                <ProtectedRoute>
+                                    <PaymentResult />
+                                </ProtectedRoute>
+                            }
+                        />
+
 
                         {/* Login admin (pubblica) */}
                         <Route path="/admin/accedi" element={<Login />} />
