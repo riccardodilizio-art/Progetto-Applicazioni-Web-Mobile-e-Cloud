@@ -29,6 +29,11 @@ namespace Hotel.Site.Application.Services
             return await _unitOfWork.DinnerReservationRepository.GetDinnerReservationsByDateAsync(data);
         }
 
+        public async Task<IEnumerable<DinnerReservation>> GetAllDinnerReservationsAsync()
+        {
+            return await _unitOfWork.DinnerReservationRepository.GetAllDinnerReservationsAsync();
+        }
+
         public async Task AddDinnerReservationAsync(DinnerReservation dinnerReservation)
         {
             await _unitOfWork.DinnerReservationRepository.AddDinnerReservationAsync(dinnerReservation);

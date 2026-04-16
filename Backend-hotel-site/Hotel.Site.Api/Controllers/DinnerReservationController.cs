@@ -23,6 +23,40 @@ public class DinnerReservationController : ControllerBase
         _roomReservationService = roomReservationService;
     }
 
+    [HttpGet]
+    [Authorize(Roles = "ADMIN")]
+    public async Task<IActionResult> GetAll()
+    {
+        var dinners = (await _dinnerReservationService.GetAllDinnerReservationsAsync()).ToList();
+
+        // Batch lookup: una sola query per risolvere numero camera e email utente
+        // sfruttando il CodiceCena come chiave (DinnerReservation non ha FK diretta a User/Room)
+        var codici = dinners.Select(d => d.CodiceCena).Distinct().ToList();
+        var roomByCodice = (await _roomReservationService.GetRoomReservationsByCodiciCenaAsync(codici))
+            .ToDictionary(r => r.CodiceCena);
+
+        var response = dinners.Select(d =>
+        {
+            roomByCodice.TryGetValue(d.CodiceCena, out var room);
+            return new DinnerReservationAdminResponse(
+                d.Id,
+                d.CodiceCena,
+                room?.Room?.NumeroCamera,
+                room?.User?.Email,
+                d.Data,
+                d.NumeroCoperti,
+                d.StatoPrenotazione.ToString(),
+                d.Ordini
+                    .OrderBy(o => o.NumeroCoperto)
+                    .Select(o => new DinnerOrderResponse(o.Id, o.NumeroCoperto, o.Primo, o.Secondo))
+                    .ToList()
+            );
+        });
+
+        return Ok(response);
+    }
+
+
     [HttpGet("by-code/{codiceCena}")]
     public async Task<IActionResult> GetByCode(string codiceCena, [FromQuery] int numeroCamera)
     {
@@ -94,6 +128,17 @@ public class DinnerReservationController : ControllerBase
 
         await _dinnerReservationService.AddDinnerReservationAsync(reservation);
         return Created($"/api/dinner-reservations/by-code/{reservation.CodiceCena}", MapToResponse(reservation));
+    }
+
+    [HttpDelete("{id:guid}")]
+    [Authorize(Roles = "ADMIN")]
+    public async Task<IActionResult> Delete(Guid id)
+    {
+        var existing = await _dinnerReservationService.GetDinnerReservationByIdAsync(id);
+        if (existing == null) return NotFound();
+
+        await _dinnerReservationService.DeleteDinnerReservationAsync(id);
+        return NoContent();
     }
 
     private static DinnerReservationResponse MapToResponse(DinnerReservation r) => new(

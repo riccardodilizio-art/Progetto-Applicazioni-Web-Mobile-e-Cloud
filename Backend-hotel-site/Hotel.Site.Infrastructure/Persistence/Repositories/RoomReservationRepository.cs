@@ -61,6 +61,28 @@ namespace Hotel.Site.Infrastructure.Persistence.Repositories
                 .ToListAsync();
         }
 
+        public async Task<IEnumerable<RoomReservation>> GetAllRoomReservationsAsync()
+        {
+            return await Context.RoomReservations
+                .Include(r => r.User)
+                .Include(r => r.Room)
+                .OrderByDescending(r => r.DataPrenotazione)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<RoomReservation>> GetRoomReservationsByCodiciCenaAsync(IEnumerable<string> codiciCena)
+        {
+            var codiciList = codiciCena.ToList();
+            if (codiciList.Count == 0) return Array.Empty<RoomReservation>();
+
+            return await Context.RoomReservations
+                .Include(r => r.User)
+                .Include(r => r.Room)
+                .Where(r => codiciList.Contains(r.CodiceCena))
+                .ToListAsync();
+        }
+
+
         public async Task AddRoomReservationAsync(RoomReservation roomReservation)
         {
             await Context.RoomReservations.AddAsync(roomReservation);
