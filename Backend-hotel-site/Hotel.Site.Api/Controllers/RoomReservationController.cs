@@ -14,11 +14,16 @@ namespace Hotel.Site.Api.Controllers;
 public class RoomReservationController : ControllerBase
 {
     private readonly IRoomReservationService _reservationService;
+    private readonly IPaymentService _paymentService;
 
-    public RoomReservationController(IRoomReservationService reservationService)
+    public RoomReservationController(
+        IRoomReservationService reservationService,
+        IPaymentService paymentService)
     {
         _reservationService = reservationService;
+        _paymentService = paymentService;
     }
+
 
     [HttpGet]
     [Authorize(Roles = "ADMIN")]
@@ -81,7 +86,12 @@ public class RoomReservationController : ControllerBase
         };
 
         await _reservationService.AddRoomReservationAsync(reservation);
-        return Created($"/api/reservations/{reservation.IdRoomReservation}", MapToResponse(reservation));
+        await _paymentService.CreateForReservationAsync(reservation.IdRoomReservation, reservation.PrezzoTotale);
+
+        var full = await _reservationService.GetRoomReservationByIdAsync(reservation.IdRoomReservation);
+        return Created($"/api/reservations/{reservation.IdRoomReservation}", MapToResponse(full!));
+
+
     }
 
     [HttpPatch("{id:guid}/status")]
@@ -132,20 +142,25 @@ public class RoomReservationController : ControllerBase
     }
 
 
+
     private static RoomReservationResponse MapToResponse(RoomReservation r) => new(
-        r.IdRoomReservation,
-        r.IdUser,
-        r.IdRoom,
-        r.Room?.Nome ?? "",
-        r.CodiceCena,
-        r.CheckIn,
-        r.CheckOut,
-        r.NumeroNotti,
-        r.PrezzoPerNotte,
-        r.PrezzoTotale,
-        r.Stato.ToString(),
-        r.DataPrenotazione
+    r.IdRoomReservation,
+    r.IdUser,
+    r.IdRoom,
+    r.Room?.Nome ?? "",
+    r.CodiceCena,
+    r.CheckIn,
+    r.CheckOut,
+    r.NumeroNotti,
+    r.PrezzoPerNotte,
+    r.PrezzoTotale,
+    r.Stato.ToString(),
+    r.DataPrenotazione,
+    r.Payment?.IdPayment,
+    r.Payment?.Stato.ToString()
     );
+
+
 
     private static RoomReservationAdminResponse MapToAdminResponse(RoomReservation r) => new(
     r.IdRoomReservation,
@@ -163,7 +178,10 @@ public class RoomReservationController : ControllerBase
     r.PrezzoPerNotte,
     r.PrezzoTotale,
     r.Stato.ToString(),
-    r.DataPrenotazione
-    );
+    r.DataPrenotazione,
+    r.Payment?.IdPayment,
+    r.Payment?.Stato.ToString()
+);
+
 
 }

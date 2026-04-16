@@ -12,6 +12,7 @@ namespace Hotel.Site.Infrastructure.Persistence
             IMenuRepository menuRepository,
             IContactRepository contactRepository,
             IDinnerReservationRepository dinnerReservationRepository,
+            IPaymentRepository paymentRepository,
             HotelSiteContext context)
         {
             RoomRepository = roomRepository;
@@ -20,6 +21,7 @@ namespace Hotel.Site.Infrastructure.Persistence
             MenuRepository = menuRepository;
             ContactRepository = contactRepository;
             DinnerReservationRepository = dinnerReservationRepository;
+            PaymentRepository = paymentRepository;
             Context = context;
         }
 
@@ -30,6 +32,7 @@ namespace Hotel.Site.Infrastructure.Persistence
         public IMenuRepository MenuRepository { get; set; }
         public IContactRepository ContactRepository { get; set; }
         public IDinnerReservationRepository DinnerReservationRepository { get; set; }
+        public IPaymentRepository PaymentRepository { get; set; }
 
         public async Task SaveChangesAsync()
         {

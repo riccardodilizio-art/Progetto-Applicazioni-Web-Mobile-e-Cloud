@@ -21,6 +21,8 @@ namespace Hotel.Site.Infrastructure.Persistence
         public DbSet<RoomImage> RoomImages { get; set; }
         public DbSet<RoomAmenity> RoomAmenities { get; set; }
 
+        public DbSet<Payment> Payments { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfigurationsFromAssembly(this.GetType().Assembly);

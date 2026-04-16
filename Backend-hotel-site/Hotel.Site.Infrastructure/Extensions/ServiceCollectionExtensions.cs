@@ -18,6 +18,7 @@ namespace Hotel.Site.Infrastructure.Extensions
             services.AddScoped<IMenuRepository, MenuRepository>();
             services.AddScoped<IDinnerReservationRepository, DinnerReservationRepository>();
             services.AddScoped<IContactRepository, ContactRepository>();
+            services.AddScoped<IPaymentRepository, PaymentRepository>();
             services.AddDbContext<HotelSiteContext>(opt =>
             {
                 opt.UseNpgsql(connectionString);

@@ -20,5 +20,7 @@ namespace Hotel.Site.Core.Entities
         public decimal PrezzoPerNotte { get; set; }
         public virtual User User { get; set; } = null!;
         public virtual Room Room { get; set; } = null!;
+        public virtual Payment? Payment { get; set; }
+
     }
 }

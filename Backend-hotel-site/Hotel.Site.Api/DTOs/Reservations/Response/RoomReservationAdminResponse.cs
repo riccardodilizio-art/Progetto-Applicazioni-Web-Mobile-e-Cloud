@@ -1,6 +1,4 @@
-﻿namespace Hotel.Site.Api.DTOs.Reservations.Response;
-
-public record RoomReservationAdminResponse(
+﻿public record RoomReservationAdminResponse(
     Guid IdRoomReservation,
     Guid IdUser,
     string UserEmail,
@@ -16,5 +14,7 @@ public record RoomReservationAdminResponse(
     decimal PrezzoPerNotte,
     decimal PrezzoTotale,
     string Stato,
-    DateTime DataPrenotazione
+    DateTime DataPrenotazione,
+    Guid? IdPayment,
+    string? StatoPagamento
 );

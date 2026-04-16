@@ -10,6 +10,7 @@ namespace Hotel.Site.Application.Abstractions.UnitOfWork
         IMenuRepository MenuRepository { get; set; }
         IContactRepository ContactRepository { get; set; }
         IDinnerReservationRepository DinnerReservationRepository { get; set; }
+        IPaymentRepository PaymentRepository { get; set; }
 
         Task SaveChangesAsync();
     }
