@@ -38,6 +38,15 @@ namespace Hotel.Site.Infrastructure.Persistence.Repositories
                 .FirstOrDefaultAsync();
         }
 
+        public async Task<IEnumerable<DinnerReservation>> GetAllDinnerReservationsAsync()
+        {
+            return await Context.DinnerReservations
+                .Include(d => d.Ordini)
+                .OrderByDescending(d => d.Data)
+                .ToListAsync();
+        }
+
+
         public async Task AddDinnerReservationAsync(DinnerReservation dinnerReservation)
         {
             await Context.DinnerReservations.AddAsync(dinnerReservation);

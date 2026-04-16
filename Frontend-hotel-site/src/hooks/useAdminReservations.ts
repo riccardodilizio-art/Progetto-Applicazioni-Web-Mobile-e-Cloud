@@ -1,15 +1,32 @@
 import { useCallback, useEffect, useState } from 'react'
 import { apiFetch } from '../lib/apiClient'
-import { mapApiDinnerReservationAdmin, mapApiRoomReservationAdmin } from '../lib/mappers'
+import {
+    mapApiDinnerReservationAdmin,
+    mapApiRoomReservationAdmin,
+} from '../lib/mappers'
 import type {
     ApiDinnerReservationAdmin,
     ApiRoomReservationAdmin,
     DinnerReservationAdmin,
+    DinnerReservationStatus,
     RoomReservationAdmin,
+    RoomReservationStatus,
 } from '../types/Reservation'
 
 type DeleteKind = 'room' | 'dinner'
 type DeleteTarget = { id: string; kind: DeleteKind } | null
+
+const roomStatusToApi: Record<RoomReservationStatus, string> = {
+    confermata: 'CONFERMATO',
+    in_attesa: 'IN_ATTESA',
+    annullata: 'ANNULLATO',
+}
+
+const dinnerStatusToApi: Record<DinnerReservationStatus, string> = {
+    bozza: 'BOZZA',
+    confermata: 'CONFERMATA',
+    annullata: 'ANNULLATA',
+}
 
 export function useAdminReservations() {
     const [roomReservations, setRoomReservations] = useState<RoomReservationAdmin[]>([])
@@ -48,6 +65,48 @@ export function useAdminReservations() {
         }
     }, [deleteTarget])
 
+    const changeRoomStatus = useCallback(
+        async (id: string, newStatus: RoomReservationStatus) => {
+            try {
+                const updated = await apiFetch<ApiRoomReservationAdmin>(
+                    `/reservations/${id}/status`,
+                    {
+                        method: 'PATCH',
+                        body: JSON.stringify({ stato: roomStatusToApi[newStatus] }),
+                    },
+                )
+                const mapped = mapApiRoomReservationAdmin(updated)
+                setRoomReservations((prev) =>
+                    prev.map((r) => (r.id === id ? { ...r, ...mapped } : r)),
+                )
+            } catch (err) {
+                console.error('Errore cambio stato prenotazione camera:', err)
+            }
+        },
+        [],
+    )
+
+    const changeDinnerStatus = useCallback(
+        async (id: string, newStatus: DinnerReservationStatus) => {
+            try {
+                const updated = await apiFetch<ApiDinnerReservationAdmin>(
+                    `/dinner-reservations/${id}/status`,
+                    {
+                        method: 'PATCH',
+                        body: JSON.stringify({ stato: dinnerStatusToApi[newStatus] }),
+                    },
+                )
+                const mapped = mapApiDinnerReservationAdmin(updated)
+                setDinnerReservations((prev) =>
+                    prev.map((r) => (r.id === id ? { ...r, ...mapped } : r)),
+                )
+            } catch (err) {
+                console.error('Errore cambio stato prenotazione cena:', err)
+            }
+        },
+        [],
+    )
+
     return {
         roomReservations,
         dinnerReservations,
@@ -55,5 +114,7 @@ export function useAdminReservations() {
         deleteTarget,
         setDeleteTarget,
         handleDelete,
+        changeRoomStatus,
+        changeDinnerStatus,
     }
 }

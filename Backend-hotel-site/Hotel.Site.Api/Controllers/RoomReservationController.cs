@@ -20,6 +20,16 @@ public class RoomReservationController : ControllerBase
         _reservationService = reservationService;
     }
 
+    [HttpGet]
+    [Authorize(Roles = "ADMIN")]
+    public async Task<IActionResult> GetAll()
+    {
+        var reservations = await _reservationService.GetAllRoomReservationsAsync();
+        var response = reservations.Select(MapToAdminResponse);
+        return Ok(response);
+    }
+
+
     [HttpGet("user/{userId:guid}")]
     [Authorize]
     public async Task<IActionResult> GetByUser(Guid userId)
@@ -84,7 +94,8 @@ public class RoomReservationController : ControllerBase
         var updated = await _reservationService.UpdateRoomReservationStatusAsync(id, nuovoStato);
         if (updated == null) return NotFound();
 
-        return Ok(MapToResponse(updated));
+        return Ok(MapToAdminResponse(updated));
+
     }
 
 
@@ -135,4 +146,24 @@ public class RoomReservationController : ControllerBase
         r.Stato.ToString(),
         r.DataPrenotazione
     );
+
+    private static RoomReservationAdminResponse MapToAdminResponse(RoomReservation r) => new(
+    r.IdRoomReservation,
+    r.IdUser,
+    r.User?.Email ?? "",
+    r.User?.Nome ?? "",
+    r.User?.Cognome ?? "",
+    r.IdRoom,
+    r.Room?.Nome ?? "",
+    r.Room?.NumeroCamera ?? 0,
+    r.CodiceCena,
+    r.CheckIn,
+    r.CheckOut,
+    r.NumeroNotti,
+    r.PrezzoPerNotte,
+    r.PrezzoTotale,
+    r.Stato.ToString(),
+    r.DataPrenotazione
+    );
+
 }

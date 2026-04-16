@@ -40,6 +40,17 @@ namespace Hotel.Site.Application.Services
             return await _unitOfWork.RoomReservationRepository.GetRoomReservationsByRoomIdAsync(idRoom);
         }
 
+        public async Task<IEnumerable<RoomReservation>> GetAllRoomReservationsAsync()
+        {
+            return await _unitOfWork.RoomReservationRepository.GetAllRoomReservationsAsync();
+        }
+
+        public async Task<IEnumerable<RoomReservation>> GetRoomReservationsByCodiciCenaAsync(IEnumerable<string> codiciCena)
+        {
+            return await _unitOfWork.RoomReservationRepository.GetRoomReservationsByCodiciCenaAsync(codiciCena);
+        }
+
+
         public async Task AddRoomReservationAsync(RoomReservation roomReservation)
         {
             await _unitOfWork.RoomReservationRepository.AddRoomReservationAsync(roomReservation);

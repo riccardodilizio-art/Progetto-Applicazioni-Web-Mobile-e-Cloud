@@ -1,14 +1,15 @@
 import { useState } from 'react'
 import StatusBadge from '../../reservations/StatusBadge'
 import { formatDate } from '../../../lib/dateUtils'
-import type { DinnerReservationAdmin } from '../../../types/Reservation'
+import type { DinnerReservationAdmin, DinnerReservationStatus } from '../../../types/Reservation'
 
 interface Props {
     reservations: DinnerReservationAdmin[]
     onDelete: (id: string) => void
+    onStatusChange: (id: string, newStatus: DinnerReservationStatus) => void
 }
 
-export default function DinnerReservationTable({ reservations, onDelete }: Props) {
+export default function DinnerReservationTable({ reservations, onDelete, onStatusChange }: Props) {
     const [expanded, setExpanded] = useState<Set<string>>(new Set())
 
     function toggle(id: string) {
@@ -71,7 +72,7 @@ export default function DinnerReservationTable({ reservations, onDelete }: Props
                                             <StatusBadge status={r.status} />
                                         </div>
                                     </div>
-                                    <div className="flex gap-2 flex-shrink-0">
+                                    <div className="flex gap-2 flex-shrink-0 flex-wrap">
                                         <button
                                             onClick={() => toggle(r.id)}
                                             aria-expanded={isOpen}
@@ -79,6 +80,22 @@ export default function DinnerReservationTable({ reservations, onDelete }: Props
                                         >
                                             {isOpen ? 'Nascondi ordini' : 'Mostra ordini'}
                                         </button>
+                                        {r.status !== 'confermata' && (
+                                            <button
+                                                onClick={() => onStatusChange(r.id, 'confermata')}
+                                                className="text-xs text-green-700 border border-green-200 px-3 py-1.5 rounded-lg hover:bg-green-50 transition-colors cursor-pointer"
+                                            >
+                                                Conferma
+                                            </button>
+                                        )}
+                                        {r.status !== 'annullata' && (
+                                            <button
+                                                onClick={() => onStatusChange(r.id, 'annullata')}
+                                                className="text-xs text-amber-700 border border-amber-200 px-3 py-1.5 rounded-lg hover:bg-amber-50 transition-colors cursor-pointer"
+                                            >
+                                                Annulla
+                                            </button>
+                                        )}
                                         <button
                                             onClick={() => onDelete(r.id)}
                                             className="text-xs text-red-600 border border-red-200 px-3 py-1.5 rounded-lg hover:bg-red-50 transition-colors cursor-pointer"
@@ -86,6 +103,7 @@ export default function DinnerReservationTable({ reservations, onDelete }: Props
                                             Elimina
                                         </button>
                                     </div>
+
                                 </div>
                                 {r.userEmail && (
                                     <p className="text-xs text-[#9A6840] mt-2">Ospite: {r.userEmail}</p>
