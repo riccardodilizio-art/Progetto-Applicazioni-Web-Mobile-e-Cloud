@@ -158,7 +158,8 @@ public class RoomReservationController : ControllerBase
     r.DataPrenotazione,
     r.Payment?.IdPayment,
     r.Payment?.Stato.ToString()
-    );
+);
+
 
 
 
@@ -182,6 +183,7 @@ public class RoomReservationController : ControllerBase
     r.Payment?.IdPayment,
     r.Payment?.Stato.ToString()
 );
+
 
 
 }

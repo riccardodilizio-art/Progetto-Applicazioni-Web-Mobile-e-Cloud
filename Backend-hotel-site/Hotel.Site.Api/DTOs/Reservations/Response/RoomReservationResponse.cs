@@ -1,5 +1,4 @@
 ﻿namespace Hotel.Site.Api.DTOs.Reservations.Response;
-
 public record RoomReservationResponse(
     Guid IdRoomReservation,
     Guid IdUser,
