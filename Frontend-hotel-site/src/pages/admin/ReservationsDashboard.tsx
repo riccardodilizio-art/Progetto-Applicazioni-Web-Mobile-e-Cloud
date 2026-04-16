@@ -42,7 +42,10 @@ export default function ReservationsDashboard() {
         deleteTarget,
         setDeleteTarget,
         handleDelete,
+        changeRoomStatus,
+        changeDinnerStatus,
     } = useAdminReservations()
+
 
     const [tab, setTab] = useState<SubTab>('rooms')
     const [search, setSearch] = useState('')
@@ -184,13 +187,16 @@ export default function ReservationsDashboard() {
                     <RoomReservationTable
                         reservations={filteredRooms}
                         onDelete={(id) => setDeleteTarget({ id, kind: 'room' })}
+                        onStatusChange={changeRoomStatus}
                     />
                 ) : (
                     <DinnerReservationTable
                         reservations={filteredDinners}
                         onDelete={(id) => setDeleteTarget({ id, kind: 'dinner' })}
+                        onStatusChange={changeDinnerStatus}
                     />
                 )}
+
             </div>
 
             {deleteTarget && (
