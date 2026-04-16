@@ -21,9 +21,11 @@ namespace Hotel.Site.Infrastructure.Persistence.Repositories
             return await Context.RoomReservations
                 .Include(r => r.User)
                 .Include(r => r.Room)
+                .Include(r => r.Payment)
                 .Where(w => w.IdRoomReservation == id)
                 .FirstOrDefaultAsync();
         }
+
 
         public async Task<bool> HasOverlappingReservationAsync(Guid idRoom, DateOnly checkIn, DateOnly checkOut)
         {
@@ -48,12 +50,12 @@ namespace Hotel.Site.Infrastructure.Persistence.Repositories
         public async Task<IEnumerable<RoomReservation>> GetRoomReservationsByUserIdAsync(Guid idUser)
         {
             return await Context.RoomReservations
-    .Include(r => r.Room)
-    .Include(r => r.Payment)
-    .Where(w => w.IdUser == idUser)
-    .ToListAsync();
-
+                .Include(r => r.Room)
+                .Include(r => r.Payment)
+                .Where(w => w.IdUser == idUser)
+                .ToListAsync();
         }
+
 
         public async Task<IEnumerable<RoomReservation>> GetRoomReservationsByRoomIdAsync(Guid idRoom)
         {
@@ -67,13 +69,13 @@ namespace Hotel.Site.Infrastructure.Persistence.Repositories
         public async Task<IEnumerable<RoomReservation>> GetAllRoomReservationsAsync()
         {
             return await Context.RoomReservations
-    .Include(r => r.User)
-    .Include(r => r.Room)
-    .Include(r => r.Payment)
-    .OrderByDescending(r => r.DataPrenotazione)
-    .ToListAsync();
-
+                .Include(r => r.User)
+                .Include(r => r.Room)
+                .Include(r => r.Payment)
+                .OrderByDescending(r => r.DataPrenotazione)
+                .ToListAsync();
         }
+
 
         public async Task<IEnumerable<RoomReservation>> GetRoomReservationsByCodiciCenaAsync(IEnumerable<string> codiciCena)
         {

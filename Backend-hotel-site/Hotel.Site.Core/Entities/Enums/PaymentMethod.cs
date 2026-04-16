@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Hotel.Site.Core.Entities.Enums
+﻿namespace Hotel.Site.Core.Entities.Enums
 {
-    internal class PaymentMethod
+    public enum PaymentMethod
     {
+        CARTA_CREDITO,
+        CARTA_DEBITO,
+        PAYPAL,
+        BONIFICO
     }
 }
