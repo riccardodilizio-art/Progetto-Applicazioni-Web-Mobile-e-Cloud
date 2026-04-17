@@ -16,10 +16,8 @@ services:
       dockerfile: Hotel.Site.Api/Dockerfile
     ports:
       - "8081:8080"
-    depends_on:
-      - postgres
     environment:
-      - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=HotelSiteDb;Username=admin;Password=admin
+      - ConnectionStrings__DefaultConnection=${DB_CONNECTION}
     volumes:
       - ./uploads:/app/wwwroot/uploads
 
