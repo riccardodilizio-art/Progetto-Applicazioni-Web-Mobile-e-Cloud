@@ -36,7 +36,7 @@ public class PaymentController : ControllerBase
     [Authorize]
     public async Task<IActionResult> GetByReservation(Guid idReservation)
     {
-        var p = await _paymentService.GetByIdAsync(idReservation);
+        var p = await _paymentService.GetByReservationIdAsync(idReservation);
         if (p == null) return NotFound();
         if (p.RoomReservation == null) return StatusCode(500, new { message = "Pagamento senza prenotazione associata" });
         if (!IsOwnerOrAdmin(p.RoomReservation.IdUser)) return Forbid();
@@ -49,7 +49,10 @@ public class PaymentController : ControllerBase
     {
         var existing = await _paymentService.GetByIdAsync(id);
         if (existing == null) return NotFound();
+        if (existing.RoomReservation == null)
+            return StatusCode(500, new { message = "Pagamento senza prenotazione associata" });
         if (!IsOwnerOrAdmin(existing.RoomReservation.IdUser)) return Forbid();
+
         if (existing.Stato == PaymentStatus.COMPLETATO)
             return Conflict(new { message = "Pagamento già completato" });
 
