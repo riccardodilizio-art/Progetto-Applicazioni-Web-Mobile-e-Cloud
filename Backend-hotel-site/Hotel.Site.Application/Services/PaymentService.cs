@@ -32,20 +32,26 @@ namespace Hotel.Site.Application.Services
                 DataCreazione = DateTime.UtcNow
             };
             await _unitOfWork.PaymentRepository.AddAsync(payment);
-            await _unitOfWork.SaveChangesAsync();
-
-            // Nota: il SaveChanges lo fa il chiamante (RoomReservationController.Create)
-            // per garantire atomicità reservation + payment in una singola transazione EF.
+            // SaveChanges è gestito dal chiamante dentro la transazione.
         }
+
 
         public async Task<Payment?> ConfirmAsync(Guid idPayment, PaymentMethod metodo, string? cartaUltime4, string? titolare)
         {
             var payment = await _unitOfWork.PaymentRepository.GetByIdAsync(idPayment);
             if (payment == null) return null;
-            if (payment.Stato == PaymentStatus.COMPLETATO) return payment; // idempotente
 
-            // Simulazione processore pagamenti (mock).
-            await Task.Delay(TimeSpan.FromSeconds(1));
+            if (payment.Stato == PaymentStatus.COMPLETATO)
+            {
+                // Idempotente: se la reservation è disallineata, sistemala.
+                if (payment.RoomReservation != null && payment.RoomReservation.Stato == State.IN_ATTESA)
+                {
+                    payment.RoomReservation.Stato = State.CONFERMATO;
+                    await _unitOfWork.SaveChangesAsync();
+                }
+                return payment;
+            }
+
 
             payment.Metodo = metodo;
             payment.CartaUltime4 = cartaUltime4;
@@ -54,12 +60,12 @@ namespace Hotel.Site.Application.Services
             payment.Stato = PaymentStatus.COMPLETATO;
             payment.DataCompletamento = DateTime.UtcNow;
 
-            // Confermiamo anche la prenotazione associata.
             if (payment.RoomReservation != null && payment.RoomReservation.Stato == State.IN_ATTESA)
                 payment.RoomReservation.Stato = State.CONFERMATO;
 
             await _unitOfWork.SaveChangesAsync();
             return payment;
         }
+
     }
 }

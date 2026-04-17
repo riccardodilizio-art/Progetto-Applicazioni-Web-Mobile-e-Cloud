@@ -26,16 +26,19 @@ public class PaymentController : ControllerBase
     {
         var p = await _paymentService.GetByIdAsync(id);
         if (p == null) return NotFound();
+        if (p.RoomReservation == null) return StatusCode(500, new { message = "Pagamento senza prenotazione associata" });
         if (!IsOwnerOrAdmin(p.RoomReservation.IdUser)) return Forbid();
         return Ok(MapToResponse(p));
+
     }
 
     [HttpGet("by-reservation/{idReservation:guid}")]
     [Authorize]
     public async Task<IActionResult> GetByReservation(Guid idReservation)
     {
-        var p = await _paymentService.GetByReservationIdAsync(idReservation);
+        var p = await _paymentService.GetByIdAsync(idReservation);
         if (p == null) return NotFound();
+        if (p.RoomReservation == null) return StatusCode(500, new { message = "Pagamento senza prenotazione associata" });
         if (!IsOwnerOrAdmin(p.RoomReservation.IdUser)) return Forbid();
         return Ok(MapToResponse(p));
     }
@@ -49,6 +52,7 @@ public class PaymentController : ControllerBase
         if (!IsOwnerOrAdmin(existing.RoomReservation.IdUser)) return Forbid();
         if (existing.Stato == PaymentStatus.COMPLETATO)
             return Conflict(new { message = "Pagamento già completato" });
+
 
         if (!Enum.TryParse<PaymentMethod>(request.Metodo, true, out var metodo))
             return BadRequest(new { message = "Metodo di pagamento non valido" });

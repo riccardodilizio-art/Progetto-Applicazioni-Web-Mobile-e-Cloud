@@ -1,11 +1,12 @@
-﻿using System.Security.Claims;
-using Hotel.Site.Api.DTOs.Reservations.Request;
+﻿using Hotel.Site.Api.DTOs.Reservations.Request;
 using Hotel.Site.Api.DTOs.Reservations.Response;
 using Hotel.Site.Application.Abstractions.Services;
+using Hotel.Site.Application.Abstractions.UnitOfWork;
 using Hotel.Site.Core.Entities;
 using Hotel.Site.Core.Entities.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Hotel.Site.Api.Controllers;
 
@@ -15,13 +16,20 @@ public class RoomReservationController : ControllerBase
 {
     private readonly IRoomReservationService _reservationService;
     private readonly IPaymentService _paymentService;
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly ILogger<RoomReservationController> _logger;
+
 
     public RoomReservationController(
-        IRoomReservationService reservationService,
-        IPaymentService paymentService)
+    IRoomReservationService reservationService,
+    IPaymentService paymentService,
+    IUnitOfWork unitOfWork,
+    ILogger<RoomReservationController> logger)
     {
         _reservationService = reservationService;
         _paymentService = paymentService;
+        _unitOfWork = unitOfWork;
+        _logger = logger;
     }
 
 
@@ -85,13 +93,23 @@ public class RoomReservationController : ControllerBase
             DataPrenotazione = DateTime.UtcNow
         };
 
-        await _reservationService.AddRoomReservationAsync(reservation);
-        await _paymentService.CreateForReservationAsync(reservation.IdRoomReservation, reservation.PrezzoTotale);
+        await _unitOfWork.BeginTransactionAsync();
+        try
+        {
+            await _reservationService.AddRoomReservationAsync(reservation);
+            await _paymentService.CreateForReservationAsync(reservation.IdRoomReservation, reservation.PrezzoTotale);
+            await _unitOfWork.SaveChangesAsync();
+            await _unitOfWork.CommitTransactionAsync();
+        }
+        catch (Exception ex)
+        {
+            await _unitOfWork.RollbackTransactionAsync();
+            _logger.LogError(ex, "Errore nella creazione della prenotazione {IdReservation}", reservation.IdRoomReservation);
+            return StatusCode(500, new { message = "Errore nella creazione della prenotazione" });
+        }
 
         var full = await _reservationService.GetRoomReservationByIdAsync(reservation.IdRoomReservation);
         return Created($"/api/reservations/{reservation.IdRoomReservation}", MapToResponse(full!));
-
-
     }
 
     [HttpPatch("{id:guid}/status")]

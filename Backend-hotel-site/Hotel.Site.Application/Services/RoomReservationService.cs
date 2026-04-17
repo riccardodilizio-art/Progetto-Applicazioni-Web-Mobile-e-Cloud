@@ -54,7 +54,6 @@ namespace Hotel.Site.Application.Services
         public async Task AddRoomReservationAsync(RoomReservation roomReservation)
         {
             await _unitOfWork.RoomReservationRepository.AddRoomReservationAsync(roomReservation);
-            await _unitOfWork.SaveChangesAsync();
         }
 
         public async Task<RoomReservation?> UpdateRoomReservationStatusAsync(Guid id, State nuovoStato)

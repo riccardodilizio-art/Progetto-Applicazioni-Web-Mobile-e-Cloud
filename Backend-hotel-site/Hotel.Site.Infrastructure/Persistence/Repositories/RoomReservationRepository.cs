@@ -29,14 +29,21 @@ namespace Hotel.Site.Infrastructure.Persistence.Repositories
 
         public async Task<bool> HasOverlappingReservationAsync(Guid idRoom, DateOnly checkIn, DateOnly checkOut)
         {
-            // Due intervalli [a1, a2) e [b1, b2) si sovrappongono se a1 < b2 E b1 < a2.
-            // Le prenotazioni annullate non contano.
+            // Soglia: una prenotazione IN_ATTESA non pagata oltre 15 minuti non blocca più la camera.
+            var soglia = DateTime.UtcNow.AddMinutes(-15);
+
             return await Context.RoomReservations
+                .Include(r => r.Payment)
                 .Where(r => r.IdRoom == idRoom)
                 .Where(r => r.Stato != State.ANNULLATO)
+                .Where(r =>
+                    r.Stato == State.CONFERMATO
+                    || (r.Payment != null && r.Payment.Stato == PaymentStatus.COMPLETATO)
+                    || r.DataPrenotazione > soglia)
                 .Where(r => r.CheckIn < checkOut && checkIn < r.CheckOut)
                 .AnyAsync();
         }
+
 
         public async Task<RoomReservation?> GetRoomReservationByCodiceCenaAsync(string codiceCena)
         {

@@ -1,4 +1,5 @@
 using Hotel.Site.Application.Abstractions.Repositories;
+using Hotel.Site.Application.Abstractions.Repositories;
 
 namespace Hotel.Site.Application.Abstractions.UnitOfWork
 {
@@ -13,5 +14,8 @@ namespace Hotel.Site.Application.Abstractions.UnitOfWork
         IPaymentRepository PaymentRepository { get; set; }
 
         Task SaveChangesAsync();
+        Task BeginTransactionAsync();
+        Task CommitTransactionAsync();
+        Task RollbackTransactionAsync();
     }
 }
