@@ -1,11 +1,12 @@
-using System.Text;
 using Hotel.Site.Api.Services;
 using Hotel.Site.Application.Abstractions.Services;
 using Hotel.Site.Application.Extensions;
 using Hotel.Site.Infrastructure.Extensions;
 using Hotel.Site.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -61,6 +62,14 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<Hotel.Site.Infrastructure.Persistence.HotelSiteContext>();
+    db.Database.Migrate();
+}
+
+
 
 // Assicura che la directory uploads esista anche al primo avvio
 var uploadsPath = Path.Combine(app.Environment.ContentRootPath, "wwwroot", "uploads", "rooms");
