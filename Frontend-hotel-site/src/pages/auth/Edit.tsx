@@ -4,7 +4,6 @@ import useIsAuthenticated from 'react-auth-kit/hooks/useIsAuthenticated'
 import useSignIn from 'react-auth-kit/hooks/useSignIn'
 import type { UserState } from '../../types/User'
 import ProfileForm from './ProfileForm'
-import PasswordForm from './PasswordForm'
 import useAuthHeader from 'react-auth-kit/hooks/useAuthHeader'
 import { apiFetch } from '../../lib/apiClient.ts'
 
@@ -33,7 +32,6 @@ export default function Edit() {
             }),
         })
 
-        // aggiorna lo stato locale di auth-kit
         const currentToken = (authHeader ?? '').replace('Bearer ', '')
         signIn({
             auth: { token: currentToken, type: 'Bearer' },
@@ -41,28 +39,28 @@ export default function Edit() {
         })
     }
 
-    const handleRequest2FA = async (_current: string, _next: string): Promise<void> => {
-        // TODO: POST /auth/request-password-change
-        // Il backend verifica la password attuale e invia l'OTP via email
-    }
-
-    const handleSavePassword = async (current: string, next: string, otp: string) => {
-        await apiFetch('/auth/confirm-password-change', {
-            method: 'POST',
-            body: JSON.stringify({ current, next, otp }),
-        })
-    }
-
     return (
         <div className="min-h-screen bg-[#FAF5EE] px-4 py-12">
             <div className="max-w-2xl mx-auto space-y-6">
-                <h1 className="font-heading text-3xl font-semibold text-[#3B2010] text-center">Modifica Profilo</h1>
-                <ProfileForm user={user} onSave={handleSaveProfile} onCancel={() => navigate(-1)} />
-                <PasswordForm
-                    onRequest2FA={handleRequest2FA}
-                    onSave={handleSavePassword}
-                    onForgotPassword={() => navigate('/password-dimenticata')}
+                <h1 className="font-heading text-3xl font-semibold text-[#3B2010] text-center">
+                    Modifica Profilo
+                </h1>
+                <ProfileForm
+                    user={user}
+                    onSave={handleSaveProfile}
+                    onCancel={() => navigate(-1)}
                 />
+                <div className="bg-white rounded-2xl shadow-lg p-6 text-center">
+                    <p className="text-sm text-[#6B4828] mb-2">
+                        Vuoi cambiare la password?
+                    </p>
+                    <button
+                        onClick={() => navigate('/password-dimenticata')}
+                        className="text-sm text-[#9A6840] hover:text-[#3B2010] hover:underline transition-colors cursor-pointer"
+                    >
+                        Richiedi un link di reset via email
+                    </button>
+                </div>
             </div>
         </div>
     )
