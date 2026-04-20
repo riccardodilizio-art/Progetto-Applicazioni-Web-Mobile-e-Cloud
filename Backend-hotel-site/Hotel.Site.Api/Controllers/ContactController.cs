@@ -2,8 +2,11 @@
 using Hotel.Site.Api.DTOs.Contact.Response;
 using Hotel.Site.Application.Abstractions.Services;
 using Hotel.Site.Core.Entities;
+using Hotel.Site.Infrastructure.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.Extensions.Options;
 
 namespace Hotel.Site.Api.Controllers;
 
@@ -12,14 +15,22 @@ namespace Hotel.Site.Api.Controllers;
 public class ContactController : ControllerBase
 {
     private readonly IContactService _contactService;
+    private readonly IEmailService _emailService;
+    private readonly SmtpSettings _smtp;
 
-    public ContactController(IContactService contactService)
+    public ContactController(
+        IContactService contactService,
+        IEmailService emailService,
+        IOptions<SmtpSettings> smtpOptions)
     {
         _contactService = contactService;
+        _emailService = emailService;
+        _smtp = smtpOptions.Value;
     }
 
     // Endpoint pubblico: il form del frontend lo chiama senza login
     [HttpPost]
+    [EnableRateLimiting("contact-post")]
     public async Task<IActionResult> Create([FromBody] ContactRequest request)
     {
         if (string.IsNullOrWhiteSpace(request.Name) ||
@@ -34,18 +45,28 @@ public class ContactController : ControllerBase
             IdContact = Guid.NewGuid(),
             Nome = request.Name,
             Email = request.Email,
-            Telefono = request.Phone ?? string.Empty,
+            Telefono = request.Phone,
             Messaggio = request.Message,
-            DataCreazione = DateTime.UtcNow,
+            DataCreazione = DateTime.UtcNow
         };
 
         await _contactService.AddContactAsync(contact);
 
-        return Created($"/api/contacts/{contact.IdContact}", new
+        // Invio email (fire-and-forget con log in caso di errore)
+        if (!string.IsNullOrWhiteSpace(_smtp.AdminEmail))
         {
-            id = contact.IdContact,
-            message = "Messaggio ricevuto, ti risponderemo a breve"
-        });
+            var body = $@"
+                <h2>Nuovo messaggio dal sito</h2>
+                <p><strong>Da:</strong> {System.Net.WebUtility.HtmlEncode(contact.Nome)}
+                &lt;{System.Net.WebUtility.HtmlEncode(contact.Email)}&gt;</p>
+                <p><strong>Telefono:</strong> {System.Net.WebUtility.HtmlEncode(contact.Telefono ?? "-")}</p>
+                <p><strong>Messaggio:</strong></p>
+                <p>{System.Net.WebUtility.HtmlEncode(contact.Messaggio).Replace("\n", "<br>")}</p>
+            ";
+            _ = _emailService.SendAsync(_smtp.AdminEmail, $"Nuovo contatto: {contact.Nome}", body);
+        }
+
+        return Created($"/api/contacts/{contact.IdContact}", new { id = contact.IdContact });
     }
 
     // Admin: vede la lista dei messaggi ricevuti (ordinati dal più recente)
