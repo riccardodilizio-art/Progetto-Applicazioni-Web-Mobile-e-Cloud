@@ -18,6 +18,10 @@ namespace Hotel.Site.Infrastructure.Persistence.Configurations
                 .WithOne(x => x.User)
                 .HasForeignKey(x => x.IdUser);
 
+            builder.Property(u => u.ResetTokenHash).HasMaxLength(128);
+            builder.HasIndex(u => u.ResetTokenHash);
+
+
             builder.HasData(
                 new User
                 {

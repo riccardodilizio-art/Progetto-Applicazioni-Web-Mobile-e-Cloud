@@ -40,5 +40,8 @@ namespace Hotel.Site.Application.Services
             await _unitOfWork.UserRepository.DeleteUserAsync(id);
             await _unitOfWork.SaveChangesAsync();
         }
+
+        public Task<User?> GetUserByResetTokenHashAsync(string tokenHash) => _unitOfWork.UserRepository.GetUserByResetTokenHashAsync(tokenHash);
+
     }
 }

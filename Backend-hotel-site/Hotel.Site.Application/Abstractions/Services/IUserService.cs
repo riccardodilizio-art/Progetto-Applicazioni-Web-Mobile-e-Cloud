@@ -12,5 +12,7 @@ namespace Hotel.Site.Application.Abstractions.Services
         Task AddUserAsync(User user);
         Task EditUserAsync(User user);
         Task DeleteUserAsync(Guid id);
+        Task<User?> GetUserByResetTokenHashAsync(string tokenHash);
+
     }
 }

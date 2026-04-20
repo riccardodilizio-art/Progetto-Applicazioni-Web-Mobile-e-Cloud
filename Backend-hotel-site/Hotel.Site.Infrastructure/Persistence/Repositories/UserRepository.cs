@@ -43,5 +43,12 @@ namespace Hotel.Site.Infrastructure.Persistence.Repositories
             if (user != null)
                 Context.Users.Remove(user);
         }
+
+        public async Task<User?> GetUserByResetTokenHashAsync(string tokenHash)
+        {
+            return await Context.Users
+                .FirstOrDefaultAsync(u => u.ResetTokenHash == tokenHash);
+        }
+
     }
 }

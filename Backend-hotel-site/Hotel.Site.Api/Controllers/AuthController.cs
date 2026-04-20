@@ -4,6 +4,10 @@ using Hotel.Site.Application.Abstractions.Services;
 using Hotel.Site.Core.Entities;
 using Hotel.Site.Core.Entities.Enums;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.Extensions.Configuration;
+using System.Security.Cryptography;
+using static Org.BouncyCastle.Math.EC.ECCurve;
 
 namespace Hotel.Site.Api.Controllers;
 
@@ -14,15 +18,20 @@ public class AuthController : ControllerBase
     private readonly IUserService _userService;
     private readonly IPasswordHasher _passwordHasher;
     private readonly IJwtTokenService _jwtTokenService;
-
+    private readonly IEmailService _emailService;
+    private readonly IConfiguration _config;
     public AuthController(
-        IUserService userService,
-        IPasswordHasher passwordHasher,
-        IJwtTokenService jwtTokenService)
+    IUserService userService,
+    IPasswordHasher passwordHasher,
+    IJwtTokenService jwtTokenService,
+    IEmailService emailService,
+    IConfiguration config)
     {
         _userService = userService;
         _passwordHasher = passwordHasher;
         _jwtTokenService = jwtTokenService;
+        _emailService = emailService;
+        _config = config;
     }
 
     [HttpPost("login")]
@@ -83,4 +92,66 @@ public class AuthController : ControllerBase
             user.IdUser, user.Nome, user.Cognome, user.Email, user.Ruolo.ToString(), token
         ));
     }
+
+    [HttpPost("forgot-password")]
+    [EnableRateLimiting("forgot-password")]
+    public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest request)
+    {
+        var user = await _userService.GetUserByEmailAsync(request.Email);
+
+        // Anti-enumerazione: rispondi sempre 200 anche se l'utente non esiste
+        if (user != null)
+        {
+            var rawToken = GenerateSecureToken();
+            user.ResetTokenHash = HashToken(rawToken);
+            user.ResetTokenExpiry = DateTime.UtcNow.AddMinutes(30);
+            await _userService.EditUserAsync(user);
+
+            var frontendUrl = _config["App:FrontendUrl"] ?? "http://localhost:8080";
+            var resetLink = $"{frontendUrl}/reset-password?token={rawToken}";
+
+            var body = $@"
+            <h2>Reset password</h2>
+            <p>Ciao {System.Net.WebUtility.HtmlEncode(user.Nome)},</p>
+            <p>Hai richiesto di reimpostare la password. Clicca il link qui sotto (valido 30 minuti):</p>
+            <p><a href=""{resetLink}"">{resetLink}</a></p>
+            <p>Se non hai fatto tu la richiesta, ignora questa email.</p>
+        ";
+            _ = _emailService.SendAsync(user.Email, "Reset password - Hotel Excelsior", body);
+        }
+
+        return Ok(new { message = "Se l'email è registrata, riceverai un link per reimpostare la password." });
+    }
+
+    [HttpPost("reset-password")]
+    public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request)
+    {
+        var tokenHash = HashToken(request.Token);
+        var user = await _userService.GetUserByResetTokenHashAsync(tokenHash);
+
+        if (user == null || user.ResetTokenExpiry == null || user.ResetTokenExpiry < DateTime.UtcNow)
+            return BadRequest(new { message = "Link scaduto o non valido." });
+
+        user.Password = _passwordHasher.Hash(request.Password);
+        user.ResetTokenHash = null;
+        user.ResetTokenExpiry = null;
+        await _userService.EditUserAsync(user);
+
+        return Ok(new { message = "Password aggiornata. Puoi accedere." });
+    }
+
+    private static string GenerateSecureToken()
+    {
+        var bytes = RandomNumberGenerator.GetBytes(32);
+        return Convert.ToBase64String(bytes)
+            .Replace("+", "-").Replace("/", "_").TrimEnd('=');
+    }
+
+    private static string HashToken(string token)
+    {
+        using var sha = SHA256.Create();
+        var hash = sha.ComputeHash(System.Text.Encoding.UTF8.GetBytes(token));
+        return Convert.ToHexString(hash);
+    }
+
 }

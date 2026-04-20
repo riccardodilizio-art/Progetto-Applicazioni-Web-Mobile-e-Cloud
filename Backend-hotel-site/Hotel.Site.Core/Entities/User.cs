@@ -17,5 +17,8 @@ namespace Hotel.Site.Core.Entities
         public Role Ruolo { get; set; } = Role.CLIENT;
         public DateTime DataCreazione { get; set; } = DateTime.UtcNow;
         public virtual ICollection<RoomReservation> StanzePrenotate { get; set; } = new HashSet<RoomReservation>();
+        public string? ResetTokenHash { get; set; }
+        public DateTime? ResetTokenExpiry { get; set; }
+
     }
 }
