@@ -25,6 +25,8 @@ services:
       - Smtp__FromEmail=${Smtp__FromEmail}
       - Smtp__FromName=${Smtp__FromName}
       - Smtp__AdminEmail=${Smtp__AdminEmail}
+      - App__FrontendUrl=${App__FrontendUrl}
+
     volumes:
       - ./uploads:/app/wwwroot/uploads
 
