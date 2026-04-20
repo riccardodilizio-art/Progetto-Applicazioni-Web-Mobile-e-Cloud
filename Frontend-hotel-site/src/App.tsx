@@ -28,6 +28,7 @@ import MenuForm from './pages/admin/MenuForm'
 import ReservationsDashboard from './pages/admin/ReservationsDashboard'
 import PaymentPage from './pages/auth/Payment'
 import PaymentResult from './pages/auth/PaymentResult'
+import ContactsDashboard from './pages/admin/ContactsDashboard';
 
 
 function ProtectedRoute({ children, redirectTo = '/accedi' }: { children: React.ReactNode; redirectTo?: string }) {
@@ -128,6 +129,18 @@ export default function App() {
                                 </ProtectedRoute>
                             }
                         />
+
+                        <Route
+                            path="/admin/contatti"
+                            element={
+                                <ProtectedRoute>
+                                    <RoleGuard role="admin">
+                                        <ContactsDashboard />
+                                    </RoleGuard>
+                                </ProtectedRoute>
+                            }
+                        />
+
 
                         <Route
                             path="/admin/camere/nuova"
