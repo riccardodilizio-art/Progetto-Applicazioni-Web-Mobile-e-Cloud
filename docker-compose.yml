@@ -16,6 +16,7 @@ services:
       - Smtp__FromName=${Smtp__FromName}
       - Smtp__AdminEmail=${Smtp__AdminEmail}
       - App__FrontendUrl=${App__FrontendUrl}
+      - Jwt__Key=${Jwt__Key}
 
     volumes:
       - ./uploads:/app/wwwroot/uploads
