@@ -20,6 +20,7 @@ services:
 
     volumes:
       - ./uploads:/app/wwwroot/uploads
+      - ./dp-keys:/app/dp-keys
 
 
 
