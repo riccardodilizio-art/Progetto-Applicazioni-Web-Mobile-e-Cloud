@@ -1,14 +1,4 @@
 services:
-  postgres:
-    image: postgres:17
-    environment:
-      - POSTGRES_USER=admin
-      - POSTGRES_PASSWORD=admin
-      - POSTGRES_DB=HotelSiteDb
-    ports:
-      - "5433:5432"
-    volumes:
-      - postgres-data:/var/lib/postgresql/data
 
   api:
     build:
@@ -40,5 +30,3 @@ services:
       - "8080:80"
     restart: unless-stopped
 
-volumes:
-  postgres-data:
