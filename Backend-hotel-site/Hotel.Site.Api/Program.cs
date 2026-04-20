@@ -9,8 +9,12 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.AspNetCore.DataProtection;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddDataProtection()
+    .PersistKeysToFileSystem(new DirectoryInfo("/app/dp-keys"))
+    .SetApplicationName("HotelExcelsior");
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")!;
 
