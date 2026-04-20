@@ -13,14 +13,18 @@ export default function ProfileForm({ user, onSave, onCancel }: Props) {
     const [phone, setPhone] = useState(user.phone ?? '')
     const [saved, setSaved] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
+    const [errorMsg, setErrorMsg] = useState('')
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         setIsLoading(true)
+        setErrorMsg('')
         try {
-            onSave(name.trim() || undefined, surname.trim() || undefined, phone.trim() || undefined)
+            await onSave(name.trim() || undefined, surname.trim() || undefined, phone.trim() || undefined)
             setSaved(true)
             setTimeout(() => setSaved(false), 3000)
+        } catch (err) {
+            setErrorMsg(err instanceof Error ? err.message : 'Errore durante il salvataggio.')
         } finally {
             setIsLoading(false)
         }
@@ -83,6 +87,13 @@ export default function ProfileForm({ user, onSave, onCancel }: Props) {
                             focus:ring-[#9A6840] focus:border-transparent"
                     />
                 </div>
+
+                {errorMsg && (
+                    <p className="text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg px-4 py-2">
+                        {errorMsg}
+                    </p>
+                )}
+
 
                 {saved && (
                     <p className="text-sm text-green-700 bg-green-50 border border-green-200 rounded-lg px-4 py-2">

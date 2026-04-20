@@ -19,14 +19,24 @@ export default function Edit() {
         return <Navigate to="/accedi" replace />
     }
 
-    const handleSaveProfile = (name: string | undefined, surname: string | undefined, phone: string | undefined) => {
-        // TODO: chiamata API per aggiornare il profilo
+    const handleSaveProfile = async (
+        name: string | undefined,
+        surname: string | undefined,
+        phone: string | undefined
+    ) => {
+        await apiFetch(`/users/${user.id}`, {
+            method: 'PUT',
+            body: JSON.stringify({
+                nome: name ?? '',
+                cognome: surname ?? '',
+                numeroTelefono: phone ?? '',
+            }),
+        })
+
+        // aggiorna lo stato locale di auth-kit
         const currentToken = (authHeader ?? '').replace('Bearer ', '')
         signIn({
-            auth: {
-                token: currentToken,
-                type: 'Bearer',
-            },
+            auth: { token: currentToken, type: 'Bearer' },
             userState: { ...user, name, surname, phone },
         })
     }
