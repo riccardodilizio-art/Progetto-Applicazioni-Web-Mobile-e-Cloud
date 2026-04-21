@@ -8,6 +8,7 @@ using Hotel.Site.Core.Entities.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using Hotel.Site.Api.DTOs.Common;
 
 namespace Hotel.Site.Api.Controllers;
 
@@ -34,20 +35,23 @@ public class RoomReservationController : ControllerBase
     }
 
 
-    /// <summary>Elenco di tutte le prenotazioni camere (admin).</summary>
+    /// <summary>Elenco paginato di tutte le prenotazioni camere (admin).</summary>
     [HttpGet]
     [Authorize(Roles = "ADMIN")]
-    [ProducesResponseType(typeof(IEnumerable<RoomReservationAdminResponse>), StatusCodes.Status200OK)]
-
+    [ProducesResponseType(typeof(PagedResponse<RoomReservationAdminResponse>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 20)
     {
+        page = Math.Max(1, page);
         pageSize = Math.Clamp(pageSize, 1, 100);
-        var all = await _reservationService.GetAllRoomReservationsAsync();
-        var total = all.Count();
-        var items = all.Skip((page - 1) * pageSize).Take(pageSize).Select(MapToAdminResponse);
-        return Ok(new PagedResponse<RoomReservationAdminResponse>(
-            items, page, pageSize, total, (int)Math.Ceiling(total / (double)pageSize)));
+
+        var (items, total) = await _reservationService.GetPagedAsync(page, pageSize);
+        var totalPages = (int)Math.Ceiling(total / (double)pageSize);
+        var response = new PagedResponse<RoomReservationAdminResponse>(
+            items.Select(MapToAdminResponse), page, pageSize, total, totalPages);
+
+        return Ok(response);
     }
+
 
 
 

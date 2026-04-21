@@ -1,4 +1,5 @@
-﻿using Hotel.Site.Api.DTOs.Contact.Request;
+﻿using Hotel.Site.Api.DTOs.Common.Response;
+using Hotel.Site.Api.DTOs.Contact.Request;
 using Hotel.Site.Api.DTOs.Contact.Response;
 using Hotel.Site.Application.Abstractions.Services;
 using Hotel.Site.Core.Entities;
@@ -73,23 +74,23 @@ public class ContactController : ControllerBase
         return Created($"/api/contacts/{contact.IdContact}", new { id = contact.IdContact });
     }
 
-    /// <summary>Elenco messaggi ricevuti (admin).</summary>
+    /// <summary>Elenco paginato dei messaggi ricevuti (admin).</summary>
     [HttpGet]
     [Authorize(Roles = "ADMIN")]
-    [ProducesResponseType(typeof(IEnumerable<ContactResponse>), StatusCodes.Status200OK)]
-
-    public async Task<IActionResult> GetAll()
+    [ProducesResponseType(typeof(PagedResponse<ContactResponse>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 20)
     {
-        var contacts = await _contactService.GetAllContactsAsync();
-        var response = contacts.Select(c => new ContactResponse(
-            c.IdContact,
-            c.Nome,
-            c.Email,
-            c.Telefono,
-            c.Messaggio,
-            c.DataCreazione
-        ));
+        page = Math.Max(1, page);
+        pageSize = Math.Clamp(pageSize, 1, 100);
+
+        var (items, total) = await _contactService.GetPagedAsync(page, pageSize);
+        var totalPages = (int)Math.Ceiling(total / (double)pageSize);
+        var response = new PagedResponse<ContactResponse>(
+            items.Select(c => new ContactResponse(c.IdContact, c.Nome, c.Email, c.Telefono, c.Messaggio, c.DataCreazione)),
+            page, pageSize, total, totalPages);
+
         return Ok(response);
     }
+
 }
 

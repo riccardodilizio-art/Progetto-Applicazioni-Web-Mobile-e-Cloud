@@ -9,5 +9,8 @@ namespace Hotel.Site.Application.Abstractions.Repositories
     {
         Task<IEnumerable<Contact>> GetAllContactsAsync();
         Task AddContactAsync(Contact contact);
+
+        Task<(IEnumerable<Contact> Items, int Total)> GetPagedAsync(int skip, int take);
+
     }
 }

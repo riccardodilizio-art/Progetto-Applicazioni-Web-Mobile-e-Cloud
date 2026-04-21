@@ -123,5 +123,23 @@ namespace Hotel.Site.Infrastructure.Persistence.Repositories
                 Context.RoomReservations.Remove(reservation);
         }
 
+        public async Task<(IEnumerable<RoomReservation> Items, int Total)> GetPagedAsync(int skip, int take)
+        {
+            var query = Context.RoomReservations
+                .Include(r => r.User)
+                .Include(r => r.Room)
+                .Include(r => r.Payment);
+
+            var total = await query.CountAsync();
+            var items = await query
+                .OrderByDescending(r => r.DataPrenotazione)
+                .Skip(skip).Take(take)
+                .AsNoTracking()
+                .ToListAsync();
+
+            return (items, total);
+        }
+
+
     }
 }
