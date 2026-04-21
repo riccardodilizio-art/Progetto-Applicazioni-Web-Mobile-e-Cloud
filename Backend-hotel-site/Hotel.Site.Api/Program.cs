@@ -149,6 +149,7 @@ app.UseExceptionHandler(errorApp =>
             title = "Errore interno del server",
             status = 500,
             message = "Si è verificato un errore inatteso. Riprova più tardi."
+            
         });
     });
 });
@@ -163,7 +164,6 @@ using (var scope = app.Services.CreateScope())
 
 
 // Assicura che la directory uploads esista anche al primo avvio
-var uploadsPath = Path.Combine(app.Environment.ContentRootPath, "wwwroot", "uploads", "rooms");
 var uploadsPath = Path.Combine(app.Environment.ContentRootPath, "wwwroot", "uploads", "rooms");
 Directory.CreateDirectory(uploadsPath);
 
