@@ -57,7 +57,7 @@ public class RoomReservationController : ControllerBase
 
     /// <summary>Prenotazioni di uno specifico utente.</summary>
     [HttpGet("user/{userId:guid}")]
-    [Authorize(Roles = "ADMIN")]
+    [Authorize]
     [ProducesResponseType(typeof(IEnumerable<RoomReservationResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> GetByUser(Guid userId)
@@ -71,7 +71,7 @@ public class RoomReservationController : ControllerBase
 
     /// <summary>Dettaglio di una prenotazione.</summary>
     [HttpGet("{id:guid}")]
-    [Authorize(Roles = "ADMIN")]
+    [Authorize]
     [ProducesResponseType(typeof(RoomReservationResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -91,7 +91,7 @@ public class RoomReservationController : ControllerBase
     /// <response code="409">Camera già prenotata per le date selezionate</response>
     /// <response code="500">Errore nella transazione</response>
     [HttpPost]
-    [Authorize(Roles = "ADMIN")]
+    [Authorize]
     [ProducesResponseType(typeof(RoomReservationResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
@@ -162,7 +162,7 @@ public class RoomReservationController : ControllerBase
 
     /// <summary>Cancella una prenotazione.</summary>
     [HttpDelete("{id:guid}")]
-    [Authorize(Roles = "ADMIN")]
+    [Authorize]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
