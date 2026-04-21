@@ -15,5 +15,8 @@ namespace Hotel.Site.Application.Abstractions.Repositories
         Task AddRoomReservationAsync(RoomReservation roomReservation);
         Task<RoomReservation?> UpdateRoomReservationStatusAsync(Guid id, State nuovoStato);
         Task DeleteRoomReservationAsync(Guid id);
+
+        Task<(IEnumerable<RoomReservation> Items, int Total)> GetPagedAsync(int skip, int take);
+
     }
 }
