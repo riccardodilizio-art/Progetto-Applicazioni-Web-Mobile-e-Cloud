@@ -10,6 +10,14 @@ export type Contact = {
     dataCreazione: string;
 };
 
+type PagedContacts = {
+    items: Contact[];
+    page: number;
+    pageSize: number;
+    totalItems: number;
+    totalPages: number;
+};
+
 export function useContacts() {
     const [contacts, setContacts] = useState<Contact[]>([]);
     const [loading, setLoading] = useState(true);
@@ -19,8 +27,8 @@ export function useContacts() {
         setLoading(true);
         setError(null);
         try {
-            const data = await apiFetch<Contact[]>('/contacts');
-            setContacts(data);
+            const data = await apiFetch<PagedContacts>('/contacts?page=1&pageSize=100');
+            setContacts(data.items);
         } catch (e) {
             setError(e instanceof Error ? e.message : 'Errore sconosciuto');
         } finally {
