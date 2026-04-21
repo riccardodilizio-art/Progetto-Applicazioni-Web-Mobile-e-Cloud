@@ -2,5 +2,6 @@
   <Project Path="../Hotel.Site.Application/Hotel.Site.Application.csproj" />
   <Project Path="../Hotel.Site.Core/Hotel.Site.Core.csproj" />
   <Project Path="../Hotel.Site.Infrastructure/Hotel.Site.Infrastructure.csproj" />
+  <Project Path="../Hotel.Site.Tests/Hotel.Site.Tests.csproj" />
   <Project Path="Hotel.Site.Api.csproj" />
 </Solution>
