@@ -5,9 +5,7 @@ using Hotel.Site.Core.Entities;
 using Hotel.Site.Core.Entities.Enums;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
-using Microsoft.Extensions.Configuration;
 using System.Security.Cryptography;
-using static Org.BouncyCastle.Math.EC.ECCurve;
 
 namespace Hotel.Site.Api.Controllers;
 
@@ -94,27 +92,63 @@ public class AuthController : ControllerBase
     /// <response code="200">Credenziali valide</response>
     /// <response code="401">Email o password errate</response>
     /// <response code="403">Utente non è admin</response>
+    /// <response code="423">Account bloccato per troppi tentativi falliti</response>
     [HttpPost("admin/login")]
     [EnableRateLimiting("auth-login")]
     [ProducesResponseType(typeof(AuthResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
-
+    [ProducesResponseType(StatusCodes.Status423Locked)]
     public async Task<IActionResult> AdminLogin([FromBody] LoginRequest request)
     {
         var user = await _userService.GetUserByEmailAsync(request.Email);
-        if (user == null || !_passwordHasher.Verify(request.Password, user.Password))
+        if (user == null)
+        {
+            _logger.LogWarning("Admin login fallito (utente inesistente) per {Email}", request.Email);
             return Unauthorized(new { message = "Email o password errati" });
+        }
+
+        if (user.LockoutExpiry != null && user.LockoutExpiry > DateTime.UtcNow)
+        {
+            _logger.LogWarning("Admin login bloccato per {Email} fino a {Expiry}", request.Email, user.LockoutExpiry);
+            return StatusCode(StatusCodes.Status423Locked, new
+            {
+                message = $"Account bloccato per troppi tentativi falliti. Riprova dopo le {user.LockoutExpiry:HH:mm}."
+            });
+        }
+
+        if (!_passwordHasher.Verify(request.Password, user.Password))
+        {
+            user.FailedLoginCount++;
+            if (user.FailedLoginCount >= 5)
+            {
+                user.LockoutExpiry = DateTime.UtcNow.AddMinutes(15);
+                user.FailedLoginCount = 0;
+                _logger.LogWarning("Account admin {Email} bloccato per 15 minuti", request.Email);
+            }
+            await _userService.EditUserAsync(user);
+            _logger.LogWarning("Admin login fallito (password errata) per {Email}", request.Email);
+            return Unauthorized(new { message = "Email o password errati" });
+        }
 
         if (user.Ruolo != Role.ADMIN)
+        {
+            _logger.LogWarning("Accesso admin negato a {Email} (ruolo {Role})", request.Email, user.Ruolo);
             return Forbid();
+        }
 
+        // login riuscito → reset contatori
+        user.FailedLoginCount = 0;
+        user.LockoutExpiry = null;
+        await _userService.EditUserAsync(user);
+
+        _logger.LogInformation("Admin login riuscito per {Email}", request.Email);
         var token = _jwtTokenService.GenerateToken(user);
-
         return Ok(new AuthResponse(
             user.IdUser, user.Nome, user.Cognome, user.Email, user.Ruolo.ToString(), token
         ));
     }
+
 
     /// <summary>Registra un nuovo utente cliente.</summary>
     /// <response code="201">Registrazione completata</response>
@@ -136,7 +170,7 @@ public class AuthController : ControllerBase
             Cognome = request.Cognome,
             Email = request.Email,
             Password = _passwordHasher.Hash(request.Password),
-            NumeroTelefono = request.NumeroTelefono,
+            NumeroTelefono = request.NumeroTelefono ?? string.Empty,
             Ruolo = Role.CLIENT,
             DataCreazione = DateTime.UtcNow
         };
@@ -179,9 +213,15 @@ public class AuthController : ControllerBase
             <p>Se non hai fatto tu la richiesta, ignora questa email.</p>
         ";
             _ = _emailService.SendAsync(user.Email, "Reset password - Hotel Excelsior", body);
+            _logger.LogInformation("Token di reset password generato per {Email}", user.Email);
+        }
+        else
+        {
+            _logger.LogInformation("Richiesta reset password per email inesistente: {Email}", request.Email);
         }
 
         return Ok(new { message = "Se l'email è registrata, riceverai un link per reimpostare la password." });
+
     }
 
     /// <summary>Imposta una nuova password usando il token di reset ricevuto via email.</summary>
@@ -196,14 +236,22 @@ public class AuthController : ControllerBase
         var user = await _userService.GetUserByResetTokenHashAsync(tokenHash);
 
         if (user == null || user.ResetTokenExpiry == null || user.ResetTokenExpiry < DateTime.UtcNow)
+        {
+            _logger.LogWarning("Tentativo di reset password con token scaduto o non valido");
             return BadRequest(new { message = "Link scaduto o non valido." });
+        }
 
         user.Password = _passwordHasher.Hash(request.Password);
         user.ResetTokenHash = null;
         user.ResetTokenExpiry = null;
+        // Se l'utente era bloccato, sbloccalo (ha dimostrato di possedere l'email)
+        user.FailedLoginCount = 0;
+        user.LockoutExpiry = null;
         await _userService.EditUserAsync(user);
 
+        _logger.LogInformation("Password reset completato per {Email}", user.Email);
         return Ok(new { message = "Password aggiornata. Puoi accedere." });
+
     }
 
     private static string GenerateSecureToken()

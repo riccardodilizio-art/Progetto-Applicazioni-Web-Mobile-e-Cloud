@@ -47,7 +47,7 @@ public class ContactController : ControllerBase
             IdContact = Guid.NewGuid(),
             Nome = request.Name,
             Email = request.Email,
-            Telefono = request.Phone,
+            Telefono = request.Phone ?? string.Empty,
             Messaggio = request.Message,
             DataCreazione = DateTime.UtcNow
         };

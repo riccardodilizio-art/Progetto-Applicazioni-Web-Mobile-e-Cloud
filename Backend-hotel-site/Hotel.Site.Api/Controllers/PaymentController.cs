@@ -14,10 +14,12 @@ namespace Hotel.Site.Api.Controllers;
 public class PaymentController : ControllerBase
 {
     private readonly IPaymentService _paymentService;
+    private readonly ILogger<PaymentController> _logger;
 
-    public PaymentController(IPaymentService paymentService)
+    public PaymentController(IPaymentService paymentService, ILogger<PaymentController> logger)
     {
         _paymentService = paymentService;
+        _logger = logger;
     }
 
     /// <summary>Ottiene un pagamento per id.</summary>
@@ -99,10 +101,13 @@ public class PaymentController : ControllerBase
         }
 
         var confirmed = await _paymentService.ConfirmAsync(id, metodo, ultime4, titolare);
-        _logger.LogInformation("Pagamento {IdPayment} confermato per prenotazione {IdReservation}",
-    confirmed.IdPayment, confirmed.IdRoomReservation);
         if (confirmed == null) return NotFound();
+
+        _logger.LogInformation("Pagamento {IdPayment} confermato per prenotazione {IdReservation} con metodo {Metodo}",
+            confirmed.IdPayment, confirmed.IdRoomReservation, metodo);
+
         return Ok(MapToResponse(confirmed));
+
     }
 
     private bool IsOwnerOrAdmin(Guid userId)
