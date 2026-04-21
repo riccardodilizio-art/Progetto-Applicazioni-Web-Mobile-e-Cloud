@@ -19,6 +19,8 @@ namespace Hotel.Site.Core.Entities
         public virtual ICollection<RoomReservation> StanzePrenotate { get; set; } = new HashSet<RoomReservation>();
         public string? ResetTokenHash { get; set; }
         public DateTime? ResetTokenExpiry { get; set; }
+        public int FailedLoginCount { get; set; } = 0;
+        public DateTime? LockoutExpiry { get; set; }
 
     }
 }

@@ -20,7 +20,10 @@ public class RoomController : ControllerBase
         _roomService = roomService;
     }
 
+    /// <summary>Elenco di tutte le camere disponibili (pubblico).</summary>
     [HttpGet]
+    [ProducesResponseType(typeof(IEnumerable<RoomResponse>), StatusCodes.Status200OK)]
+
     public async Task<IActionResult> GetAll()
     {
         var rooms = await _roomService.GetAllRoomsAsync();
@@ -28,8 +31,12 @@ public class RoomController : ControllerBase
         return Ok(response);
     }
 
+    /// <summary>Aggiorna una camera esistente (admin).</summary>
     [HttpPut("{id:guid}")]
     [Authorize(Roles = "ADMIN")]
+    [ProducesResponseType(typeof(RoomResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Update(Guid id, [FromBody] RoomUpdateRequest request)
     {
         if (!Enum.TryParse<RoomType>(request.TipoStanza, true, out var tipoStanza))
@@ -57,8 +64,10 @@ public class RoomController : ControllerBase
         return Ok(MapToResponse(result));
     }
 
-
+    /// <summary>Dettaglio di una singola camera.</summary>
     [HttpGet("{id:guid}")]
+    [ProducesResponseType(typeof(RoomResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetById(Guid id)
     {
         var room = await _roomService.GetRoomByIdAsync(id);
@@ -66,8 +75,11 @@ public class RoomController : ControllerBase
         return Ok(MapToResponse(room));
     }
 
+    /// <summary>Crea una nuova camera (admin).</summary>
     [HttpPost]
     [Authorize(Roles = "ADMIN")]
+    [ProducesResponseType(typeof(RoomResponse), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Create([FromBody] RoomRequest request)
     {
         if (!Enum.TryParse<RoomType>(request.TipoStanza, true, out var tipoStanza))
@@ -115,9 +127,11 @@ public class RoomController : ControllerBase
         return Created($"/api/rooms/{room.IdRoom}", MapToResponse(room));
     }
 
-
+    /// <summary>Cancella una camera (admin).</summary>
     [HttpDelete("{id:guid}")]
     [Authorize(Roles = "ADMIN")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(Guid id)
     {
         await _roomService.DeleteRoomAsync(id);

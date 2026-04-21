@@ -28,9 +28,11 @@ public class ContactController : ControllerBase
         _smtp = smtpOptions.Value;
     }
 
-    // Endpoint pubblico: il form del frontend lo chiama senza login
     [HttpPost]
     [EnableRateLimiting("contact-post")]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status429TooManyRequests)]
     public async Task<IActionResult> Create([FromBody] ContactRequest request)
     {
         if (string.IsNullOrWhiteSpace(request.Name) ||
@@ -69,9 +71,11 @@ public class ContactController : ControllerBase
         return Created($"/api/contacts/{contact.IdContact}", new { id = contact.IdContact });
     }
 
-    // Admin: vede la lista dei messaggi ricevuti (ordinati dal più recente)
+    /// <summary>Elenco messaggi ricevuti (admin).</summary>
     [HttpGet]
     [Authorize(Roles = "ADMIN")]
+    [ProducesResponseType(typeof(IEnumerable<ContactResponse>), StatusCodes.Status200OK)]
+
     public async Task<IActionResult> GetAll()
     {
         var contacts = await _contactService.GetAllContactsAsync();

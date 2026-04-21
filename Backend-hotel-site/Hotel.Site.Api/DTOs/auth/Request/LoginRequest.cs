@@ -1,3 +1,12 @@
-﻿namespace Hotel.Site.Api.DTOs.auth.Request;
+﻿using System.ComponentModel.DataAnnotations;
 
-public record LoginRequest(string Email, string Password);
+namespace Hotel.Site.Api.DTOs.auth.Request;
+
+public record LoginRequest(
+    [Required(ErrorMessage = "Email obbligatoria")]
+    [EmailAddress(ErrorMessage = "Email non valida")]
+    string Email,
+
+    [Required(ErrorMessage = "Password obbligatoria")]
+    string Password
+);

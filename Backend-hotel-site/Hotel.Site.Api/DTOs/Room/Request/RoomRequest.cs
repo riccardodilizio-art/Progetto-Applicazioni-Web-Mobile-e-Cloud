@@ -12,3 +12,4 @@ public record RoomRequest(
     List<string> Immagini,
     List<string> Servizi
 );
+

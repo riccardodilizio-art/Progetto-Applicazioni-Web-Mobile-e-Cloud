@@ -20,8 +20,12 @@ public class PaymentController : ControllerBase
         _paymentService = paymentService;
     }
 
+    /// <summary>Ottiene un pagamento per id.</summary>
     [HttpGet("{id:guid}")]
-    [Authorize]
+    [Authorize(Roles = "ADMIN")]
+    [ProducesResponseType(typeof(PaymentResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetById(Guid id)
     {
         var p = await _paymentService.GetByIdAsync(id);
@@ -32,8 +36,12 @@ public class PaymentController : ControllerBase
 
     }
 
+    /// <summary>Ottiene il pagamento associato a una prenotazione.</summary>
     [HttpGet("by-reservation/{idReservation:guid}")]
-    [Authorize]
+    [Authorize(Roles = "ADMIN")]
+    [ProducesResponseType(typeof(PaymentResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetByReservation(Guid idReservation)
     {
         var p = await _paymentService.GetByReservationIdAsync(idReservation);
@@ -43,8 +51,19 @@ public class PaymentController : ControllerBase
         return Ok(MapToResponse(p));
     }
 
+    /// <summary>Conferma un pagamento in attesa con i dati della carta.</summary>
+    /// <response code="200">Pagamento confermato</response>
+    /// <response code="400">Dati carta non validi (Luhn, scadenza, CVV)</response>
+    /// <response code="409">Pagamento già completato</response>
     [HttpPost("{id:guid}/confirm")]
-    [Authorize]
+    [Authorize(Roles = "ADMIN")]
+    [ProducesResponseType(typeof(PaymentResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    
+
     public async Task<IActionResult> Confirm(Guid id, [FromBody] PaymentConfirmRequest request)
     {
         var existing = await _paymentService.GetByIdAsync(id);
@@ -80,6 +99,8 @@ public class PaymentController : ControllerBase
         }
 
         var confirmed = await _paymentService.ConfirmAsync(id, metodo, ultime4, titolare);
+        _logger.LogInformation("Pagamento {IdPayment} confermato per prenotazione {IdReservation}",
+    confirmed.IdPayment, confirmed.IdRoomReservation);
         if (confirmed == null) return NotFound();
         return Ok(MapToResponse(confirmed));
     }

@@ -1,4 +1,5 @@
-﻿using Hotel.Site.Api.DTOs.Reservations.Request;
+﻿using Hotel.Site.Api.DTOs.Common.Response;
+using Hotel.Site.Api.DTOs.Reservations.Request;
 using Hotel.Site.Api.DTOs.Reservations.Response;
 using Hotel.Site.Application.Abstractions.Services;
 using Hotel.Site.Application.Abstractions.UnitOfWork;
@@ -33,18 +34,28 @@ public class RoomReservationController : ControllerBase
     }
 
 
+    /// <summary>Elenco di tutte le prenotazioni camere (admin).</summary>
     [HttpGet]
     [Authorize(Roles = "ADMIN")]
-    public async Task<IActionResult> GetAll()
+    [ProducesResponseType(typeof(IEnumerable<RoomReservationAdminResponse>), StatusCodes.Status200OK)]
+
+    public async Task<IActionResult> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 20)
     {
-        var reservations = await _reservationService.GetAllRoomReservationsAsync();
-        var response = reservations.Select(MapToAdminResponse);
-        return Ok(response);
+        pageSize = Math.Clamp(pageSize, 1, 100);
+        var all = await _reservationService.GetAllRoomReservationsAsync();
+        var total = all.Count();
+        var items = all.Skip((page - 1) * pageSize).Take(pageSize).Select(MapToAdminResponse);
+        return Ok(new PagedResponse<RoomReservationAdminResponse>(
+            items, page, pageSize, total, (int)Math.Ceiling(total / (double)pageSize)));
     }
 
 
+
+    /// <summary>Prenotazioni di uno specifico utente.</summary>
     [HttpGet("user/{userId:guid}")]
-    [Authorize]
+    [Authorize(Roles = "ADMIN")]
+    [ProducesResponseType(typeof(IEnumerable<RoomReservationResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> GetByUser(Guid userId)
     {
         if (!IsSelfOrAdmin(userId)) return Forbid();
@@ -54,8 +65,12 @@ public class RoomReservationController : ControllerBase
         return Ok(response);
     }
 
+    /// <summary>Dettaglio di una prenotazione.</summary>
     [HttpGet("{id:guid}")]
-    [Authorize]
+    [Authorize(Roles = "ADMIN")]
+    [ProducesResponseType(typeof(RoomReservationResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetById(Guid id)
     {
         var reservation = await _reservationService.GetRoomReservationByIdAsync(id);
@@ -66,8 +81,17 @@ public class RoomReservationController : ControllerBase
         return Ok(MapToResponse(reservation));
     }
 
+    /// <summary>Crea una nuova prenotazione camera con pagamento in attesa.</summary>
+    /// <response code="201">Prenotazione creata</response>
+    /// <response code="400">Dati non validi (es. CheckOut prima di CheckIn)</response>
+    /// <response code="409">Camera già prenotata per le date selezionate</response>
+    /// <response code="500">Errore nella transazione</response>
     [HttpPost]
-    [Authorize]
+    [Authorize(Roles = "ADMIN")]
+    [ProducesResponseType(typeof(RoomReservationResponse), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Create([FromBody] RoomReservationRequest request)
     {
         var currentUserId = GetCurrentUserId();
@@ -112,8 +136,12 @@ public class RoomReservationController : ControllerBase
         return Created($"/api/reservations/{reservation.IdRoomReservation}", MapToResponse(full!));
     }
 
+    /// <summary>Aggiorna lo stato di una prenotazione (admin).</summary>
     [HttpPatch("{id:guid}/status")]
     [Authorize(Roles = "ADMIN")]
+    [ProducesResponseType(typeof(RoomReservationAdminResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> UpdateStatus(Guid id, [FromBody] RoomReservationStatusRequest request)
     {
         if (!Enum.TryParse<State>(request.Stato, true, out var nuovoStato))
@@ -128,8 +156,12 @@ public class RoomReservationController : ControllerBase
 
 
 
+    /// <summary>Cancella una prenotazione.</summary>
     [HttpDelete("{id:guid}")]
-    [Authorize]
+    [Authorize(Roles = "ADMIN")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(Guid id)
     {
         var reservation = await _reservationService.GetRoomReservationByIdAsync(id);

@@ -1,3 +1,7 @@
-﻿namespace Hotel.Site.Api.DTOs.Reservations.Request;
+﻿using System.ComponentModel.DataAnnotations;
 
-public record RoomReservationStatusRequest(string Stato);
+namespace Hotel.Site.Api.DTOs.Reservations.Request;
+
+public record RoomReservationStatusRequest(
+    [Required][StringLength(30)] string Stato
+);

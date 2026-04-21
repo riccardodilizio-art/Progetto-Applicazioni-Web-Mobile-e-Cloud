@@ -22,10 +22,14 @@ namespace Hotel.Site.Api.Controllers
             _env = env;
         }
 
-        // POST /api/uploads  (multipart/form-data, campo: file)
-        // Ritorna: { "url": "/uploads/rooms/<guid>.<ext>" }
+        /// <summary>Carica un'immagine associata alla camera (admin).</summary>
+        /// <response code="200">Immagine caricata</response>
+        /// <response code="400">File non valido (formato o dimensione)</response>
         [HttpPost]
         [Authorize(Roles = "ADMIN")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [RequestSizeLimit(MaxFileSize)]
         public async Task<IActionResult> Upload(IFormFile file)
         {

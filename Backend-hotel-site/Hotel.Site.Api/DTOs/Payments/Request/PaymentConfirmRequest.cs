@@ -4,13 +4,18 @@ namespace Hotel.Site.Api.DTOs.Payments.Request;
 
 public class PaymentConfirmRequest
 {
-    [Required]
+    [Required(ErrorMessage = "Metodo di pagamento obbligatorio")]
     public string Metodo { get; set; } = string.Empty;
 
-    // Campi richiesti solo per CARTA_CREDITO / CARTA_DEBITO.
-    // Il PAN completo viene ricevuto ma MAI persistito: salviamo solo le ultime 4.
+    [StringLength(19, MinimumLength = 13)]
     public string? NumeroCarta { get; set; }
+
+    [StringLength(120, MinimumLength = 2)]
     public string? Titolare { get; set; }
-    public string? Scadenza { get; set; } // MM/YY
+
+    [RegularExpression(@"^(0[1-9]|1[0-2])\/\d{2}$", ErrorMessage = "Formato scadenza: MM/YY")]
+    public string? Scadenza { get; set; }
+
+    [StringLength(4, MinimumLength = 3)]
     public string? Cvv { get; set; }
 }
