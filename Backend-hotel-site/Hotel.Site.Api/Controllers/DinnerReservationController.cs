@@ -23,8 +23,11 @@ public class DinnerReservationController : ControllerBase
         _roomReservationService = roomReservationService;
     }
 
+    /// <summary>Elenco di tutte le prenotazioni cena (admin).</summary>
     [HttpGet]
     [Authorize(Roles = "ADMIN")]
+    [ProducesResponseType(typeof(IEnumerable<DinnerReservationAdminResponse>), StatusCodes.Status200OK)]
+
     public async Task<IActionResult> GetAll()
     {
         var dinners = (await _dinnerReservationService.GetAllDinnerReservationsAsync()).ToList();
@@ -66,8 +69,12 @@ public class DinnerReservationController : ControllerBase
         return Ok(MapToResponse(dinnerReservation));
     }
 
+    /// <summary>Aggiorna lo stato di una prenotazione cena (admin).</summary>
     [HttpPatch("{id:guid}/status")]
     [Authorize(Roles = "ADMIN")]
+    [ProducesResponseType(typeof(DinnerReservationAdminResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> UpdateStatus(Guid id, [FromBody] DinnerReservationStatusRequest request)
     {
         if (!Enum.TryParse<DinnerState>(request.Stato, true, out var nuovoStato))
@@ -83,7 +90,15 @@ public class DinnerReservationController : ControllerBase
 
 
 
+    /// <summary>Crea una prenotazione cena associata a una prenotazione camera tramite il codice cena.</summary>
+    /// <response code="201">Prenotazione creata</response>
+    /// <response code="400">Dati non validi (es. numero ospiti fuori range)</response>
+    /// <response code="404">Codice cena non trovato</response>
     [HttpPost]
+    [Authorize]
+    [ProducesResponseType(typeof(DinnerReservationResponse), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Create([FromBody] DinnerReservationRequest request)
     {
         var roomReservation = await _roomReservationService.GetRoomReservationByCodiceCenaAsync(request.CodiceCena);
@@ -122,9 +137,12 @@ public class DinnerReservationController : ControllerBase
         await _dinnerReservationService.AddDinnerReservationAsync(reservation);
         return Created($"/api/dinner-reservations/by-code/{reservation.CodiceCena}", MapToResponse(reservation));
     }
-
+    /// <summary>Cancella una prenotazione cena.</summary>
     [HttpDelete("{id:guid}")]
-    [Authorize(Roles = "ADMIN")]
+    [Authorize]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(Guid id)
     {
         var existing = await _dinnerReservationService.GetDinnerReservationByIdAsync(id);

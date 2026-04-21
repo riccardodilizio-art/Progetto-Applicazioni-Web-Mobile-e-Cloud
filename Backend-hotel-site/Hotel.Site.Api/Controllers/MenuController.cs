@@ -19,7 +19,9 @@ public class MenuController : ControllerBase
         _menuService = menuService;
     }
 
+    /// <summary>Elenco di tutte le portate del menu (pubblico).</summary>
     [HttpGet]
+    [ProducesResponseType(typeof(IEnumerable<MenuResponse>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAll()
     {
         var menus = await _menuService.GetAllMenusAsync();
@@ -27,7 +29,10 @@ public class MenuController : ControllerBase
         return Ok(response);
     }
 
+    /// <summary>Dettaglio di una singola portata.</summary>
     [HttpGet("{giorno}")]
+    [ProducesResponseType(typeof(MenuResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetByDay(string giorno)
     {
         if (!Enum.TryParse<DayOfWeek>(giorno, true, out var day))
@@ -38,8 +43,11 @@ public class MenuController : ControllerBase
         return Ok(MapToResponse(menu));
     }
 
+    /// <summary>Crea una nuova portata (admin).</summary>
     [HttpPost]
     [Authorize(Roles = "ADMIN")]
+    [ProducesResponseType(typeof(MenuResponse), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Create([FromBody] MenuRequest request)
     {
         if (!Enum.TryParse<DayOfWeek>(request.Giorno, true, out var giorno))
@@ -89,9 +97,12 @@ public class MenuController : ControllerBase
         await _menuService.AddMenuAsync(menu);
         return Created($"/api/menus/{menu.IdMenu}", MapToResponse(menu));
     }
-
+    /// <summary>Aggiorna una portata esistente (admin).</summary>
     [HttpPut("{id:guid}")]
     [Authorize(Roles = "ADMIN")]
+    [ProducesResponseType(typeof(MenuResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Update(Guid id, [FromBody] MenuRequest request)
     {
         if (!Enum.TryParse<DayOfWeek>(request.Giorno, true, out var giorno))
@@ -131,8 +142,11 @@ public class MenuController : ControllerBase
         return Ok(MapToResponse(updated));
     }
 
+    /// <summary>Cancella una portata (admin).</summary>
     [HttpDelete("{id:guid}")]
     [Authorize(Roles = "ADMIN")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(Guid id)
     {
         var existing = await _menuService.GetMenuByIdAsync(id);

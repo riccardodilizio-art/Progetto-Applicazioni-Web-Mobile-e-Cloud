@@ -3,7 +3,7 @@
 namespace Hotel.Site.Api.DTOs.Users.Request;
 
 public record UpdateUserRequest(
-    [StringLength(100)] string? Nome,
-    [StringLength(100)] string? Cognome,
+    [StringLength(100, MinimumLength = 2)] string? Nome,
+    [StringLength(100, MinimumLength = 2)] string? Cognome,
     [StringLength(30)][RegularExpression(@"^[+\d\s\-()]{0,30}$")] string? NumeroTelefono
 );
