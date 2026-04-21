@@ -24,7 +24,7 @@ public class PaymentController : ControllerBase
 
     /// <summary>Ottiene un pagamento per id.</summary>
     [HttpGet("{id:guid}")]
-    [Authorize(Roles = "ADMIN")]
+    [Authorize]
     [ProducesResponseType(typeof(PaymentResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -40,7 +40,7 @@ public class PaymentController : ControllerBase
 
     /// <summary>Ottiene il pagamento associato a una prenotazione.</summary>
     [HttpGet("by-reservation/{idReservation:guid}")]
-    [Authorize(Roles = "ADMIN")]
+    [Authorize]
     [ProducesResponseType(typeof(PaymentResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -58,7 +58,7 @@ public class PaymentController : ControllerBase
     /// <response code="400">Dati carta non validi (Luhn, scadenza, CVV)</response>
     /// <response code="409">Pagamento già completato</response>
     [HttpPost("{id:guid}/confirm")]
-    [Authorize(Roles = "ADMIN")]
+    [Authorize]
     [ProducesResponseType(typeof(PaymentResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]

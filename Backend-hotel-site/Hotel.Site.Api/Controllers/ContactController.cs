@@ -17,15 +17,20 @@ public class ContactController : ControllerBase
     private readonly IContactService _contactService;
     private readonly IEmailService _emailService;
     private readonly SmtpSettings _smtp;
+    private readonly ILogger<ContactController> _logger;
+    
 
     public ContactController(
         IContactService contactService,
         IEmailService emailService,
-        IOptions<SmtpSettings> smtpOptions)
+        IOptions<SmtpSettings> smtpOptions,
+        ILogger<ContactController> logger)
     {
         _contactService = contactService;
         _emailService = emailService;
         _smtp = smtpOptions.Value;
+        _logger = logger;
+
     }
 
     [HttpPost]
@@ -35,12 +40,6 @@ public class ContactController : ControllerBase
     [ProducesResponseType(StatusCodes.Status429TooManyRequests)]
     public async Task<IActionResult> Create([FromBody] ContactRequest request)
     {
-        if (string.IsNullOrWhiteSpace(request.Name) ||
-            string.IsNullOrWhiteSpace(request.Email) ||
-            string.IsNullOrWhiteSpace(request.Message))
-        {
-            return BadRequest(new { message = "Nome, email e messaggio sono obbligatori" });
-        }
 
         var contact = new Contact
         {
@@ -53,6 +52,9 @@ public class ContactController : ControllerBase
         };
 
         await _contactService.AddContactAsync(contact);
+        _logger.LogInformation("Nuovo messaggio di contatto da {Email}", contact.Email);
+
+
 
         // Invio email (fire-and-forget con log in caso di errore)
         if (!string.IsNullOrWhiteSpace(_smtp.AdminEmail))
