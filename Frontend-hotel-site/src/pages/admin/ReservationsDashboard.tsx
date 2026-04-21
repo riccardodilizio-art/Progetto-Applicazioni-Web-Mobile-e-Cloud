@@ -1,8 +1,4 @@
 import { useMemo, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import useAuthUser from 'react-auth-kit/hooks/useAuthUser'
-import useSignOut from 'react-auth-kit/hooks/useSignOut'
-import type { UserState } from '../../types/User'
 import type {
     DinnerReservationAdmin,
     DinnerReservationStatus,
@@ -10,7 +6,6 @@ import type {
     RoomReservationStatus,
 } from '../../types/Reservation'
 import { useAdminReservations } from '../../hooks/useAdminReservations'
-import AdminNav from '../../components/admin/AdminNav'
 import DeleteConfirmModal from '../../components/admin/DeleteConfirmModal'
 import RoomReservationTable from '../../components/admin/reservations/RoomReservationTable'
 import DinnerReservationTable from '../../components/admin/reservations/DinnerReservationTable'
@@ -32,9 +27,6 @@ const DINNER_STATUSES: { value: DinnerReservationStatus | ''; label: string }[] 
 ]
 
 export default function ReservationsDashboard() {
-    const signOut = useSignOut()
-    const navigate = useNavigate()
-    const authUser = useAuthUser<UserState>()
     const {
         roomReservations,
         dinnerReservations,
@@ -45,7 +37,6 @@ export default function ReservationsDashboard() {
         changeRoomStatus,
         changeDinnerStatus,
     } = useAdminReservations()
-
 
     const [tab, setTab] = useState<SubTab>('rooms')
     const [search, setSearch] = useState('')
@@ -90,30 +81,8 @@ export default function ReservationsDashboard() {
         return r ? `cena ${r.dinnerCode}` : 'cena'
     })()
 
-    const handleLogout = () => {
-        signOut()
-        navigate('/admin/accedi')
-    }
-
     return (
-        <div className="min-h-screen bg-[#FAF5EE]">
-            <div className="bg-white border-b border-[#E8C9A0] px-6 py-4">
-                <div className="max-w-6xl mx-auto flex justify-between items-center">
-                    <div>
-                        <h1 className="text-2xl text-[#3B2010] font-light font-heading">Dashboard Admin</h1>
-                        <p className="text-sm text-[#9A6840]">{authUser?.email}</p>
-                    </div>
-                    <button
-                        onClick={handleLogout}
-                        className="text-sm text-red-600 border border-red-200 px-4 py-2 rounded-lg hover:bg-red-50 transition-colors cursor-pointer"
-                    >
-                        Logout
-                    </button>
-                </div>
-            </div>
-
-            <AdminNav />
-
+        <>
             <div className="max-w-6xl mx-auto px-6 py-8">
                 <h2 className="text-xl font-semibold text-[#3B2010] mb-6">Gestione Prenotazioni</h2>
 
@@ -196,7 +165,6 @@ export default function ReservationsDashboard() {
                         onStatusChange={changeDinnerStatus}
                     />
                 )}
-
             </div>
 
             {deleteTarget && (
@@ -207,6 +175,6 @@ export default function ReservationsDashboard() {
                     onCancel={() => setDeleteTarget(null)}
                 />
             )}
-        </div>
+        </>
     )
 }
