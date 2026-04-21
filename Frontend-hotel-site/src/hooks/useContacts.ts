@@ -39,4 +39,5 @@ export function useContacts() {
     useEffect(() => { reload(); }, [reload]);
 
     return { contacts, loading, error, reload };
+
 }
