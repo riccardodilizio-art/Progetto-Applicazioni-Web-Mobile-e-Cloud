@@ -8,6 +8,8 @@ import { nightsBetween } from '../hooks/useRoomBooking'
 import { formatDate } from '../lib/dateUtils'
 import useIsAuthenticated from 'react-auth-kit/hooks/useIsAuthenticated'
 import type { Room, ApiRoom } from '../types/Room'
+import { useRoomAvailability } from '../hooks/useRoomAvailability'
+
 
 export default function RoomDetail() {
     const { id } = useParams<{ id: string }>()
@@ -16,6 +18,9 @@ export default function RoomDetail() {
     const [currentImage, setCurrentImage] = useState(0)
 
     const { checkIn, checkOut, guests, isInCart, addToCart, setPendingRoom } = useBooking()
+    // rinominato `loading` in `checkingAvail` per evitare conflitto
+    const { available, loading: checkingAvail } = useRoomAvailability(room?.id, checkIn, checkOut)
+
     const isAuthenticated = useIsAuthenticated()
     const navigate = useNavigate()
 
@@ -53,7 +58,7 @@ export default function RoomDetail() {
     const alreadyInCart = isInCart(room.id)
 
     function handleAddToCart() {
-        if (!room || !hasSearch || !room.available) return
+        if (!room || !hasSearch || !room.available || available === false) return
 
         if (!isAuthenticated) {
             setPendingRoom(room)
@@ -155,40 +160,67 @@ export default function RoomDetail() {
                             </div>
                         </div>
 
+                        {/* Camera non disponibile globalmente */}
                         {!room.available && (
-                            <button disabled className="w-full py-3 rounded-lg font-semibold text-white bg-gray-400 cursor-not-allowed">Non disponibile</button>
-                        )}
-
-                        {room.available && !hasSearch && (
-                            <>
-                                <button disabled className="w-full py-3 rounded-lg font-semibold text-white bg-[#6B4828]/50 cursor-not-allowed">Prenota ora</button>
-                                <p className="text-sm text-[#9A6840] mt-2 text-center">
-                                    <Link to="/camere" className="underline hover:text-[#6B4828]">← Seleziona le date del soggiorno</Link> per prenotare
-                                </p>
-                            </>
-                        )}
-
-                        {room.available && hasSearch && alreadyInCart && (
-                            <Link to="/carrello" className="w-full py-3 rounded-lg font-semibold text-white bg-green-600 flex items-center justify-center gap-2">
-                                <svg aria-hidden="true" className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                                </svg>
-                                Vai al carrello
-                            </Link>
-                        )}
-
-                        {room.available && hasSearch && !alreadyInCart && (
-                            <button onClick={handleAddToCart} className="w-full py-3 rounded-lg font-semibold text-white bg-[#6B4828] hover:bg-[#3B2010] cursor-pointer transition">
-                                Prenota ora
+                            <button disabled className="w-full py-3 rounded-lg font-semibold text-white bg-gray-400 cursor-not-allowed">
+                                Non disponibile
                             </button>
                         )}
 
-                        {room.available && alreadyInCart && hasSearch && (
-                            <div className="bg-[#FAF5EE] border border-[#C4A070] rounded-xl p-4 mt-4">
-                                <p className="font-semibold text-[#3B2010] mb-1">Camera aggiunta al carrello</p>
-                                <p className="text-sm text-[#6B4828]">{nights} {nights === 1 ? 'notte' : 'notti'} · €{room.pricePerNight} / notte</p>
-                                <p className="text-[#3B2010] font-bold text-lg mt-1">Totale: €{total}</p>
-                            </div>
+                        {/* Nessuna ricerca attiva: invito a selezionare le date */}
+                        {room.available && !hasSearch && (
+                            <p className="text-sm text-[#9A6840] mt-2 text-center">
+                                <Link to="/camere" className="underline hover:text-[#6B4828]">
+                                    ← Seleziona le date del soggiorno
+                                </Link> per prenotare
+                            </p>
+                        )}
+
+                        {/* Già nel carrello */}
+                        {room.available && hasSearch && alreadyInCart && (
+                            <>
+                                <Link to="/carrello" className="w-full py-3 rounded-lg font-semibold text-white bg-green-600 flex items-center justify-center gap-2">
+                                    <svg aria-hidden="true" className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                    </svg>
+                                    Vai al carrello
+                                </Link>
+                                <div className="bg-[#FAF5EE] border border-[#C4A070] rounded-xl p-4 mt-4">
+                                    <p className="font-semibold text-[#3B2010] mb-1">Camera aggiunta al carrello</p>
+                                    <p className="text-sm text-[#6B4828]">{nights} {nights === 1 ? 'notte' : 'notti'} · €{room.pricePerNight} / notte</p>
+                                    <p className="text-[#3B2010] font-bold text-lg mt-1">Totale: €{total}</p>
+                                </div>
+                            </>
+                        )}
+
+                        {/* Date scelte ma non ancora in carrello: check disponibilità + Prenota */}
+                        {room.available && hasSearch && !alreadyInCart && (
+                            <>
+                                <button
+                                    onClick={handleAddToCart}
+                                    disabled={checkingAvail || available === false}
+                                    className={`w-full py-3 rounded-lg font-semibold text-white transition ${
+                                        checkingAvail || available === false
+                                            ? 'bg-gray-400 cursor-not-allowed'
+                                            : 'bg-[#6B4828] hover:bg-[#3B2010] cursor-pointer'
+                                    }`}
+                                >
+                                    {checkingAvail
+                                        ? 'Controllo disponibilità…'
+                                        : available === false
+                                            ? 'Non disponibile per queste date'
+                                            : 'Prenota ora'}
+                                </button>
+                                <div className="mt-2 text-sm text-center">
+                                    {checkingAvail && <span className="text-gray-500">Controllo disponibilità…</span>}
+                                    {available === true && <span className="text-green-700">✓ Camera disponibile per le date selezionate</span>}
+                                    {available === false && (
+                                        <span className="text-red-600">
+                                            Camera già prenotata per queste date. Prova altre date.
+                                        </span>
+                                    )}
+                                </div>
+                            </>
                         )}
                     </div>
                 </div>
