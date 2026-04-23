@@ -76,5 +76,11 @@ namespace Hotel.Site.Application.Services
             return _unitOfWork.RoomReservationRepository.GetPagedAsync(skip, pageSize);
         }
 
+        public Task<IEnumerable<Guid>> GetBookedRoomIdsInPeriodAsync(DateOnly checkIn, DateOnly checkOut)
+        {
+            return _unitOfWork.RoomReservationRepository.GetBookedRoomIdsInPeriodAsync(checkIn, checkOut);
+        }
+
+
     }
 }

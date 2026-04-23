@@ -6,9 +6,20 @@ import { typeLabels } from '../data/roomUtils'
 import { formatDate } from '../lib/dateUtils'
 import { apiFetch } from '../lib/apiClient'
 import type { UserState } from '../types/User'
+import { useCartAvailability } from '../hooks/useCartAvailability'
 
 export default function Cart() {
     const { cart, removeFromCart, clearCart } = useBooking()
+
+    // Check disponibilità per ogni item del carrello
+    const cartKeys = cart.map((item) => ({
+        roomId: item.room.id,
+        checkIn: item.checkIn,
+        checkOut: item.checkOut,
+    }))
+    const { availability, loading: checkingAvail } = useCartAvailability(cartKeys)
+    const hasUnavailableItems = cart.some((item) => availability[item.room.id] === false)
+
     const user = useAuthUser<UserState>()
     const navigate = useNavigate()
     const [isSubmitting, setIsSubmitting] = useState(false)
@@ -18,12 +29,15 @@ export default function Cart() {
 
     async function handleCheckout() {
         if (!user) return
+        if (hasUnavailableItems) return
         setIsSubmitting(true)
         setError('')
 
-        try {
-            const created: { idPayment: string | null }[] = []
-            for (const item of cart) {
+        const created: { idPayment: string | null }[] = []
+        const items = [...cart]
+
+        for (const item of items) {
+            try {
                 const res = await apiFetch<{ idPayment: string | null }>('/reservations', {
                     method: 'POST',
                     body: JSON.stringify({
@@ -34,21 +48,32 @@ export default function Cart() {
                     }),
                 })
                 created.push(res)
+                removeFromCart(item.room.id)
+            } catch (err) {
+                const msg = err instanceof Error ? err.message : ''
+                if (msg.includes('409')) {
+                    setError(
+                        `La camera "${item.room.name}" (${formatDate(item.checkIn)} → ${formatDate(item.checkOut)}) non è più disponibile per le date scelte. Rimuovila dal carrello o modifica le date.`,
+                    )
+                } else if (msg.includes('401')) {
+                    setError('Sessione scaduta. Effettua di nuovo l\'accesso.')
+                } else {
+                    setError(
+                        `Errore durante la prenotazione di "${item.room.name}". Riprova più tardi.`,
+                    )
+                }
+                setIsSubmitting(false)
+                return
             }
-            clearCart()
+        }
 
-            // Se c'è una sola prenotazione vado dritto al pagamento;
-            // con più di una, rimando all'elenco dove pagherà una alla volta.
-            const firstPaymentId = created[0]?.idPayment
-            if (created.length === 1 && firstPaymentId) {
-                navigate(`/pagamento/${firstPaymentId}`)
-            } else {
-                navigate('/prenotazioni')
-            }
-        } catch {
-            setError('Errore durante la prenotazione. Riprova.')
-        } finally {
-            setIsSubmitting(false)
+        clearCart()
+
+        const firstPaymentId = created[0]?.idPayment
+        if (created.length === 1 && firstPaymentId) {
+            navigate(`/pagamento/${firstPaymentId}`)
+        } else {
+            navigate('/prenotazioni')
         }
     }
 
@@ -81,45 +106,70 @@ export default function Cart() {
                 <h1 className="text-3xl font-bold text-[#6B4828] mb-8 font-heading">Il tuo carrello</h1>
 
                 <div className="flex flex-col gap-4 mb-8">
-                    {cart.map((item) => (
-                        <div
-                            key={item.room.id}
-                            className="bg-white rounded-xl shadow-sm border border-[#E8C9A0]/50 flex flex-col sm:flex-row overflow-hidden"
-                        >
-                            <img
-                                src={item.room.images[0]}
-                                alt={item.room.name}
-                                className="w-full sm:w-48 h-40 sm:h-auto object-cover"
-                            />
-                            <div className="flex-1 p-5 flex flex-col justify-between">
-                                <div>
-                                    <div className="flex items-center gap-2 mb-1">
-                                        <h2 className="text-lg font-bold text-[#6B4828]">{item.room.name}</h2>
-                                        <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-[#E8C9A0] text-[#6B4828]">
-                                            {typeLabels[item.room.type]}
-                                        </span>
-                                    </div>
-                                    <p className="text-sm text-gray-500">
-                                        {formatDate(item.checkIn)} → {formatDate(item.checkOut)} · {item.guests}{' '}
-                                        {item.guests === 1 ? 'ospite' : 'ospiti'}
-                                    </p>
-                                    <p className="text-sm text-[#6B4828] mt-1">
-                                        {item.nights} {item.nights === 1 ? 'notte' : 'notti'} × €
-                                        {item.room.pricePerNight}
-                                    </p>
+                    {cart.map((item) => {
+                        const isUnavailable = availability[item.room.id] === false
+                        return (
+                            <div
+                                key={item.room.id}
+                                className={`bg-white rounded-xl shadow-sm border overflow-hidden flex flex-col sm:flex-row transition ${
+                                    isUnavailable ? 'border-red-200 opacity-75' : 'border-[#E8C9A0]/50'
+                                }`}
+                            >
+                                {/* Immagine con overlay "Non disponibile" */}
+                                <div className="relative w-full sm:w-48 h-40 sm:h-auto shrink-0">
+                                    <img
+                                        src={item.room.images[0]}
+                                        alt={item.room.name}
+                                        className="w-full h-full object-cover"
+                                    />
+                                    {isUnavailable && (
+                                        <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                        <span className="bg-red-600 text-white text-sm font-semibold px-4 py-1.5 rounded-full">
+                            Non disponibile
+                        </span>
+                                        </div>
+                                    )}
                                 </div>
-                                <div className="flex items-center justify-between mt-4">
-                                    <p className="text-xl font-bold text-[#3B2010]">€{item.totalPrice}</p>
-                                    <button
-                                        onClick={() => removeFromCart(item.room.id)}
-                                        className="text-sm text-red-500 hover:text-red-700 font-medium cursor-pointer transition"
-                                    >
-                                        Rimuovi
-                                    </button>
+
+                                {/* Contenuto */}
+                                <div className="flex-1 p-5 flex flex-col justify-between">
+                                    <div>
+                                        <div className="flex items-center gap-2 mb-1 flex-wrap">
+                                            <h2 className="text-lg font-bold text-[#6B4828]">{item.room.name}</h2>
+                                            <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-[#E8C9A0] text-[#6B4828]">
+                            {typeLabels[item.room.type]}
+                        </span>
+                                        </div>
+                                        <p className="text-sm text-gray-500">
+                                            {formatDate(item.checkIn)} → {formatDate(item.checkOut)} · {item.guests}{' '}
+                                            {item.guests === 1 ? 'ospite' : 'ospiti'}
+                                        </p>
+                                        <p className="text-sm text-[#6B4828] mt-1">
+                                            {item.nights} {item.nights === 1 ? 'notte' : 'notti'} × €
+                                            {item.room.pricePerNight}
+                                        </p>
+                                    </div>
+
+                                    <div className="flex items-center justify-between mt-4">
+                                        {isUnavailable ? (
+                                            <span className="text-sm font-medium text-gray-400 bg-gray-100 px-4 py-2 rounded-lg cursor-not-allowed">
+                            Non disponibile
+                        </span>
+                                        ) : (
+                                            <p className="text-xl font-bold text-[#3B2010]">€{item.totalPrice}</p>
+                                        )}
+                                        <button
+                                            onClick={() => removeFromCart(item.room.id)}
+                                            className="text-sm text-red-500 hover:text-red-700 font-medium cursor-pointer transition"
+                                        >
+                                            Rimuovi
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    ))}
+                        )
+                    })}
+
                 </div>
 
                 <div className="bg-white rounded-xl shadow-sm border border-[#E8C9A0]/50 p-6">
@@ -128,21 +178,42 @@ export default function Cart() {
                             {error}
                         </div>
                     )}
+
+                    {hasUnavailableItems && !error && (
+                        <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg px-4 py-3 mb-4">
+                            Alcune camere nel carrello non sono più disponibili. Rimuovile per procedere.
+                        </div>
+                    )}
+
                     <div className="flex items-center justify-between mb-4">
                         <span className="text-lg text-[#6B4828]">
                             Totale ({cart.length} {cart.length === 1 ? 'camera' : 'camere'})
                         </span>
                         <span className="text-2xl font-bold text-[#3B2010]">€{grandTotal}</span>
                     </div>
+
                     <button
                         onClick={handleCheckout}
-                        disabled={isSubmitting}
-                        className={`w-full py-3 rounded-lg font-semibold text-white transition
-                            ${isSubmitting ? 'bg-[#6B4828]/70 cursor-not-allowed' : 'bg-[#6B4828] hover:bg-[#3B2010] cursor-pointer'}`}
+                        disabled={isSubmitting || checkingAvail || hasUnavailableItems}
+                        className={`w-full py-3 rounded-lg font-semibold text-white transition ${
+                            isSubmitting || checkingAvail || hasUnavailableItems
+                                ? 'bg-gray-400 cursor-not-allowed'
+                                : 'bg-[#6B4828] hover:bg-[#3B2010] cursor-pointer'
+                        }`}
                     >
-                        {isSubmitting ? 'Prenotazione in corso...' : 'Conferma prenotazione'}
+                        {checkingAvail
+                            ? 'Verifico disponibilità…'
+                            : hasUnavailableItems
+                                ? 'Rimuovi le camere non disponibili'
+                                : isSubmitting
+                                    ? 'Prenotazione in corso...'
+                                    : 'Conferma prenotazione'}
                     </button>
-                    <Link to="/camere" className="block text-center text-sm text-[#9A6840] hover:underline mt-3">
+
+                    <Link
+                        to="/camere"
+                        className="block text-center text-sm text-[#9A6840] hover:underline mt-3"
+                    >
                         ← Continua a cercare camere
                     </Link>
                 </div>

@@ -83,6 +83,22 @@ namespace Hotel.Site.Infrastructure.Persistence.Repositories
                 .ToListAsync();
         }
 
+        public async Task<IEnumerable<Guid>> GetBookedRoomIdsInPeriodAsync(DateOnly checkIn, DateOnly checkOut)
+        {
+            var soglia = DateTime.UtcNow.AddMinutes(-15);
+
+            return await Context.RoomReservations
+                .Include(r => r.Payment)
+                .Where(r => r.Stato != State.ANNULLATO)
+                .Where(r =>
+                    r.Stato == State.CONFERMATO
+                    || (r.Payment != null && r.Payment.Stato == PaymentStatus.COMPLETATO)
+                    || r.DataPrenotazione > soglia)
+                .Where(r => r.CheckIn < checkOut && checkIn < r.CheckOut)
+                .Select(r => r.IdRoom)
+                .Distinct()
+                .ToListAsync();
+        }
 
         public async Task<IEnumerable<RoomReservation>> GetRoomReservationsByCodiciCenaAsync(IEnumerable<string> codiciCena)
         {

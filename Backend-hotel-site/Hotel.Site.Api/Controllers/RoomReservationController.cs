@@ -158,6 +158,39 @@ public class RoomReservationController : ControllerBase
 
     }
 
+    /// <summary>Verifica se una camera è disponibile nelle date richieste.</summary>
+    /// <response code="200">Ritorna {available: true/false}</response>
+    [HttpGet("availability")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> CheckAvailability(
+        [FromQuery] Guid idRoom,
+        [FromQuery] DateOnly checkIn,
+        [FromQuery] DateOnly checkOut)
+    {
+        if (checkOut <= checkIn)
+            return BadRequest(new { message = "CheckOut deve essere successivo a CheckIn" });
+
+        var hasOverlap = await _reservationService.HasOverlappingReservationAsync(idRoom, checkIn, checkOut);
+        return Ok(new { available = !hasOverlap });
+    }
+
+    /// <summary>Ritorna gli id delle camere prenotate nel periodo indicato.</summary>
+    /// <response code="200">Lista di guid</response>
+    [HttpGet("booked-rooms")]
+    [ProducesResponseType(typeof(IEnumerable<Guid>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetBookedRoomIds(
+        [FromQuery] DateOnly checkIn,
+        [FromQuery] DateOnly checkOut)
+    {
+        if (checkOut <= checkIn)
+            return BadRequest(new { message = "CheckOut deve essere successivo a CheckIn" });
+
+        var ids = await _reservationService.GetBookedRoomIdsInPeriodAsync(checkIn, checkOut);
+        return Ok(ids);
+    }
+
+
+
 
 
     /// <summary>Cancella una prenotazione.</summary>
