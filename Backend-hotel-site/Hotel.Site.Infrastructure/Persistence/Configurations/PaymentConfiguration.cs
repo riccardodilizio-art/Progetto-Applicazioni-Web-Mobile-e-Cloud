@@ -21,9 +21,10 @@ namespace Hotel.Site.Infrastructure.Persistence.Configurations
             builder.Property(p => p.Stato).HasConversion<string>().HasMaxLength(20);
 
             builder.HasOne(p => p.RoomReservation)
-        .WithOne(r => r.Payment)
-        .HasForeignKey<Payment>(p => p.IdRoomReservation)
-        .OnDelete(DeleteBehavior.Restrict);
+                .WithOne(r => r.Payment)
+                .HasForeignKey<Payment>(p => p.IdRoomReservation)
+                .OnDelete(DeleteBehavior.Cascade);
+
 
 
             builder.HasIndex(p => p.IdRoomReservation).IsUnique();
