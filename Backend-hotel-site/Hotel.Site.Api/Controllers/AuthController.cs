@@ -44,6 +44,7 @@ public class AuthController : ControllerBase
     [EnableRateLimiting("auth-login")]
     [ProducesResponseType(typeof(AuthResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
 
     public async Task<IActionResult> Login([FromBody] LoginRequest request)
     {
@@ -76,16 +77,24 @@ public class AuthController : ControllerBase
             return Unauthorized(new { message = "Email o password errati" });
         }
 
+        // Questo endpoint è riservato ai clienti
+        if (user.Ruolo != Role.CLIENT)
+        {
+            _logger.LogWarning("Accesso cliente negato a {Email} (ruolo {Role})", request.Email, user.Ruolo);
+            return Forbid();
+        }
+
         // login riuscito → reset contatori
         user.FailedLoginCount = 0;
         user.LockoutExpiry = null;
         await _userService.EditUserAsync(user);
 
-        _logger.LogInformation("Login riuscito per {Email}", request.Email);
+        _logger.LogInformation("Login cliente riuscito per {Email}", request.Email);
         var token = _jwtTokenService.GenerateToken(user);
         return Ok(new AuthResponse(
             user.IdUser, user.Nome, user.Cognome, user.Email, user.Ruolo.ToString(), token
         ));
+
     }
 
     /// <summary>Autentica un amministratore.</summary>

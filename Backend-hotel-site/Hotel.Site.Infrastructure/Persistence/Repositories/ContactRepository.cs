@@ -26,5 +26,18 @@ namespace Hotel.Site.Infrastructure.Persistence.Repositories
         {
             await Context.Contacts.AddAsync(contact);
         }
+
+        public async Task<(IEnumerable<Contact> Items, int Total)> GetPagedAsync(int skip, int take)
+        {
+            var query = Context.Contacts;
+            var total = await query.CountAsync();
+            var items = await query
+                .OrderByDescending(c => c.DataCreazione)
+                .Skip(skip).Take(take)
+                .AsNoTracking()
+                .ToListAsync();
+            return (items, total);
+        }
+
     }
 }

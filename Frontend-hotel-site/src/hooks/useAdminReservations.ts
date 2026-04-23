@@ -15,6 +15,13 @@ import type {
 
 type DeleteKind = 'room' | 'dinner'
 type DeleteTarget = { id: string; kind: DeleteKind } | null
+type PagedResponse<T> = {
+    items: T[]
+    page: number
+    pageSize: number
+    totalItems: number
+    totalPages: number
+}
 
 const roomStatusToApi: Record<RoomReservationStatus, string> = {
     confermata: 'CONFERMATO',
@@ -36,16 +43,17 @@ export function useAdminReservations() {
 
     useEffect(() => {
         Promise.all([
-            apiFetch<ApiRoomReservationAdmin[]>('/reservations'),
+            apiFetch<PagedResponse<ApiRoomReservationAdmin>>('/reservations?page=1&pageSize=100'),
             apiFetch<ApiDinnerReservationAdmin[]>('/dinner-reservations'),
         ])
-            .then(([rooms, dinners]) => {
-                setRoomReservations(rooms.map(mapApiRoomReservationAdmin))
+            .then(([roomsPaged, dinners]) => {
+                setRoomReservations(roomsPaged.items.map(mapApiRoomReservationAdmin))
                 setDinnerReservations(dinners.map(mapApiDinnerReservationAdmin))
             })
             .catch(console.error)
             .finally(() => setLoading(false))
     }, [])
+
 
     const handleDelete = useCallback(async () => {
         if (!deleteTarget) return

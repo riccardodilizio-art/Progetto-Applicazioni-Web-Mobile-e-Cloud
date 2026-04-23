@@ -28,7 +28,8 @@ import MenuForm from './pages/admin/MenuForm'
 import ReservationsDashboard from './pages/admin/ReservationsDashboard'
 import PaymentPage from './pages/auth/Payment'
 import PaymentResult from './pages/auth/PaymentResult'
-import ContactsDashboard from './pages/admin/ContactsDashboard';
+import ContactsDashboard from './pages/admin/ContactsDashboard'
+import AdminLayout from './components/admin/AdminLayout.tsx'
 
 
 function ProtectedRoute({ children, redirectTo = '/accedi' }: { children: React.ReactNode; redirectTo?: string }) {
@@ -71,7 +72,6 @@ export default function App() {
                                 </ProtectedRoute>
                             }
                         />
-
                         <Route
                             path="/profilo/modifica"
                             element={
@@ -96,7 +96,6 @@ export default function App() {
                                 </ProtectedRoute>
                             }
                         />
-
                         <Route
                             path="/pagamento/:id"
                             element={
@@ -114,34 +113,26 @@ export default function App() {
                             }
                         />
 
-
                         {/* Login admin (pubblica) */}
                         <Route path="/admin/accedi" element={<Login />} />
 
-                        {/* Rotte admin protette */}
+                        {/* Dashboard admin — raggruppate sotto AdminLayout */}
                         <Route
-                            path="/admin/dashboard"
                             element={
                                 <ProtectedRoute redirectTo="/admin/accedi">
                                     <RoleGuard role="admin">
-                                        <Dashboard />
+                                        <AdminLayout />
                                     </RoleGuard>
                                 </ProtectedRoute>
                             }
-                        />
+                        >
+                            <Route path="/admin/dashboard" element={<Dashboard />} />
+                            <Route path="/admin/menu" element={<MenuDashboard />} />
+                            <Route path="/admin/prenotazioni" element={<ReservationsDashboard />} />
+                            <Route path="/admin/contatti" element={<ContactsDashboard />} />
+                        </Route>
 
-                        <Route
-                            path="/admin/contatti"
-                            element={
-                                <ProtectedRoute>
-                                    <RoleGuard role="admin">
-                                        <ContactsDashboard />
-                                    </RoleGuard>
-                                </ProtectedRoute>
-                            }
-                        />
-
-
+                        {/* Form admin (fuori dal layout, hanno header propri) */}
                         <Route
                             path="/admin/camere/nuova"
                             element={
@@ -158,17 +149,6 @@ export default function App() {
                                 <ProtectedRoute redirectTo="/admin/accedi">
                                     <RoleGuard role="admin">
                                         <RoomForm />
-                                    </RoleGuard>
-                                </ProtectedRoute>
-                            }
-                        />
-
-                        <Route
-                            path="/admin/menu"
-                            element={
-                                <ProtectedRoute redirectTo="/admin/accedi">
-                                    <RoleGuard role="admin">
-                                        <MenuDashboard />
                                     </RoleGuard>
                                 </ProtectedRoute>
                             }
@@ -193,19 +173,6 @@ export default function App() {
                                 </ProtectedRoute>
                             }
                         />
-
-                        <Route
-                            path="/admin/prenotazioni"
-                            element={
-                                <ProtectedRoute redirectTo="/admin/accedi">
-                                    <RoleGuard role="admin">
-                                        <ReservationsDashboard />
-                                    </RoleGuard>
-                                </ProtectedRoute>
-                            }
-                        />
-
-
 
                         <Route path="*" element={<NotFound />} />
                     </Routes>

@@ -37,7 +37,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: Backend-hotel-site
+        working-directory: Backend-hotel-site/Hotel.Site.Api
     steps:
       - uses: actions/checkout@v4
 
@@ -62,4 +62,5 @@ jobs:
           name: backend-test-results
           path: Backend-hotel-site/**/*.trx
           retention-days: 14
+
 

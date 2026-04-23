@@ -23,5 +23,12 @@ namespace Hotel.Site.Application.Services
             await _unitOfWork.ContactRepository.AddContactAsync(contact);
             await _unitOfWork.SaveChangesAsync();
         }
+
+        public Task<(IEnumerable<Contact> Items, int Total)> GetPagedAsync(int page, int pageSize)
+        {
+            var skip = (page - 1) * pageSize;
+            return _unitOfWork.ContactRepository.GetPagedAsync(skip, pageSize);
+        }
+
     }
 }

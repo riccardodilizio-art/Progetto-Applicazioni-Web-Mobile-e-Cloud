@@ -69,5 +69,12 @@ namespace Hotel.Site.Application.Services
             await _unitOfWork.RoomReservationRepository.DeleteRoomReservationAsync(id);
             await _unitOfWork.SaveChangesAsync();
         }
+
+        public Task<(IEnumerable<RoomReservation> Items, int Total)> GetPagedAsync(int page, int pageSize)
+        {
+            var skip = (page - 1) * pageSize;
+            return _unitOfWork.RoomReservationRepository.GetPagedAsync(skip, pageSize);
+        }
+
     }
 }

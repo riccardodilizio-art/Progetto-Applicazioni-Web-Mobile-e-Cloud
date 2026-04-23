@@ -1,18 +1,10 @@
-import { Link, useNavigate } from 'react-router-dom'
-import useSignOut from 'react-auth-kit/hooks/useSignOut'
-import useAuthUser from 'react-auth-kit/hooks/useAuthUser'
+import { Link } from 'react-router-dom'
 import { typeLabels } from '../../data/roomUtils'
 import type { RoomType } from '../../types/Room'
-import type { UserState } from '../../types/User'
 import DeleteConfirmModal from '../../components/admin/DeleteConfirmModal'
 import { useRooms } from '../../hooks/useRooms'
-import AdminNav from '../../components/admin/AdminNav'
 
 export default function Dashboard() {
-    const signOut = useSignOut()
-    const navigate = useNavigate()
-    const authUser = useAuthUser<UserState>()
-
     const {
         rooms,
         filteredRooms,
@@ -27,31 +19,8 @@ export default function Dashboard() {
         clearFilters,
     } = useRooms()
 
-    const handleLogout = () => {
-        signOut()
-        navigate('/admin/accedi')
-    }
-
-
     return (
-        <div className="min-h-screen bg-[#FAF5EE]">
-            {/* Header */}
-            <div className="bg-white border-b border-[#E8C9A0] px-6 py-4">
-                <AdminNav />
-                <div className="max-w-6xl mx-auto flex justify-between items-center">
-                    <div>
-                        <h1 className="text-2xl text-[#3B2010] font-light font-heading">Dashboard Admin</h1>
-                        <p className="text-sm text-[#9A6840]">{authUser?.email}</p>
-                    </div>
-                    <button
-                        onClick={handleLogout}
-                        className="text-sm text-red-600 border border-red-200 px-4 py-2 rounded-lg hover:bg-red-50 transition-colors cursor-pointer"
-                    >
-                        Logout
-                    </button>
-                </div>
-            </div>
-
+        <>
             <div className="max-w-6xl mx-auto px-6 py-8">
                 {/* Stats */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
@@ -89,7 +58,6 @@ export default function Dashboard() {
                     >
                         + Aggiungi camera
                     </Link>
-
                 </div>
 
                 {/* Filtri */}
@@ -119,92 +87,78 @@ export default function Dashboard() {
                 <div className="hidden md:block bg-white rounded-xl shadow-sm border border-[#E8C9A0]/50 overflow-hidden">
                     <table className="w-full">
                         <thead>
-                            <tr className="bg-[#FAF5EE] border-b border-[#E8C9A0]/50">
-                                <th className="text-left text-xs font-semibold text-[#9A6840] uppercase tracking-wider px-6 py-3">
-                                    Camera
-                                </th>
-                                <th className="text-left text-xs font-semibold text-[#9A6840] uppercase tracking-wider px-6 py-3">
-                                    Tipo
-                                </th>
-                                <th className="text-left text-xs font-semibold text-[#9A6840] uppercase tracking-wider px-6 py-3">
-                                    Prezzo
-                                </th>
-                                <th className="text-left text-xs font-semibold text-[#9A6840] uppercase tracking-wider px-6 py-3">
-                                    Capacità
-                                </th>
-                                <th className="text-left text-xs font-semibold text-[#9A6840] uppercase tracking-wider px-6 py-3">
-                                    Stato
-                                </th>
-                                <th className="text-right text-xs font-semibold text-[#9A6840] uppercase tracking-wider px-6 py-3">
-                                    Azioni
-                                </th>
-                            </tr>
+                        <tr className="bg-[#FAF5EE] border-b border-[#E8C9A0]/50">
+                            <th className="text-left text-xs font-semibold text-[#9A6840] uppercase tracking-wider px-6 py-3">Camera</th>
+                            <th className="text-left text-xs font-semibold text-[#9A6840] uppercase tracking-wider px-6 py-3">Tipo</th>
+                            <th className="text-left text-xs font-semibold text-[#9A6840] uppercase tracking-wider px-6 py-3">Prezzo</th>
+                            <th className="text-left text-xs font-semibold text-[#9A6840] uppercase tracking-wider px-6 py-3">Capacità</th>
+                            <th className="text-left text-xs font-semibold text-[#9A6840] uppercase tracking-wider px-6 py-3">Stato</th>
+                            <th className="text-right text-xs font-semibold text-[#9A6840] uppercase tracking-wider px-6 py-3">Azioni</th>
+                        </tr>
                         </thead>
                         <tbody>
-                            {filteredRooms.map((room) => (
-                                <tr
-                                    key={room.id}
-                                    className="border-b border-[#E8C9A0]/30 hover:bg-[#FAF5EE]/50 transition-colors"
-                                >
-                                    <td className="px-6 py-4">
-                                        <div className="flex items-center gap-3">
-                                            <img
-                                                src={room.images[0] ?? '/images/LogoHotel.png'}
-                                                alt={room.name}
-                                                className="w-12 h-12 rounded-lg object-cover"
-                                            />
-                                            <div>
-                                                <p className="font-medium text-[#3B2010]">{room.name}</p>
-                                                <p className="text-xs text-[#9A6840]">
-                                                    #{room.roomNumber} · Piano {room.floor}
-                                                </p>
-                                            </div>
+                        {filteredRooms.map((room) => (
+                            <tr
+                                key={room.id}
+                                className="border-b border-[#E8C9A0]/30 hover:bg-[#FAF5EE]/50 transition-colors"
+                            >
+                                <td className="px-6 py-4">
+                                    <div className="flex items-center gap-3">
+                                        <img
+                                            src={room.images[0] ?? '/images/LogoHotel.png'}
+                                            alt={room.name}
+                                            className="w-12 h-12 rounded-lg object-cover"
+                                        />
+                                        <div>
+                                            <p className="font-medium text-[#3B2010]">{room.name}</p>
+                                            <p className="text-xs text-[#9A6840]">
+                                                #{room.roomNumber} · Piano {room.floor}
+                                            </p>
                                         </div>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <span className="text-sm text-[#6B4828]">{typeLabels[room.type]}</span>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <span className="text-sm font-semibold text-[#3B2010]">
-                                            €{room.pricePerNight}
-                                        </span>
-                                        <span className="text-xs text-[#9A6840]"> /notte</span>
-                                    </td>
-                                    <td className="px-6 py-4">
+                                    </div>
+                                </td>
+                                <td className="px-6 py-4">
+                                    <span className="text-sm text-[#6B4828]">{typeLabels[room.type]}</span>
+                                </td>
+                                <td className="px-6 py-4">
+                                    <span className="text-sm font-semibold text-[#3B2010]">€{room.pricePerNight}</span>
+                                    <span className="text-xs text-[#9A6840]"> /notte</span>
+                                </td>
+                                <td className="px-6 py-4">
                                         <span className="text-sm text-[#6B4828]">
                                             {room.capacity} {room.capacity === 1 ? 'ospite' : 'ospiti'}
                                         </span>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <button
-                                            onClick={() => handleToggleAvailability(room.id)}
-                                            className={`text-xs font-semibold px-3 py-1 rounded-full cursor-pointer transition-colors ${
-                                                room.available
-                                                    ? 'bg-green-100 text-green-700 hover:bg-green-200'
-                                                    : 'bg-red-100 text-red-700 hover:bg-red-200'
-                                            }`}
+                                </td>
+                                <td className="px-6 py-4">
+                                    <button
+                                        onClick={() => handleToggleAvailability(room.id)}
+                                        className={`text-xs font-semibold px-3 py-1 rounded-full cursor-pointer transition-colors ${
+                                            room.available
+                                                ? 'bg-green-100 text-green-700 hover:bg-green-200'
+                                                : 'bg-red-100 text-red-700 hover:bg-red-200'
+                                        }`}
+                                    >
+                                        {room.available ? 'Disponibile' : 'Non disponibile'}
+                                    </button>
+                                </td>
+                                <td className="px-6 py-4 text-right">
+                                    <div className="flex justify-end gap-2">
+                                        <Link
+                                            to={`/admin/camere/modifica/${room.id}`}
+                                            className="text-sm text-[#6B4828] border border-[#C4A070] px-3 py-1.5 rounded-lg hover:bg-[#FAF5EE] transition-colors"
                                         >
-                                            {room.available ? 'Disponibile' : 'Non disponibile'}
+                                            Modifica
+                                        </Link>
+                                        <button
+                                            onClick={() => setDeleteId(room.id)}
+                                            className="text-sm text-red-600 border border-red-200 px-3 py-1.5 rounded-lg hover:bg-red-50 transition-colors cursor-pointer"
+                                        >
+                                            Elimina
                                         </button>
-                                    </td>
-                                    <td className="px-6 py-4 text-right">
-                                        <div className="flex justify-end gap-2">
-                                            <Link
-                                                to={`/admin/camere/modifica/${room.id}`}
-                                                className="text-sm text-[#6B4828] border border-[#C4A070] px-3 py-1.5 rounded-lg hover:bg-[#FAF5EE] transition-colors"
-                                            >
-                                                Modifica
-                                            </Link>
-                                            <button
-                                                onClick={() => setDeleteId(room.id)}
-                                                className="text-sm text-red-600 border border-red-200 px-3 py-1.5 rounded-lg hover:bg-red-50 transition-colors cursor-pointer"
-                                            >
-                                                Elimina
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))}
+                                    </div>
+                                </td>
+                            </tr>
+                        ))}
                         </tbody>
                     </table>
                 </div>
@@ -288,7 +242,6 @@ export default function Dashboard() {
                     onCancel={() => setDeleteId(null)}
                 />
             )}
-
-        </div>
+        </>
     )
 }
