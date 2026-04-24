@@ -74,10 +74,10 @@ export default function Navbar() {
                     <img
                         src="/images/LogoHotel.png"
                         alt="Logo Hotel"
-                        className="w-17 h-17 rounded-full object-cover border border-[#B07840]/40"
+                        className="w-12 h-12 md:w-17 md:h-17 rounded-full object-cover border border-[#B07840]/40"
                     />
                     <div className="flex flex-col leading-tight">
-                        <span className="text-[#3B2010] text-3xl font-medium tracking-wide drop-shadow-sm font-heading">
+                        <span className="text-[#3B2010] text-xl md:text-3xl font-medium tracking-wide drop-shadow-sm font-heading">
                             Hotel Excelsior
                         </span>
                     </div>
@@ -165,76 +165,76 @@ export default function Navbar() {
 
             {/* Mobile drawer */}
             <div
-                className={`md:hidden flex flex-col px-6 border-t border-[#9A6840]/20
-                    bg-[#E8C9A0]/70 backdrop-blur-md overflow-hidden transition-all duration-300`}
+                className={`md:hidden border-t border-[#9A6840]/20 bg-[#E8C9A0]/90 backdrop-blur-md
+        overflow-hidden transition-[max-height,opacity] duration-300 ease-in-out
+        ${isOpen ? 'max-h-[90vh] opacity-100' : 'max-h-0 opacity-0'}`}
                 aria-hidden={!isOpen}
             >
-                {/* Navlink principali */}
-                <div className="flex flex-col gap-5">
-                    {navLinks.map(({ to, label }) => (
-                        <Link
-                            key={to}
-                            to={to}
-                            className={`text-[0.8rem] tracking-[0.2em] uppercase font-normal
-                                transition-colors duration-200
-                                ${isActive(to) ? 'text-[#3B2010]' : 'text-[#6B4828] hover:text-[#3B2010]'}`}
-                            onClick={() => setIsOpen(false)}
-                        >
-                            {label}
-                        </Link>
-                    ))}
-                </div>
-
-                {/* Sezione utente mobile */}
-                <div className="mt-6 pt-5 border-t border-[#9A6840]/30">
-                    {isAuthenticated && user ? (
-                        <>
-                            {/* Nome utente — non cliccabile */}
-                            <div className="mb-4">
-                                <p className="text-[0.6rem] text-[#9A6840] uppercase tracking-widest mb-0.5">
-                                    {isAdmin ? 'Amministratore' : 'Cliente'}
-                                </p>
-                                <p className="text-sm font-medium text-[#3B2010]">
-                                    {user.name} {user.surname}
-                                </p>
-                            </div>
-
-                            {/* Voci menu utente */}
-                            <div className="flex flex-col gap-4 mb-5">
-                                {mobileUserItems.map(({ to, label }) => (
-                                    <Link
-                                        key={to}
-                                        to={to}
-                                        className="text-[0.8rem] tracking-[0.2em] uppercase font-normal
-                                            text-[#6B4828] hover:text-[#3B2010] transition-colors duration-200"
-                                        onClick={() => setIsOpen(false)}
-                                    >
-                                        {label}
-                                    </Link>
-                                ))}
-                            </div>
-
-                            {/* Logout */}
-                            <button
-                                onClick={handleMobileLogout}
-                                className="text-[0.7rem] tracking-[0.2em] uppercase font-medium
-                                    text-red-600 border border-red-300 px-5 py-2.5 self-start
-                                    hover:bg-red-50 transition-all duration-300 cursor-pointer"
+                <div className="flex flex-col px-6 py-5">
+                    {/* Navlink principali */}
+                    <div className="flex flex-col gap-5">
+                        {navLinks.map(({ to, label }) => (
+                            <Link
+                                key={to}
+                                to={to}
+                                className={`text-[0.8rem] tracking-[0.2em] uppercase font-normal
+                        transition-colors duration-200
+                        ${isActive(to) ? 'text-[#3B2010]' : 'text-[#6B4828] hover:text-[#3B2010]'}`}
+                                onClick={() => setIsOpen(false)}
                             >
-                                Esci
-                            </button>
-                        </>
-                    ) : (
-                        <Link
-                            to="/accedi"
-                            className="text-[0.7rem] tracking-[0.2em] uppercase font-medium
-                                text-[#FAF0E6] bg-[#3B2010]/80 px-5 py-2.5 self-start
-                                hover:bg-[#3B2010] transition-all duration-300 inline-block"
-                            onClick={() => setIsOpen(false)}
-                        >
-                            Accedi
-                        </Link>
-                    )}
+                                {label}
+                            </Link>
+                        ))}
+                    </div>
+
+                    {/* Sezione utente mobile */}
+                    <div className="mt-6 pt-5 border-t border-[#9A6840]/30">
+                        {isAuthenticated && user ? (
+                            <>
+                                <div className="mb-4">
+                                    <p className="text-[0.6rem] text-[#9A6840] uppercase tracking-widest mb-0.5">
+                                        {isAdmin ? 'Amministratore' : 'Cliente'}
+                                    </p>
+                                    <p className="text-sm font-medium text-[#3B2010]">
+                                        {user.name} {user.surname}
+                                    </p>
+                                </div>
+
+                                <div className="flex flex-col gap-4 mb-5">
+                                    {mobileUserItems.map(({ to, label }) => (
+                                        <Link
+                                            key={to}
+                                            to={to}
+                                            className="text-[0.8rem] tracking-[0.2em] uppercase font-normal
+                                    text-[#6B4828] hover:text-[#3B2010] transition-colors duration-200"
+                                            onClick={() => setIsOpen(false)}
+                                        >
+                                            {label}
+                                        </Link>
+                                    ))}
+                                </div>
+
+                                <button
+                                    onClick={handleMobileLogout}
+                                    className="text-[0.7rem] tracking-[0.2em] uppercase font-medium
+                            text-red-600 border border-red-300 px-5 py-2.5 self-start
+                            hover:bg-red-50 transition-all duration-300 cursor-pointer"
+                                >
+                                    Esci
+                                </button>
+                            </>
+                        ) : (
+                            <Link
+                                to="/accedi"
+                                className="text-[0.7rem] tracking-[0.2em] uppercase font-medium
+                        text-[#FAF0E6] bg-[#3B2010]/80 px-5 py-2.5 self-start
+                        hover:bg-[#3B2010] transition-all duration-300 inline-block"
+                                onClick={() => setIsOpen(false)}
+                            >
+                                Accedi
+                            </Link>
+                        )}
+                    </div>
                 </div>
             </div>
         </nav>

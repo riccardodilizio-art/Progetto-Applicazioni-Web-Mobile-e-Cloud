@@ -1,5 +1,4 @@
 services:
-
   api:
     build:
       context: ./Backend-hotel-site
@@ -17,12 +16,9 @@ services:
       - Smtp__AdminEmail=${Smtp__AdminEmail}
       - App__FrontendUrl=${App__FrontendUrl}
       - Jwt__Key=${Jwt__Key}
-
     volumes:
       - ./uploads:/app/wwwroot/uploads
       - ./dp-keys:/app/dp-keys
-
-
 
   frontend:
     build:
@@ -31,4 +27,5 @@ services:
     ports:
       - "8080:80"
     restart: unless-stopped
+
 
