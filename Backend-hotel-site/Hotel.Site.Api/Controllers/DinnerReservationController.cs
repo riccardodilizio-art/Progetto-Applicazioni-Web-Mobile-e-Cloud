@@ -92,10 +92,9 @@ public class DinnerReservationController : ControllerBase
 
     /// <summary>Crea una prenotazione cena associata a una prenotazione camera tramite il codice cena.</summary>
     /// <response code="201">Prenotazione creata</response>
-    /// <response code="400">Dati non validi (es. numero ospiti fuori range)</response>
+    /// <response code="400">Dati non validi (codice errato, data passata, oltre cutoff, ecc.)</response>
     /// <response code="404">Codice cena non trovato</response>
     [HttpPost]
-    [Authorize]
     [ProducesResponseType(typeof(DinnerReservationResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -112,6 +111,26 @@ public class DinnerReservationController : ControllerBase
         if (roomReservation.Stato == State.ANNULLATO)
             return BadRequest(new { message = "Prenotazione camera annullata" });
 
+        // === Validazione data e cutoff orario ===
+        var italyTz = TimeZoneInfo.FindSystemTimeZoneById("Europe/Rome");
+        var nowItaly = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, italyTz);
+        var todayItaly = DateOnly.FromDateTime(nowItaly);
+        var requestedDate = request.Data;
+
+        if (requestedDate < todayItaly)
+            return BadRequest(new { message = "Non puoi prenotare la cena per una data passata" });
+
+        const int CUTOFF_HOUR = 18; // la cucina chiude gli ordini per la cena alle 18:00
+        if (requestedDate == todayItaly && nowItaly.Hour >= CUTOFF_HOUR)
+            return BadRequest(new
+            {
+                message = $"Le prenotazioni cena per oggi sono chiuse (cutoff alle {CUTOFF_HOUR}:00). Prenota per domani."
+            });
+
+        if (requestedDate > roomReservation.CheckOut)
+            return BadRequest(new { message = "Non puoi prenotare oltre la data di check-out" });
+
+        // === Crea la prenotazione cena ===
         var reservation = new DinnerReservation
         {
             Id = Guid.NewGuid(),
@@ -137,6 +156,8 @@ public class DinnerReservationController : ControllerBase
         await _dinnerReservationService.AddDinnerReservationAsync(reservation);
         return Created($"/api/dinner-reservations/by-code/{reservation.CodiceCena}", MapToResponse(reservation));
     }
+
+
     /// <summary>Cancella una prenotazione cena.</summary>
     [HttpDelete("{id:guid}")]
     [Authorize]
