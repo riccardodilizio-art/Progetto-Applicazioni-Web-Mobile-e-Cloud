@@ -78,9 +78,7 @@ builder.Services.AddCors(options =>
         policy.WithOrigins(
             "http://localhost:8080",
             "http://localhost:5173",
-            "http://hotel-excelsior.duckdns.org",
-            "https://hotel-excelsior.duckdns.org",
-            "https://tubes-asin-freedom-treasure.trycloudflare.com")
+            "https://hotel-excelsior.uk")
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials();
