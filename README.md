@@ -4,6 +4,18 @@ Sito web completo per un hotel: prenotazione camere con pagamento, prenotazione 
 Progetto d'esame del corso **Applicazioni Web, Mobile e Cloud** — A.A. 2025/2026.
 
 ---
+## 🌐 Sito live
+
+L'applicazione è deployata in produzione e accessibile all'indirizzo:
+
+**https://hotel-excelsior.uk**
+
+Credenziali demo per l'accesso:
+- **Amministratore**: `admin@hotelexcelsior.it` / `admin123`
+- **Cliente**: `cliente@hotelexcelsior.it` / `password123`
+
+Per i dettagli sull'architettura di deploy (Modulo 2 — Cloud), consulta `Relazione hotel excelsior modulo 2.pdf` nella root del repository.
+---
 
 ## Tecnologie utilizzate
 
@@ -257,17 +269,67 @@ Sono presenti 13 test xUnit che coprono password hashing, servizio pagamenti, ov
 
 ---
 
-## Continuous Integration
+## Continuous Integration e Deployment
 
 Il repository include una pipeline GitHub Actions (`.github/workflows/ci.yml`) che ad ogni push e pull request esegue:
 
 - **Frontend**: `npm ci` + lint + build
 - **Backend**: `dotnet restore` + `dotnet build` + `dotnet test`
+- **Deploy** (solo su push a `main`): connessione SSH alla VPS Hetzner e aggiornamento dei container Docker
 
-Lo stato della CI è visibile nella tab **Actions** del repository.
+Lo stato della pipeline è visibile nella tab Actions del repository. La sezione *Deploy in produzione* più sotto descrive l'infrastruttura cloud.
+
 
 ---
 
+
+## 🚀 Deploy in produzione
+
+L'applicazione è deployata su VPS Hetzner Cloud con HTTPS gestito da Cloudflare Tunnel.
+
+### Architettura cloud
+
+```
+Browser → Cloudflare Edge (HTTPS) → Cloudflare Tunnel (outbound)
+                                          ↓
+                                    Hetzner VPS (Falkenstein)
+                                    ├─ cloudflared
+                                    ├─ nginx (reverse proxy)
+                                    └─ Docker Compose (frontend + api)
+                                          ↓
+                                    Neon PostgreSQL (cloud)
+```
+
+### Tecnologie cloud
+
+| Componente | Servizio | Modello |
+|---|---|---|
+| Compute | Hetzner Cloud VPS CX23 | IaaS |
+| HTTPS + DNS | Cloudflare (Tunnel + Registrar) | PaaS |
+| Database | Neon PostgreSQL | SaaS |
+| Email SMTP | Gmail | SaaS |
+| Deploy automatico | GitHub Actions via SSH | — |
+
+### CI/CD
+
+La pipeline GitHub Actions in `.github/workflows/ci.yml` esegue tre job sequenziali a ogni push su `main`:
+
+1. **Build frontend** — `npm ci`, lint, vite build
+2. **Build + test backend** — `dotnet build` + 13 test xUnit
+3. **Deploy** — SSH alla VPS, `git pull` e `docker compose up -d --build`
+
+Se uno dei test fallisce, il deploy non viene eseguito. Tempo medio di rilascio: 3-4 minuti dal push fino al sito aggiornato.
+
+### Sicurezza del deploy
+
+- Solo porta SSH (22) esposta sulla VPS (traffico web tramite tunnel outbound)
+- Firewall UFW con policy "default deny"
+- Login SSH solo via chiave (no password)
+- Utente non-root dedicato (`deploy`) per le operazioni quotidiane
+- Chiave SSH dedicata per il deploy automatico, memorizzata in GitHub Secrets
+- Secrets di produzione esternalizzati in `.env` sulla VPS (mai committati)
+
+---
 ## Troubleshooting
 
 ### Il sito risponde 502 Bad Gateway
@@ -312,7 +374,8 @@ Hai modificato un'entità o configurazione EF Core senza generare la migration. 
 ├── .env.example                     Template delle variabili d'ambiente
 ├── .gitignore
 ├── README.md                        Questo file
-├── Relazione.md                     Relazione tecnica del progetto
+├── Relazione hotel excelsior modulo 1.pdf                     Relazione tecnica del progetto modulo 1
+├── Relazione hotel excelsior modulo 2.pdf                     Relazione tecnica del progetto modulo 2
 └── .github/workflows/ci.yml         Pipeline CI
 ```
 
