@@ -34,7 +34,7 @@ export default function Home() {
                         Hotel Excelsior
                     </h1>
                     <p className="text-white/80 text-lg md:text-xl mt-4 max-w-xl">
-                        Il tuo rifugio di eleganza e allegria sul mare Adriatico
+                        Il tuo rifugio di eleganza sul mare Adriatico
                     </p>
                     <div className="flex gap-4 mt-8">
                         <Link
