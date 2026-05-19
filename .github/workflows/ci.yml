@@ -62,5 +62,30 @@ jobs:
           name: backend-test-results
           path: Backend-hotel-site/**/*.trx
           retention-days: 14
+  deploy:
+    name: Deploy su VPS Hetzner
+    runs-on: ubuntu-latest
+    needs: [build, backend]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          script: |
+            set -e
+            cd /home/deploy/Progetto-Applicazioni-Web-Mobile-e-Cloud
+            echo "==> Pulling latest code"
+            git pull origin main
+            echo "==> Rebuilding containers"
+            docker compose up -d --build
+            echo "==> Cleaning unused images"
+            docker image prune -af
+            echo "==> Deploy complete"
+            docker compose ps
 
 
