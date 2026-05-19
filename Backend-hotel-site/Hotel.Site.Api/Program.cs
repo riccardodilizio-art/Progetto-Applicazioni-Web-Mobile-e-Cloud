@@ -76,11 +76,11 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowFrontend", policy =>
     {
         policy.WithOrigins(
-                "http://localhost:8080",
-                "http://localhost:5173",
-                "http://hotel-excelsior.duckdns.org",
-                "https://hotel-excelsior.duckdns.org"
-              )
+            "http://localhost:8080",
+            "http://localhost:5173",
+            "http://hotel-excelsior.duckdns.org",
+            "https://hotel-excelsior.duckdns.org",
+            "https://tubes-asin-freedom-treasure.trycloudflare.com")
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials();
